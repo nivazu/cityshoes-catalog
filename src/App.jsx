@@ -286,16 +286,26 @@ const LuxuryShoeCatalogWithAdmin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-amber-50/20 text-stone-900 font-light overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 text-stone-900 font-light overflow-hidden">
       {/* Background Graphics */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -right-32 w-64 h-64 bg-gradient-to-br from-amber-100/30 to-stone-200/20 rounded-full blur-3xl animate-pulse" style={{animationDuration: '8s'}}></div>
         <div className="absolute bottom-1/4 -left-32 w-80 h-80 bg-gradient-to-tr from-stone-200/20 to-amber-100/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '12s', animationDelay: '4s'}}></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-amber-50/10 to-stone-100/10 rounded-full blur-3xl animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
         
+        {/* Additional background elements for scroll sections */}
+        <div className="absolute top-3/4 right-1/4 w-48 h-48 bg-gradient-to-bl from-amber-100/20 to-stone-100/15 rounded-full blur-2xl animate-pulse" style={{animationDuration: '10s', animationDelay: '1s'}}></div>
+        <div className="absolute top-1/3 -left-20 w-32 h-64 bg-gradient-to-r from-stone-100/25 to-amber-100/15 rounded-full blur-2xl animate-pulse" style={{animationDuration: '14s', animationDelay: '6s'}}></div>
+        <div className="absolute bottom-1/3 right-1/3 w-40 h-40 bg-gradient-to-tr from-amber-50/20 to-stone-50/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '9s', animationDelay: '3s'}}></div>
+        
         <div className="absolute top-20 right-20 w-2 h-20 bg-gradient-to-b from-amber-300/20 to-transparent transform rotate-12"></div>
         <div className="absolute bottom-40 left-20 w-1 h-16 bg-gradient-to-t from-stone-400/30 to-transparent transform -rotate-12"></div>
         <div className="absolute top-1/3 left-1/4 w-px h-12 bg-gradient-to-b from-amber-400/40 to-transparent"></div>
+        
+        {/* Subtle geometric accents */}
+        <div className="absolute top-2/3 right-1/5 w-px h-8 bg-gradient-to-b from-amber-300/30 to-transparent transform rotate-45"></div>
+        <div className="absolute bottom-1/5 left-1/3 w-2 h-2 bg-amber-200/40 rounded-full"></div>
+        <div className="absolute top-1/5 left-2/3 w-1 h-1 bg-stone-300/50 rounded-full"></div>
       </div>
 
       {/* Admin Bar */}
@@ -443,7 +453,7 @@ const LuxuryShoeCatalogWithAdmin = () => {
       </section>
 
       {/* Controls */}
-      <section className="py-12 border-t border-stone-200/50 bg-white/30 backdrop-blur-sm">
+      <section className="py-12 border-t border-stone-200/50 bg-gradient-to-r from-white/60 via-amber-50/30 to-white/60 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-8">
@@ -481,7 +491,7 @@ const LuxuryShoeCatalogWithAdmin = () => {
       </section>
 
       {/* Products Grid */}
-      <section className="py-20">
+      <section className="py-20 bg-gradient-to-b from-transparent via-stone-50/20 to-transparent">
         <div className="max-w-7xl mx-auto px-6">
           <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-12 transition-all duration-700 ${isTransitioning ? 'opacity-0 transform translate-y-8' : 'opacity-100 transform translate-y-0'}`}>
             {filteredProducts.map((product, index) => (
@@ -642,7 +652,7 @@ const LuxuryShoeCatalogWithAdmin = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 border-t border-stone-200/50 bg-white/80 backdrop-blur-sm">
+      <footer className="py-16 border-t border-stone-200/50 bg-gradient-to-r from-stone-50/50 via-white/80 to-amber-50/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
