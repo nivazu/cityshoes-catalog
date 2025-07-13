@@ -55,7 +55,15 @@ const StoreEditModal = ({ storeInfo, onSave, onCancel }) => {
             <button onClick={onCancel} className="text-stone-400 hover:text-stone-700"><X className="w-6 h-6" /></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Store Edit Form Fields will go here */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">שם החנות</label><input type="text" value={formData.name} onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl" required /></div>
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">סלוגן</label><input type="text" value={formData.slogan} onChange={(e) => setFormData(p => ({ ...p, slogan: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl" required /></div>
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">טלפון (לתצוגה)</label><input type="text" value={formData.phone} onChange={(e) => setFormData(p => ({ ...p, phone: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl" required /></div>
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">וואטסאפ</label><input type="text" value={formData.whatsapp} onChange={(e) => setFormData(p => ({ ...p, whatsapp: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl" required /></div>
+                <div className="md:col-span-2"><label className="block text-sm font-medium text-stone-700 mb-2">כתובת</label><input type="text" value={formData.address} onChange={(e) => setFormData(p => ({ ...p, address: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl" required /></div>
+                <div className="md:col-span-2"><label className="block text-sm font-medium text-stone-700 mb-2">אינסטגרם</label><input type="text" value={formData.instagram} onChange={(e) => setFormData(p => ({ ...p, instagram: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl" required /></div>
+            </div>
+            <div className="flex gap-4 pt-6"><button type="submit" className="flex-1 bg-stone-800 text-white py-3 rounded-xl font-medium"><Save className="w-4 h-4 inline-block ml-2" />שמור שינויים</button><button type="button" onClick={onCancel} className="flex-1 border border-stone-300 text-stone-600 py-3 rounded-xl font-medium">ביטול</button></div>
         </form>
       </div>
     </div>
@@ -104,23 +112,8 @@ const App = () => {
   const saveStoreInfo = (newStoreInfo) => { setStoreInfo(newStoreInfo); setEditingStore(false); };
   const handleCategoryChange = (categoryId) => { setIsTransitioning(true); setTimeout(() => { setSelectedCategory(categoryId); setIsTransitioning(false); }, 300); };
   const handleProductSelect = (product) => { if (!isAdminMode) { setSelectedProduct(product); setCurrentImageIndex(0); } };
-
-  const saveProduct = (productData) => {
-    if (productData.id) {
-      setProducts(prev => prev.map(p => p.id === productData.id ? productData : p));
-    } else {
-      const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-      setProducts(prev => [...prev, { ...productData, id: newId }]);
-    }
-    setEditingProduct(null);
-  };
-  
-  const deleteProduct = (id) => {
-    if (window.confirm('האם אתה בטוח שברצונך למחוק את המוצר?')) {
-      setProducts(prev => prev.filter(p => p.id !== id));
-    }
-  };
-
+  const saveProduct = (productData) => { if (productData.id) { setProducts(prev => prev.map(p => p.id === productData.id ? productData : p)); } else { const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1; setProducts(prev => [...prev, { ...productData, id: newId }]); } setEditingProduct(null); };
+  const deleteProduct = (id) => { if (window.confirm('האם אתה בטוח שברצונך למחוק את המוצר?')) { setProducts(prev => prev.filter(p => p.id !== id)); } };
   const exportImagesList = () => { /* ... Functionality for exporting ... */ };
   
   if (isLoading) {
@@ -178,6 +171,7 @@ const App = () => {
         {showAdminLogin && !isAdminMode && ( <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6"><div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl"><h3 className="text-2xl font-bold text-stone-800 mb-2 text-center">כניסת מנהל</h3><div className="relative mt-4"><input type={showPassword ? "text" : "password"} value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)} placeholder="סיסמה" className="w-full px-4 py-3 border border-stone-300 rounded-xl" onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()} /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-stone-400">{showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button></div><div className="flex gap-4 mt-6"><button onClick={handleAdminLogin} className="flex-1 bg-stone-800 text-white py-3 rounded-xl font-medium">כניסה</button><button onClick={() => setShowAdminLogin(false)} className="flex-1 border border-stone-300 text-stone-600 py-3 rounded-xl font-medium">ביטול</button></div></div></div> )}
         {editingProduct && <ProductEditModal product={editingProduct} onSave={saveProduct} onCancel={() => setEditingProduct(null)} categories={categories} />}
         {editingStore && <StoreEditModal storeInfo={storeInfo} onSave={saveStoreInfo} onCancel={() => setEditingStore(null)} />}
+        {selectedProduct && <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-2xl" onClick={() => setSelectedProduct(null)}><div className="h-full flex items-center justify-center p-6"><div className="max-w-6xl w-full max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl" onClick={e => e.stopPropagation()}>...Product Detail Modal...</div></div></div>}
     </div>
   );
 };
