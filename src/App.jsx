@@ -15,7 +15,8 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
       originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
       colors: formData.colors.split(',').map(c => c.trim()).filter(Boolean),
       sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
-      images: formData.images.split('\n').map(i => i.trim()).filter(Boolean)
+      images: formData.images.split('\n').map(i => i.trim()).filter(Boolean),
+      category: formData.category,
     };
     onSave(productData);
   };
@@ -115,6 +116,7 @@ const App = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [hoveredProduct, setHoveredProduct] = useState(null);
 
   useEffect(() => { const handleScroll = () => setScrollY(window.scrollY); window.addEventListener('scroll', handleScroll); setTimeout(() => setIsLoading(false), 2500); return () => window.removeEventListener('scroll', handleScroll); }, []);
   
