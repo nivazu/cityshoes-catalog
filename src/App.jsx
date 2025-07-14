@@ -1,8 +1,220 @@
-<div className="absolute bottom-1/5 left-1/3 w-6 h-6 bg-amber-300/50 rounded-full animate-pulse" style={{animationDuration: '6s', animationDelay: '3s'}}></div>
+import React, { useState, useEffect } from 'react';
+import { Phone, MapPin, Instagram, Search, Filter, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Plus, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
+
+const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
+  const [formData, setFormData] = useState({
+    name: product.name || '', brand: product.brand || '', price: product.price || '', originalPrice: product.originalPrice || '',
+    category: product.category || 'lifestyle', description: product.description || '', colors: product.colors?.join(', ') || '',
+    sizes: product.sizes?.join(', ') || '', images: product.images?.join('\n') || '', isNew: product.isNew || false, featured: product.featured || false
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const productData = {
+      ...product, ...formData, price: parseFloat(formData.price),
+      originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
+      colors: formData.colors.split(',').map(c => c.trim()).filter(Boolean),
+      sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
+      images: formData.images.split('\n').map(i => i.trim()).filter(Boolean)
+    };
+    onSave(productData);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
+      <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">{product.id ? 'ערוך מוצר' : 'הוסף מוצר חדש'}</h3>
+          <button onClick={onCancel} className="text-stone-400 hover:text-amber-700 transition-colors duration-300">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">שם המוצר</label><input type="text" value={formData.name} onChange={(e) => setFormData(p => ({...p, name: e.target.value}))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">מותג</label><input type="text" value={formData.brand} onChange={(e) => setFormData(p => ({...p, brand: e.target.value}))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">מחיר</label><input type="number" value={formData.price} onChange={(e) => setFormData(p => ({...p, price: e.target.value}))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">מחיר מקורי (אופציונלי)</label><input type="number" value={formData.originalPrice} onChange={(e) => setFormData(p => ({ ...p, originalPrice: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" /></div>
+            </div>
+            <div><label className="block text-sm font-medium text-stone-700 mb-2">תיאור</label><textarea value={formData.description} onChange={(e) => setFormData(p => ({...p, description: e.target.value}))} rows={3} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+            <div><label className="block text-sm font-medium text-stone-700 mb-2">קישורי תמונות (כל קישור בשורה חדשה)</label><textarea value={formData.images} onChange={(e) => setFormData(p => ({...p, images: e.target.value}))} rows={4} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" /></div>
+            <div className="flex gap-4"><label className="flex items-center gap-2"><input type="checkbox" checked={formData.isNew} onChange={(e) => setFormData(prev => ({ ...prev, isNew: e.target.checked }))} className="rounded border-stone-300 text-amber-600 focus:ring-amber-500" /><span className="text-sm text-stone-700">מוצר חדש</span></label><label className="flex items-center gap-2"><input type="checkbox" checked={formData.featured} onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))} className="rounded border-stone-300 text-amber-600 focus:ring-amber-500" /><span className="text-sm text-stone-700">מוצר מומלץ</span></label></div>
+            <div className="flex gap-4 pt-6"><button type="submit" className="flex-1 bg-gradient-to-r from-stone-800 to-amber-800 text-white py-3 rounded-xl font-medium hover:from-amber-800 hover:to-stone-800 transition-all duration-500 shadow-xl hover:shadow-2xl transform hover:scale-105"><Save className="w-4 h-4 inline-block ml-2" />שמור</button><button type="button" onClick={onCancel} className="flex-1 border border-stone-300 text-stone-600 py-3 rounded-xl font-medium hover:bg-stone-50 transition-colors duration-300">ביטול</button></div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const StoreEditModal = ({ storeInfo, onSave, onCancel }) => {
+  const [formData, setFormData] = useState({ ...storeInfo });
+  const handleSubmit = (e) => { e.preventDefault(); onSave(formData); };
+  return (
+    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
+      <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">ערוך פרטי החנות</h3>
+          <button onClick={onCancel} className="text-stone-400 hover:text-amber-700 transition-colors duration-300">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">שם החנות</label><input type="text" value={formData.name} onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">סלוגן</label><input type="text" value={formData.slogan} onChange={(e) => setFormData(p => ({ ...p, slogan: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">טלפון</label><input type="text" value={formData.phone} onChange={(e) => setFormData(p => ({ ...p, phone: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+                <div><label className="block text-sm font-medium text-stone-700 mb-2">וואטסאפ</label><input type="text" value={formData.whatsapp} onChange={(e) => setFormData(p => ({ ...p, whatsapp: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+                <div className="md:col-span-2"><label className="block text-sm font-medium text-stone-700 mb-2">כתובת</label><input type="text" value={formData.address} onChange={(e) => setFormData(p => ({ ...p, address: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+                <div className="md:col-span-2"><label className="block text-sm font-medium text-stone-700 mb-2">אינסטגרם</label><input type="text" value={formData.instagram} onChange={(e) => setFormData(p => ({ ...p, instagram: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+                <div className="md:col-span-2"><label className="block text-sm font-medium text-stone-700 mb-2">פייסבוק</label><input type="text" value={formData.facebook} onChange={(e) => setFormData(p => ({ ...p, facebook: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+                <div className="md:col-span-2"><label className="block text-sm font-medium text-stone-700 mb-2">טיקטוק</label><input type="text" value={formData.tiktok} onChange={(e) => setFormData(p => ({ ...p, tiktok: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+            </div>
+            <div className="w-full h-px bg-gradient-to-r from-transparent via-stone-300 to-transparent"></div>
+            <div><label className="block text-sm font-medium text-stone-700 mb-2">כותרת באנר ראשית</label><input type="text" value={formData.heroTitle} onChange={(e) => setFormData(p => ({ ...p, heroTitle: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+            <div><label className="block text-sm font-medium text-stone-700 mb-2">כותרת משנה (Hero)</label><textarea value={formData.heroSubtitle} onChange={(e) => setFormData(p => ({ ...p, heroSubtitle: e.target.value }))} rows={2} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
+            <div><label className="block text-sm font-medium text-stone-700 mb-2">קישור לתמונת הבאנר</label><input type="text" value={formData.bannerImage} onChange={(e) => setFormData(p => ({ ...p, bannerImage: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" /></div>
+            <div className="flex gap-4 pt-6"><button type="submit" className="flex-1 bg-gradient-to-r from-stone-800 to-amber-800 text-white py-3 rounded-xl font-medium hover:from-amber-800 hover:to-stone-800 transition-all duration-500 shadow-xl hover:shadow-2xl transform hover:scale-105"><Save className="w-4 h-4 inline-block ml-2" />שמור שינויים</button><button type="button" onClick={onCancel} className="flex-1 border border-stone-300 text-stone-600 py-3 rounded-xl font-medium hover:bg-stone-50 transition-colors duration-300">ביטול</button></div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const App = () => {
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [viewMode, setViewMode] = useState('grid');
+  const [hoveredProduct, setHoveredProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [productImageIndexes, setProductImageIndexes] = useState({});
+  const [scrollY, setScrollY] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingStore, setEditingStore] = useState(false);
+
+  const [products, setProducts] = useState([
+    { id: 1, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/Xx3jh94t/Sprayground96.jpg", "https://i.ibb.co/HL8fWng9/Sprayground92.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: true, featured: true },
+    { id: 2, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/TqWYFrDN/Sprayground82.jpg", "https://i.ibb.co/Y7BGVshR/Sprayground79.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: true, featured: false },
+    { id: 3, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/Y7BGVshR/Sprayground79.jpg", "https://i.ibb.co/TqWYFrDN/Sprayground82.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: false, featured: false },
+    { id: 4, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/NgW7L3Lg/Sprayground83.jpg", "https://i.ibb.co/7NyzMHz2/Sprayground80.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: false, featured: false }
+  ]);
+  
+  const [storeInfo, setStoreInfo] = useState({ 
+    name: "נעלי העיר", 
+    slogan: "כל המיוחדים אצלנו", 
+    phone: "050-5798761",
+    whatsapp: "+972505798761",
+    address: "שד' רוטשילד 17, חדרה", 
+    instagram: "https://www.instagram.com/asi_abergel_city_shoes?igsh=MTU4Mm16Z2VxbzVxYw==", 
+    facebook: "https://www.facebook.com/share/1B32LKgMpx/", 
+    tiktok: "https://www.tiktok.com/@asi0505798761?_t=ZS-8xzXQyLNjcI&_r=1",
+    heroTitle: "PREMIUM FOOTWEAR EXPERIENCE", 
+    heroSubtitle: "קולקציה אקסקלוסיבית של נעלי ספורט ואופנה מהמותגים המובילים בעולם.", 
+    bannerImage: "https://i.ibb.co/gMXLwMg6/b447649c-d70a-400e-bf50-f22a1c291eca-1.gif" 
+  });
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    setTimeout(() => setIsLoading(false), 2500);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const categories = [ { id: 'all', name: 'כל המוצרים' }, { id: 'lifestyle', name: 'לייפסטייל' } ];
+  const filteredProducts = selectedCategory === 'all' ? products : products.filter(p => p.category === selectedCategory);
+  const featuredProducts = products.filter(p => p.featured);
+  
+  const handleCategoryChange = (categoryId) => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+        setSelectedCategory(categoryId);
+        setIsTransitioning(false);
+    }, 500); // Animation duration
+  };
+
+  const handleProductImageChange = (productId, direction) => {
+    const product = products.find(p => p.id === productId);
+    if (!product || !product.images || product.images.length <= 1) return;
+    
+    setProductImageIndexes(prev => {
+      const currentIndex = prev[productId] || 0;
+      let newIndex;
+      
+      if (direction === 'next') {
+        newIndex = currentIndex < product.images.length - 1 ? currentIndex + 1 : 0;
+      } else {
+        newIndex = currentIndex > 0 ? currentIndex - 1 : product.images.length - 1;
+      }
+      
+      return { ...prev, [productId]: newIndex };
+    });
+  };
+  const handleAdminLogin = () => { if (adminPassword === 'admin123') { setIsAdminMode(true); setShowAdminLogin(false); setAdminPassword(''); } else { alert('סיסמה שגויה'); } };
+  const handleLogout = () => { setIsAdminMode(false); setEditingProduct(null); setEditingStore(false); };
+  const saveStoreInfo = (newStoreInfo) => { setStoreInfo(newStoreInfo); setEditingStore(false); };
+  const handleProductSelect = (product) => { if (!isAdminMode) { setSelectedProduct(product); } };
+  const saveProduct = (productData) => { if (productData.id) { setProducts(prev => prev.map(p => p.id === productData.id ? productData : p)); } else { const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1; setProducts(prev => [...prev, { ...productData, id: newId }]); } setEditingProduct(null); };
+  const deleteProduct = (id) => { if (window.confirm('האם אתה בטוח שברצונך למחוק את המוצר?')) { setProducts(prev => prev.filter(p => p.id !== id)); } };
+  const exportDataForCode = () => { const dataString = `const newProducts = ${JSON.stringify(products, null, 2)};`; const blob = new Blob([dataString], { type: 'text/javascript; charset=utf-8' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'updated_products.js'; a.click(); URL.revokeObjectURL(url); };
+  const exportHumanReadableList = () => { let list = `רשימת מוצרים - ${storeInfo.name}\n\n`; products.forEach(p => { list += `שם: ${p.name}\nמחיר: ${p.price}\n\n`; }); const blob = new Blob([list], { type: 'text/plain; charset=utf-8' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'רשימת_מוצרים.txt'; a.click(); URL.revokeObjectURL(url); };
+  
+  if (isLoading) { 
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative mb-8">
+            <div className="w-20 h-1 bg-gradient-to-r from-stone-800 via-amber-600 to-stone-800 mx-auto animate-pulse"></div>
+            <div className="absolute inset-0 w-20 h-1 bg-gradient-to-r from-amber-400 to-stone-600 mx-auto animate-pulse opacity-50 blur-sm"></div>
+          </div>
+          <div className="text-xs tracking-[0.4em] text-stone-600 font-light">LOADING LUXURY EXPERIENCE</div>
+          <div className="mt-4 text-lg tracking-[0.2em] text-stone-800 font-extralight">{storeInfo.name}</div>
+        </div>
+      </div>
+    ); 
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/20 via-stone-50/30 to-amber-100/40 text-stone-900 font-light overflow-hidden relative">
+      {/* Enhanced Background Graphics - Much More Visible */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {/* Large Primary Circles */}
+        <div className="absolute top-1/4 -right-32 w-96 h-96 bg-gradient-to-br from-amber-200/40 to-stone-300/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '8s'}}></div>
+        <div className="absolute bottom-1/4 -left-32 w-[500px] h-[500px] bg-gradient-to-tr from-stone-300/35 to-amber-200/45 rounded-full blur-3xl animate-pulse" style={{animationDuration: '12s', animationDelay: '4s'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-amber-100/25 to-stone-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
+        
+        {/* Medium Secondary Circles */}
+        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-bl from-amber-200/35 to-stone-200/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '10s', animationDelay: '1s'}}></div>
+        <div className="absolute top-1/3 -left-20 w-72 h-72 bg-gradient-to-r from-stone-200/40 to-amber-200/30 rounded-full blur-2xl animate-pulse" style={{animationDuration: '14s', animationDelay: '6s'}}></div>
+        <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-gradient-to-tr from-amber-100/30 to-stone-100/35 rounded-full blur-2xl animate-pulse" style={{animationDuration: '9s', animationDelay: '3s'}}></div>
+        
+        {/* Additional Floating Elements */}
+        <div className="absolute top-1/6 left-1/4 w-48 h-48 bg-gradient-to-br from-amber-300/25 to-stone-400/20 rounded-full blur-2xl animate-pulse" style={{animationDuration: '11s', animationDelay: '5s'}}></div>
+        <div className="absolute bottom-1/6 right-1/5 w-56 h-56 bg-gradient-to-tl from-stone-300/30 to-amber-300/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '13s', animationDelay: '7s'}}></div>
+        
+        {/* Decorative Lines - More Visible */}
+        <div className="absolute top-20 right-20 w-4 h-32 bg-gradient-to-b from-amber-400/40 to-transparent transform rotate-12 animate-pulse" style={{animationDuration: '8s'}}></div>
+        <div className="absolute bottom-40 left-20 w-3 h-28 bg-gradient-to-t from-stone-500/40 to-transparent transform -rotate-12 animate-pulse" style={{animationDuration: '10s', animationDelay: '2s'}}></div>
+        <div className="absolute top-1/3 left-1/4 w-2 h-20 bg-gradient-to-b from-amber-500/50 to-transparent animate-pulse" style={{animationDuration: '9s', animationDelay: '4s'}}></div>
+        <div className="absolute top-2/3 right-1/5 w-2 h-16 bg-gradient-to-b from-amber-400/45 to-transparent transform rotate-45 animate-pulse" style={{animationDuration: '7s', animationDelay: '1s'}}></div>
+        <div className="absolute bottom-1/4 left-1/2 w-3 h-24 bg-gradient-to-t from-stone-400/45 to-transparent transform rotate-30 animate-pulse" style={{animationDuration: '12s', animationDelay: '3s'}}></div>
+        
+        {/* Geometric Shapes */}
+        <div className="absolute top-1/5 left-3/4 w-16 h-16 bg-gradient-to-br from-amber-300/30 to-stone-400/25 transform rotate-45 animate-pulse" style={{animationDuration: '15s', animationDelay: '4s'}}></div>
+        <div className="absolute bottom-1/5 left-1/6 w-12 h-12 bg-gradient-to-tr from-stone-300/35 to-amber-300/30 rounded-full animate-pulse" style={{animationDuration: '11s', animationDelay: '6s'}}></div>
+        <div className="absolute top-1/2 right-1/6 w-20 h-20 bg-gradient-to-bl from-amber-200/25 to-stone-300/30 transform rotate-12 animate-pulse" style={{animationDuration: '14s', animationDelay: '2s'}}></div>
+        
+        {/* Small Accent Dots - More Visible */}
+        <div className="absolute bottom-1/5 left-1/3 w-6 h-6 bg-amber-300/50 rounded-full animate-pulse" style={{animationDuration: '6s', animationDelay: '3s'}}></div>
         <div className="absolute top-1/5 left-2/3 w-4 h-4 bg-stone-400/60 rounded-full animate-pulse" style={{animationDuration: '8s', animationDelay: '1s'}}></div>
         <div className="absolute top-1/3 right-1/4 w-5 h-5 bg-amber-400/55 rounded-full animate-pulse" style={{animationDuration: '7s', animationDelay: '5s'}}></div>
         <div className="absolute bottom-1/3 left-1/5 w-4 h-4 bg-stone-500/50 rounded-full animate-pulse" style={{animationDuration: '9s', animationDelay: '2s'}}></div>
         
+        {/* Flowing Wave Elements */}
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-amber-100/20 to-transparent"></div>
         <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-stone-100/25 to-transparent"></div>
         <div className="absolute top-1/2 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-200/30 to-transparent animate-pulse" style={{animationDuration: '20s'}}></div>
@@ -97,23 +309,31 @@
               </div>
               
               <div className="relative">
-                <img 
-                  src={storeInfo.bannerImage}
-                  alt="Banner"
-                  className="w-full h-96 lg:h-[600px] object-cover transition-all duration-700 rounded-3xl shadow-2xl"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-3xl"></div>
-                <div className="absolute bottom-8 left-8 text-white">
-                  <div className="text-xs tracking-[0.3em] mb-2">SPRAYGROUND</div>
-                  <div className="text-2xl font-bold mb-2">תיק גב Sprayground</div>
-                  <div className="text-lg">₪350</div>
-                </div>
+                {featuredProducts[0] && featuredProducts[0].images && featuredProducts[0].images.length > 0 && (
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-100/20 to-stone-200/20 rounded-3xl transform rotate-3 group-hover:rotate-6 transition-transform duration-700"></div>
+                    <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-700 transform group-hover:scale-105">
+                      <img 
+                        src={featuredProducts[0].images[0]}
+                        alt={featuredProducts[0].name}
+                        className="w-full h-96 lg:h-[600px] object-cover transition-all duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                      <div className="absolute bottom-8 left-8 text-white opacity-0 group-hover:opacity-100 transition-all duration-700 transform translate-y-4 group-hover:translate-y-0">
+                        <div className="text-xs tracking-[0.3em] mb-2">{featuredProducts[0].brand}</div>
+                        <div className="text-2xl font-bold mb-2">{featuredProducts[0].name}</div>
+                        <div className="text-lg">₪{featuredProducts[0].price}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </section>
 
         <section className="py-12 border-t border-stone-200/50 bg-gradient-to-r from-amber-50/60 via-stone-50/70 to-amber-50/60 backdrop-blur-sm relative overflow-hidden">
+          {/* Enhanced Controls Section Background */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-1/2 -right-20 w-80 h-80 bg-gradient-to-bl from-amber-200/35 to-stone-300/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '8s'}}></div>
             <div className="absolute top-1/2 -left-20 w-72 h-72 bg-gradient-to-br from-stone-200/40 to-amber-200/35 rounded-full blur-2xl animate-pulse" style={{animationDuration: '12s', animationDelay: '3s'}}></div>
@@ -125,7 +345,237 @@
           <div className="max-w-7xl mx-auto px-6 relative">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-8">
-                <div className="text-sm tracking-wide mb-2 text-stone-600">טלפון</div>
+                <div className="text-sm tracking-wide text-stone-600">
+                  {filteredProducts.length} פריטים
+                </div>
+                <div className="flex items-center gap-4 bg-white/50 rounded-full p-1 shadow-lg">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-3 rounded-full transition-all duration-300 ${viewMode === 'grid' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-400 hover:text-stone-700'}`}
+                  >
+                    <Grid className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-3 rounded-full transition-all duration-300 ${viewMode === 'list' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-400 hover:text-stone-700'}`}
+                  >
+                    <List className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-6">
+                <button onClick={exportDataForCode} className="flex items-center gap-2 text-sm tracking-wide text-stone-600 hover:text-amber-700 transition-colors duration-300 bg-white/50 px-4 py-2 rounded-full shadow-lg hover:shadow-xl">
+                  <Download className="w-4 h-4" />
+                  ייצא נתונים לקוד
+                </button>
+                <button onClick={exportHumanReadableList} className="flex items-center gap-2 text-sm tracking-wide text-stone-600 hover:text-amber-700 transition-colors duration-300 bg-white/50 px-4 py-2 rounded-full shadow-lg hover:shadow-xl">
+                  <Download className="w-4 h-4" />
+                  ייצא רשימה פשוטה
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="products-section" className="py-20 bg-gradient-to-br from-amber-50/50 via-stone-50/60 via-amber-50/40 to-stone-100/50 relative overflow-hidden">
+          {/* Dramatically Enhanced Products Section Background */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Large Flowing Circles */}
+            <div className="absolute top-1/6 -right-40 w-[500px] h-[500px] bg-gradient-to-bl from-amber-300/30 to-stone-400/25 rounded-full blur-3xl animate-pulse" style={{animationDuration: '10s', animationDelay: '2s'}}></div>
+            <div className="absolute bottom-1/4 -left-40 w-[450px] h-[450px] bg-gradient-to-tr from-stone-400/35 to-amber-300/40 rounded-full blur-3xl animate-pulse" style={{animationDuration: '14s', animationDelay: '5s'}}></div>
+            <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-gradient-to-r from-amber-200/25 to-stone-300/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '12s', animationDelay: '1s'}}></div>
+            <div className="absolute bottom-1/6 right-1/3 w-80 h-80 bg-gradient-to-bl from-stone-300/35 to-amber-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '16s', animationDelay: '3s'}}></div>
+            <div className="absolute top-1/3 left-1/6 w-72 h-72 bg-gradient-to-br from-amber-400/25 to-stone-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '11s', animationDelay: '6s'}}></div>
+            
+            {/* Dynamic Lines and Patterns */}
+            <div className="absolute top-1/4 left-1/6 w-6 h-48 bg-gradient-to-b from-amber-400/35 to-transparent transform rotate-12 animate-pulse" style={{animationDuration: '8s'}}></div>
+            <div className="absolute bottom-1/3 right-1/5 w-4 h-40 bg-gradient-to-t from-stone-500/40 to-transparent transform -rotate-12 animate-pulse" style={{animationDuration: '11s', animationDelay: '2s'}}></div>
+            <div className="absolute top-2/3 left-1/3 w-3 h-32 bg-gradient-to-b from-amber-500/45 to-transparent animate-pulse" style={{animationDuration: '9s', animationDelay: '4s'}}></div>
+            <div className="absolute top-1/6 right-2/3 w-3 h-36 bg-gradient-to-b from-stone-400/50 to-transparent transform rotate-45 animate-pulse" style={{animationDuration: '13s', animationDelay: '1s'}}></div>
+            <div className="absolute bottom-1/5 left-2/3 w-5 h-28 bg-gradient-to-t from-amber-300/40 to-transparent transform rotate-30 animate-pulse" style={{animationDuration: '7s', animationDelay: '3s'}}></div>
+            
+            {/* Geometric Elements */}
+            <div className="absolute top-1/5 left-3/4 w-24 h-24 bg-gradient-to-br from-amber-300/30 to-stone-400/25 transform rotate-45 animate-pulse" style={{animationDuration: '18s', animationDelay: '4s'}}></div>
+            <div className="absolute bottom-1/5 left-1/6 w-20 h-20 bg-gradient-to-tr from-stone-300/35 to-amber-300/30 rounded-full animate-pulse" style={{animationDuration: '12s', animationDelay: '7s'}}></div>
+            <div className="absolute top-1/2 right-1/6 w-16 h-16 bg-gradient-to-bl from-amber-400/30 to-stone-300/25 transform rotate-30 animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
+            <div className="absolute top-1/3 left-1/2 w-18 h-18 bg-gradient-to-tr from-stone-400/30 to-amber-200/35 rounded-full animate-pulse" style={{animationDuration: '10s', animationDelay: '5s'}}></div>
+            
+            {/* Accent Dots - Much More Visible */}
+            <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-amber-400/60 rounded-full animate-pulse" style={{animationDuration: '7s', animationDelay: '3s'}}></div>
+            <div className="absolute bottom-1/4 left-1/5 w-6 h-6 bg-stone-500/65 rounded-full animate-pulse" style={{animationDuration: '10s', animationDelay: '6s'}}></div>
+            <div className="absolute top-1/2 right-1/6 w-4 h-4 bg-amber-500/70 rounded-full animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
+            <div className="absolute bottom-1/6 left-1/3 w-5 h-5 bg-stone-400/60 rounded-full animate-pulse" style={{animationDuration: '8s', animationDelay: '4s'}}></div>
+            
+            {/* Flowing Background Gradients */}
+            <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-amber-200/20 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-stone-200/25 to-transparent"></div>
+            <div className="absolute top-1/3 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-300/30 to-transparent animate-pulse" style={{animationDuration: '20s'}}></div>
+            <div className="absolute bottom-1/3 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stone-400/25 to-transparent animate-pulse" style={{animationDuration: '25s', animationDelay: '5s'}}></div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-6 relative">
+            <div className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12' : 'space-y-8'} transition-all duration-700 ${isTransitioning ? 'opacity-0 transform translate-y-8' : 'opacity-100 transform translate-y-0'}`}>
+              {filteredProducts.map((product, index) => {
+                const currentProductImageIndex = productImageIndexes[product.id] || 0;
+                return (
+                  <div
+                    key={product.id}
+                    className={`group cursor-pointer animate-fadeInUp relative ${viewMode === 'list' ? 'flex gap-8 items-center bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg' : ''}`}
+                    onClick={() => handleProductSelect(product)}
+                    onMouseEnter={() => setHoveredProduct(product.id)}
+                    onMouseLeave={() => setHoveredProduct(null)}
+                    style={{animationDelay: `${index * 150}ms`}}
+                  >
+                    {isAdminMode && (
+                      <div className="absolute top-4 left-4 z-20 flex gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingProduct(product);
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteProduct(product.id);
+                          }}
+                          className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+
+                    <div className={`relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-stone-200/50 transition-all duration-700 transform hover:scale-105 ${viewMode === 'list' ? 'w-48 h-48 flex-shrink-0' : 'mb-6'}`}>
+                      {product.isNew && (
+                        <div className="absolute top-4 right-4 z-10 text-xs tracking-[0.3em] bg-gradient-to-r from-amber-600 to-stone-800 text-white px-3 py-1 rounded-full shadow-lg">
+                          חדש
+                        </div>
+                      )}
+                      
+                      {!isAdminMode && (
+                        <div className="absolute top-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-0 group-hover:scale-100">
+                          <Heart className="w-5 h-5 text-white hover:text-amber-400 cursor-pointer transition-colors duration-300 drop-shadow-lg" />
+                        </div>
+                      )}
+                      
+                      {product.images && product.images.length > 0 && (
+                        <img 
+                          src={product.images[currentProductImageIndex]}
+                          alt={product.name}
+                          className={`w-full object-cover transition-all duration-700 ${viewMode === 'list' ? 'h-full' : 'h-80 lg:h-96'}`}
+                        />
+                      )}
+                      
+                      {/* Navigation arrows for multiple images */}
+                      {product.images && product.images.length > 1 && (
+                        <div className="absolute inset-y-0 left-2 right-2 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <button 
+                            className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleProductImageChange(product.id, 'prev');
+                            }}
+                          >
+                            <ArrowLeft className="w-4 h-4" />
+                          </button>
+                          <button 
+                            className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleProductImageChange(product.id, 'next');
+                            }}
+                          >
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                      
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                      
+                      {!isAdminMode && (
+                        <div className="absolute bottom-6 left-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-8 group-hover:translate-y-0">
+                          <button className="bg-white/90 backdrop-blur-sm text-stone-800 px-6 py-2 text-sm tracking-wide hover:bg-white transition-all duration-300 rounded-full shadow-xl">
+                            צפה בפרטים
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={`space-y-3 ${viewMode === 'list' ? 'flex-1' : 'bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg'}`}>
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
+                        <div className="flex items-center gap-2">
+                          {product.originalPrice && product.originalPrice > product.price && (
+                            <>
+                              <span className="text-sm text-stone-400 line-through">₪{product.originalPrice}</span>
+                              <div className="w-1 h-4 bg-stone-300"></div>
+                            </>
+                          )}
+                          <span className="text-lg font-medium bg-gradient-to-r from-stone-800 to-amber-800 bg-clip-text text-transparent">₪{product.price}</span>
+                        </div>
+                      </div>
+                      
+                      <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
+                        {product.name}
+                      </h3>
+                      
+                      <div className="text-sm text-stone-600 leading-relaxed">
+                        {product.description}
+                      </div>
+                      
+                      <div className="flex items-center gap-3 pt-2">
+                        {product.colors && product.colors.slice(0, 3).map((color, index) => (
+                          <span key={index} className="text-xs tracking-wide text-stone-500">
+                            {color}
+                            {index < Math.min(product.colors.length - 1, 2) && <span className="mx-2 text-amber-400">•</span>}
+                          </span>
+                        ))}
+                        {product.colors && product.colors.length > 3 && (
+                          <span className="text-xs text-amber-600 font-medium">+{product.colors.length - 3}</span>
+                        )}
+                      </div>
+                      
+                      {/* Image indicators for multiple images */}
+                      {product.images && product.images.length > 1 && (
+                        <div className="flex justify-center gap-2 pt-2">
+                          {product.images.map((_, imgIndex) => (
+                            <div
+                              key={imgIndex}
+                              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                currentProductImageIndex === imgIndex ? 'bg-amber-600' : 'bg-stone-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer id="contact-section" className="py-32 bg-gradient-to-br from-stone-100 to-amber-50/50 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
+        <div className="max-w-4xl mx-auto px-6 text-center relative">
+          <div className="text-xs tracking-[0.4em] text-amber-600 mb-6">צור קשר</div>
+          <h2 className="text-4xl lg:text-6xl font-black mb-12 tracking-tight bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">
+            מוכנים להזמין?
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+            <div className="text-center bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105">
+              <div className="w-12 h-12 bg-gradient-to-r from-amber-400 to-stone-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Phone className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-sm tracking-wide mb-2 text-stone-600">טלפון</div>
               <a href={`tel:${storeInfo.phone}`} className="text-lg font-medium hover:text-amber-700 transition-colors duration-300">{storeInfo.phone}</a>
             </div>
             
@@ -134,7 +584,7 @@
                 <MapPin className="w-6 h-6 text-white" />
               </div>
               <div className="text-sm tracking-wide mb-2 text-stone-600">כתובת</div>
-              <a href={`https://maps.google.com/?q=${encodeURIComponent(storeInfo.address)}`} target="_blank" rel="noopener noreferrer" className="text-lg font-medium hover:text-amber-700 transition-colors duration-300">{storeInfo.address}</a>
+              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(storeInfo.address)}`} target="_blank" rel="noopener noreferrer" className="text-lg font-medium hover:text-amber-700 transition-colors duration-300">{storeInfo.address}</a>
             </div>
             
             <div className="text-center bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105">
@@ -169,9 +619,6 @@
             </a>
             <a href={storeInfo.facebook} target="_blank" rel="noopener noreferrer" className="text-stone-400 hover:text-amber-600 transition-all duration-300 transform hover:scale-110">
               <Facebook className="w-6 h-6" />
-            </a>
-            <a href={storeInfo.tiktok} target="_blank" rel="noopener noreferrer" className="text-stone-400 hover:text-amber-600 transition-all duration-300 transform hover:scale-110">
-              <Youtube className="w-6 h-6" />
             </a>
           </div>
           
@@ -372,438 +819,4 @@
   );
 };
 
-export default App;-wide text-stone-600">
-                  {filteredProducts.length} פריטים
-                </div>
-                <div className="flex items-center gap-4 bg-white/50 rounded-full p-1 shadow-lg">
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    className={`p-3 rounded-full transition-all duration-300 ${viewMode === 'grid' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-400 hover:text-stone-700'}`}
-                  >
-                    <Grid className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode('list')}
-                    className={`p-3 rounded-full transition-all duration-300 ${viewMode === 'list' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-400 hover:text-stone-700'}`}
-                  >
-                    <List className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-6">
-                <button className="flex items-center gap-2 text-sm tracking-wide text-stone-600 hover:text-amber-700 transition-colors duration-300 bg-white/50 px-4 py-2 rounded-full shadow-lg hover:shadow-xl">
-                  <Filter className="w-4 h-4" />
-                  מסנן
-                </button>
-                <button className="flex items-center gap-2 text-sm tracking-wide text-stone-600 hover:text-amber-700 transition-colors duration-300 bg-white/50 px-4 py-2 rounded-full shadow-lg hover:shadow-xl">
-                  <Search className="w-4 h-4" />
-                  חיפוש
-                </button>
-                {isAdminMode && (
-                  <>
-                    <button onClick={exportDataForCode} className="flex items-center gap-2 text-sm tracking-wide text-stone-600 hover:text-amber-700 transition-colors duration-300 bg-white/50 px-4 py-2 rounded-full shadow-lg hover:shadow-xl">
-                      <Download className="w-4 h-4" />
-                      ייצא נתונים לקוד
-                    </button>
-                    <button onClick={exportHumanReadableList} className="flex items-center gap-2 text-sm tracking-wide text-stone-600 hover:text-amber-700 transition-colors duration-300 bg-white/50 px-4 py-2 rounded-full shadow-lg hover:shadow-xl">
-                      <Download className="w-4 h-4" />
-                      ייצא רשימה פשוטה
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="products-section" className="py-20 bg-gradient-to-br from-amber-50/50 via-stone-50/60 via-amber-50/40 to-stone-100/50 relative overflow-hidden">
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/6 -right-40 w-[500px] h-[500px] bg-gradient-to-bl from-amber-300/30 to-stone-400/25 rounded-full blur-3xl animate-pulse" style={{animationDuration: '10s', animationDelay: '2s'}}></div>
-            <div className="absolute bottom-1/4 -left-40 w-[450px] h-[450px] bg-gradient-to-tr from-stone-400/35 to-amber-300/40 rounded-full blur-3xl animate-pulse" style={{animationDuration: '14s', animationDelay: '5s'}}></div>
-            <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-gradient-to-r from-amber-200/25 to-stone-300/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '12s', animationDelay: '1s'}}></div>
-            <div className="absolute bottom-1/6 right-1/3 w-80 h-80 bg-gradient-to-bl from-stone-300/35 to-amber-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '16s', animationDelay: '3s'}}></div>
-            <div className="absolute top-1/3 left-1/6 w-72 h-72 bg-gradient-to-br from-amber-400/25 to-stone-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '11s', animationDelay: '6s'}}></div>
-            
-            <div className="absolute top-1/4 left-1/6 w-6 h-48 bg-gradient-to-b from-amber-400/35 to-transparent transform rotate-12 animate-pulse" style={{animationDuration: '8s'}}></div>
-            <div className="absolute bottom-1/3 right-1/5 w-4 h-40 bg-gradient-to-t from-stone-500/40 to-transparent transform -rotate-12 animate-pulse" style={{animationDuration: '11s', animationDelay: '2s'}}></div>
-            <div className="absolute top-2/3 left-1/3 w-3 h-32 bg-gradient-to-b from-amber-500/45 to-transparent animate-pulse" style={{animationDuration: '9s', animationDelay: '4s'}}></div>
-            <div className="absolute top-1/6 right-2/3 w-3 h-36 bg-gradient-to-b from-stone-400/50 to-transparent transform rotate-45 animate-pulse" style={{animationDuration: '13s', animationDelay: '1s'}}></div>
-            <div className="absolute bottom-1/5 left-2/3 w-5 h-28 bg-gradient-to-t from-amber-300/40 to-transparent transform rotate-30 animate-pulse" style={{animationDuration: '7s', animationDelay: '3s'}}></div>
-            
-            <div className="absolute top-1/5 left-3/4 w-24 h-24 bg-gradient-to-br from-amber-300/30 to-stone-400/25 transform rotate-45 animate-pulse" style={{animationDuration: '18s', animationDelay: '4s'}}></div>
-            <div className="absolute bottom-1/5 left-1/6 w-20 h-20 bg-gradient-to-tr from-stone-300/35 to-amber-300/30 rounded-full animate-pulse" style={{animationDuration: '12s', animationDelay: '7s'}}></div>
-            <div className="absolute top-1/2 right-1/6 w-16 h-16 bg-gradient-to-bl from-amber-400/30 to-stone-300/25 transform rotate-30 animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
-            <div className="absolute top-1/3 left-1/2 w-18 h-18 bg-gradient-to-tr from-stone-400/30 to-amber-200/35 rounded-full animate-pulse" style={{animationDuration: '10s', animationDelay: '5s'}}></div>
-            
-            <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-amber-400/60 rounded-full animate-pulse" style={{animationDuration: '7s', animationDelay: '3s'}}></div>
-            <div className="absolute bottom-1/4 left-1/5 w-6 h-6 bg-stone-500/65 rounded-full animate-pulse" style={{animationDuration: '10s', animationDelay: '6s'}}></div>
-            <div className="absolute top-1/2 right-1/6 w-4 h-4 bg-amber-500/70 rounded-full animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
-            <div className="absolute bottom-1/6 left-1/3 w-5 h-5 bg-stone-400/60 rounded-full animate-pulse" style={{animationDuration: '8s', animationDelay: '4s'}}></div>
-            
-            <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-amber-200/20 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-stone-200/25 to-transparent"></div>
-            <div className="absolute top-1/3 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-300/30 to-transparent animate-pulse" style={{animationDuration: '20s'}}></div>
-            <div className="absolute bottom-1/3 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stone-400/25 to-transparent animate-pulse" style={{animationDuration: '25s', animationDelay: '5s'}}></div>
-          </div>
-
-          <div className="max-w-7xl mx-auto px-6 relative">
-            <div className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12' : 'space-y-8'} transition-all duration-700 ${isTransitioning ? 'opacity-0 transform translate-y-8' : 'opacity-100 transform translate-y-0'}`}>
-              {filteredProducts.map((product, index) => {
-                const currentProductImageIndex = productImageIndexes[product.id] || 0;
-                return (
-                  <div
-                    key={product.id}
-                    className={`group cursor-pointer animate-fadeInUp relative ${viewMode === 'list' ? 'flex gap-8 items-center bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg' : ''}`}
-                    onClick={() => handleProductSelect(product)}
-                    onMouseEnter={() => setHoveredProduct(product.id)}
-                    onMouseLeave={() => setHoveredProduct(null)}
-                    style={{animationDelay: `${index * 150}ms`}}
-                  >
-                    {isAdminMode && (
-                      <div className="absolute top-4 left-4 z-20 flex gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingProduct(product);
-                          }}
-                          className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteProduct(product.id);
-                          }}
-                          className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-
-                    <div className={`relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-stone-200/50 transition-all duration-700 transform hover:scale-105 ${viewMode === 'list' ? 'w-48 h-48 flex-shrink-0' : 'mb-6'}`}>
-                      {product.isNew && (
-                        <div className="absolute top-4 right-4 z-10 text-xs tracking-[0.3em] bg-gradient-to-r from-amber-600 to-stone-800 text-white px-3 py-1 rounded-full shadow-lg">
-                          חדש
-                        </div>
-                      )}
-                      
-                      {!isAdminMode && (
-                        <div className="absolute top-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-0 group-hover:scale-100">
-                          <Heart className="w-5 h-5 text-white hover:text-amber-400 cursor-pointer transition-colors duration-300 drop-shadow-lg" />
-                        </div>
-                      )}
-                      
-                      {product.images && product.images.length > 0 && (
-                        <img 
-                          src={product.images[currentProductImageIndex]}
-                          alt={product.name}
-                          className={`w-full object-cover transition-all duration-700 ${viewMode === 'list' ? 'h-full' : 'h-80 lg:h-96'}`}
-                        />
-                      )}
-                      
-                      {product.images && product.images.length > 1 && (
-                        <div className="absolute inset-y-0 left-2 right-2 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300">
-                          <button 
-                            className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleProductImageChange(product.id, 'prev');
-                            }}
-                          >
-                            <ArrowLeft className="w-4 h-4" />
-                          </button>
-                          <button 
-                            className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleProductImageChange(product.id, 'next');
-                            }}
-                          >
-                            <ArrowRight className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
-                      
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                      
-                      {!isAdminMode && (
-                        <div className="absolute bottom-6 left-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-8 group-hover:translate-y-0">
-                          <button className="bg-white/90 backdrop-blur-sm text-stone-800 px-6 py-2 text-sm tracking-wide hover:bg-white transition-all duration-300 rounded-full shadow-xl">
-                            צפה בפרטים
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className={`space-y-3 ${viewMode === 'list' ? 'flex-1' : 'bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg'}`}>
-                      <div className="flex items-center justify-between">
-                        <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
-                        <div className="flex items-center gap-2">
-                          {product.originalPrice && product.originalPrice > product.price && (
-                            <>
-                              <span className="text-sm text-stone-400 line-through">₪{product.originalPrice}</span>
-                              <div className="w-1 h-4 bg-stone-300"></div>
-                            </>
-                          )}
-                          <span className="text-lg font-medium bg-gradient-to-r from-stone-800 to-amber-800 bg-clip-text text-transparent">₪{product.price}</span>
-                        </div>
-                      </div>
-                      
-                      <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
-                        {product.name}
-                      </h3>
-                      
-                      <div className="text-sm text-stone-600 leading-relaxed">
-                        {product.description}
-                      </div>
-                      
-                      <div className="flex items-center gap-3 pt-2">
-                        {product.colors && product.colors.slice(0, 3).map((color, index) => (
-                          <span key={index} className="text-xs tracking-wide text-stone-500">
-                            {color}
-                            {index < Math.min(product.colors.length - 1, 2) && <span className="mx-2 text-amber-400">•</span>}
-                          </span>
-                        ))}
-                        {product.colors && product.colors.length > 3 && (
-                          <span className="text-xs text-amber-600 font-medium">+{product.colors.length - 3}</span>
-                        )}
-                      </div>
-                      
-                      {product.images && product.images.length > 1 && (
-                        <div className="flex justify-center gap-2 pt-2">
-                          {product.images.map((_, imgIndex) => (
-                            <div
-                              key={imgIndex}
-                              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                currentProductImageIndex === imgIndex ? 'bg-amber-600' : 'bg-stone-300'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer id="contact-section" className="py-32 bg-gradient-to-br from-stone-100 to-amber-50/50 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
-        <div className="max-w-4xl mx-auto px-6 text-center relative">
-          <div className="text-xs tracking-[0.4em] text-amber-600 mb-6">צור קשר</div>
-          <h2 className="text-4xl lg:text-6xl font-black mb-12 tracking-tight bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">
-            מוכנים להזמין?
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
-            <div className="text-center bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105">
-              <div className="w-12 h-12 bg-gradient-to-r from-amber-400 to-stone-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Phone className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-sm trackingimport React, { useState, useEffect } from 'react';
-import { Phone, MapPin, Instagram, Search, Filter, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Plus, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
-
-const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
-  const [formData, setFormData] = useState({
-    name: product.name || '', brand: product.brand || '', price: product.price || '', originalPrice: product.originalPrice || '',
-    category: product.category || 'lifestyle', description: product.description || '', colors: product.colors?.join(', ') || '',
-    sizes: product.sizes?.join(', ') || '', images: product.images?.join('\n') || '', isNew: product.isNew || false, featured: product.featured || false
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const productData = {
-      ...product, ...formData, price: parseFloat(formData.price),
-      originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
-      colors: formData.colors.split(',').map(c => c.trim()).filter(Boolean),
-      sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
-      images: formData.images.split('\n').map(i => i.trim()).filter(Boolean)
-    };
-    onSave(productData);
-  };
-
-  return (
-    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
-      <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="flex justify-between items-center mb-8">
-          <h3 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">{product.id ? 'ערוך מוצר' : 'הוסף מוצר חדש'}</h3>
-          <button onClick={onCancel} className="text-stone-400 hover:text-amber-700 transition-colors duration-300">
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div><label className="block text-sm font-medium text-stone-700 mb-2">שם המוצר</label><input type="text" value={formData.name} onChange={(e) => setFormData(p => ({...p, name: e.target.value}))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-            <div><label className="block text-sm font-medium text-stone-700 mb-2">מותג</label><input type="text" value={formData.brand} onChange={(e) => setFormData(p => ({...p, brand: e.target.value}))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-            <div><label className="block text-sm font-medium text-stone-700 mb-2">מחיר</label><input type="number" value={formData.price} onChange={(e) => setFormData(p => ({...p, price: e.target.value}))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-            <div><label className="block text-sm font-medium text-stone-700 mb-2">מחיר מקורי (אופציונלי)</label><input type="number" value={formData.originalPrice} onChange={(e) => setFormData(p => ({ ...p, originalPrice: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" /></div>
-          </div>
-          <div><label className="block text-sm font-medium text-stone-700 mb-2">תיאור</label><textarea value={formData.description} onChange={(e) => setFormData(p => ({...p, description: e.target.value}))} rows={3} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-          <div><label className="block text-sm font-medium text-stone-700 mb-2">קישורי תמונות (כל קישור בשורה חדשה)</label><textarea value={formData.images} onChange={(e) => setFormData(p => ({...p, images: e.target.value}))} rows={4} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" /></div>
-          <div className="flex gap-4"><label className="flex items-center gap-2"><input type="checkbox" checked={formData.isNew} onChange={(e) => setFormData(prev => ({ ...prev, isNew: e.target.checked }))} className="rounded border-stone-300 text-amber-600 focus:ring-amber-500" /><span className="text-sm text-stone-700">מוצר חדש</span></label><label className="flex items-center gap-2"><input type="checkbox" checked={formData.featured} onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))} className="rounded border-stone-300 text-amber-600 focus:ring-amber-500" /><span className="text-sm text-stone-700">מוצר מומלץ</span></label></div>
-          <div className="flex gap-4 pt-6"><button type="submit" className="flex-1 bg-gradient-to-r from-stone-800 to-amber-800 text-white py-3 rounded-xl font-medium hover:from-amber-800 hover:to-stone-800 transition-all duration-500 shadow-xl hover:shadow-2xl transform hover:scale-105"><Save className="w-4 h-4 inline-block ml-2" />שמור</button><button type="button" onClick={onCancel} className="flex-1 border border-stone-300 text-stone-600 py-3 rounded-xl font-medium hover:bg-stone-50 transition-colors duration-300">ביטול</button></div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-const StoreEditModal = ({ storeInfo, onSave, onCancel }) => {
-  const [formData, setFormData] = useState({ ...storeInfo });
-  const handleSubmit = (e) => { e.preventDefault(); onSave(formData); };
-  return (
-    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
-      <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="flex justify-between items-center mb-8">
-          <h3 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">ערוך פרטי החנות</h3>
-          <button onClick={onCancel} className="text-stone-400 hover:text-amber-700 transition-colors duration-300">
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div><label className="block text-sm font-medium text-stone-700 mb-2">שם החנות</label><input type="text" value={formData.name} onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-            <div><label className="block text-sm font-medium text-stone-700 mb-2">סלוגן</label><input type="text" value={formData.slogan} onChange={(e) => setFormData(p => ({ ...p, slogan: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-            <div><label className="block text-sm font-medium text-stone-700 mb-2">טלפון</label><input type="text" value={formData.phone} onChange={(e) => setFormData(p => ({ ...p, phone: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-            <div><label className="block text-sm font-medium text-stone-700 mb-2">וואטסאפ</label><input type="text" value={formData.whatsapp} onChange={(e) => setFormData(p => ({ ...p, whatsapp: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-            <div className="md:col-span-2"><label className="block text-sm font-medium text-stone-700 mb-2">כתובת</label><input type="text" value={formData.address} onChange={(e) => setFormData(p => ({ ...p, address: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-            <div className="md:col-span-2"><label className="block text-sm font-medium text-stone-700 mb-2">אינסטגרם</label><input type="text" value={formData.instagram} onChange={(e) => setFormData(p => ({ ...p, instagram: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-            <div className="md:col-span-2"><label className="block text-sm font-medium text-stone-700 mb-2">פייסבוק</label><input type="text" value={formData.facebook} onChange={(e) => setFormData(p => ({ ...p, facebook: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-            <div className="md:col-span-2"><label className="block text-sm font-medium text-stone-700 mb-2">טיקטוק</label><input type="text" value={formData.tiktok} onChange={(e) => setFormData(p => ({ ...p, tiktok: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-          </div>
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-stone-300 to-transparent"></div>
-          <div><label className="block text-sm font-medium text-stone-700 mb-2">כותרת באנר ראשית</label><input type="text" value={formData.heroTitle} onChange={(e) => setFormData(p => ({ ...p, heroTitle: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-          <div><label className="block text-sm font-medium text-stone-700 mb-2">כותרת משנה (Hero)</label><textarea value={formData.heroSubtitle} onChange={(e) => setFormData(p => ({ ...p, heroSubtitle: e.target.value }))} rows={2} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" required /></div>
-          <div><label className="block text-sm font-medium text-stone-700 mb-2">קישור לתמונת הבאנר</label><input type="text" value={formData.bannerImage} onChange={(e) => setFormData(p => ({ ...p, bannerImage: e.target.value }))} className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm" /></div>
-          <div className="flex gap-4 pt-6"><button type="submit" className="flex-1 bg-gradient-to-r from-stone-800 to-amber-800 text-white py-3 rounded-xl font-medium hover:from-amber-800 hover:to-stone-800 transition-all duration-500 shadow-xl hover:shadow-2xl transform hover:scale-105"><Save className="w-4 h-4 inline-block ml-2" />שמור שינויים</button><button type="button" onClick={onCancel} className="flex-1 border border-stone-300 text-stone-600 py-3 rounded-xl font-medium hover:bg-stone-50 transition-colors duration-300">ביטול</button></div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-const App = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [viewMode, setViewMode] = useState('grid');
-  const [hoveredProduct, setHoveredProduct] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [productImageIndexes, setProductImageIndexes] = useState({});
-  const [scrollY, setScrollY] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isAdminMode, setIsAdminMode] = useState(false);
-  const [showAdminLogin, setShowAdminLogin] = useState(false);
-  const [adminPassword, setAdminPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [editingStore, setEditingStore] = useState(false);
-
-  const [products, setProducts] = useState([
-    { id: 1, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/Xx3jh94t/Sprayground96.jpg", "https://i.ibb.co/HL8fWng9/Sprayground92.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: true, featured: true },
-    { id: 2, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/TqWYFrDN/Sprayground82.jpg", "https://i.ibb.co/Y7BGVshR/Sprayground79.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: true, featured: false },
-    { id: 3, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/Y7BGVshR/Sprayground79.jpg", "https://i.ibb.co/TqWYFrDN/Sprayground82.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: false, featured: false },
-    { id: 4, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/NgW7L3Lg/Sprayground83.jpg", "https://i.ibb.co/7NyzMHz2/Sprayground80.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: false, featured: false }
-  ]);
-  
-  const [storeInfo, setStoreInfo] = useState({ 
-    name: "נעלי העיר", 
-    slogan: "כל המיוחדים אצלנו", 
-    phone: "050-5798761",
-    whatsapp: "+972505798761",
-    address: "שד' רוטשילד 17, חדרה", 
-    instagram: "https://www.instagram.com/asi_abergel_city_shoes?igsh=MTU4Mm16Z2VxbzVxYw==", 
-    facebook: "https://www.facebook.com/share/1B32LKgMpx/", 
-    tiktok: "https://www.tiktok.com/@asi0505798761?_t=ZS-8xzXQyLNjcI&_r=1",
-    heroTitle: "PREMIUM FOOTWEAR EXPERIENCE", 
-    heroSubtitle: "קולקציה אקסקלוסיבית של נעלי ספורט ואופנה מהמותגים המובילים בעולם.", 
-    bannerImage: "https://i.ibb.co/gMXLwMg6/b447649c-d70a-400e-bf50-f22a1c291eca-1.gif" 
-  });
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    setTimeout(() => setIsLoading(false), 2500);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const categories = [ { id: 'all', name: 'כל המוצרים' }, { id: 'lifestyle', name: 'לייפסטייל' } ];
-  const filteredProducts = selectedCategory === 'all' ? products : products.filter(p => p.category === selectedCategory);
-  const featuredProducts = products.filter(p => p.featured);
-  
-  const handleProductImageChange = (productId, direction) => {
-    const product = products.find(p => p.id === productId);
-    if (!product || !product.images || product.images.length <= 1) return;
-    
-    setProductImageIndexes(prev => {
-      const currentIndex = prev[productId] || 0;
-      let newIndex;
-      
-      if (direction === 'next') {
-        newIndex = currentIndex < product.images.length - 1 ? currentIndex + 1 : 0;
-      } else {
-        newIndex = currentIndex > 0 ? currentIndex - 1 : product.images.length - 1;
-      }
-      
-      return { ...prev, [productId]: newIndex };
-    });
-  };
-
-  const handleAdminLogin = () => { if (adminPassword === 'admin123') { setIsAdminMode(true); setShowAdminLogin(false); setAdminPassword(''); } else { alert('סיסמה שגויה'); } };
-  const handleLogout = () => { setIsAdminMode(false); setEditingProduct(null); setEditingStore(false); };
-  const saveStoreInfo = (newStoreInfo) => { setStoreInfo(newStoreInfo); setEditingStore(false); };
-  const handleCategoryChange = (categoryId) => { setIsTransitioning(true); setTimeout(() => { setSelectedCategory(categoryId); setIsTransitioning(false); }, 300); };
-  const handleProductSelect = (product) => { if (!isAdminMode) { setSelectedProduct(product); } };
-  const saveProduct = (productData) => { if (productData.id) { setProducts(prev => prev.map(p => p.id === productData.id ? productData : p)); } else { const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1; setProducts(prev => [...prev, { ...productData, id: newId }]); } setEditingProduct(null); };
-  const deleteProduct = (id) => { if (window.confirm('האם אתה בטוח שברצונך למחוק את המוצר?')) { setProducts(prev => prev.filter(p => p.id !== id)); } };
-  const exportDataForCode = () => { const dataString = `const newProducts = ${JSON.stringify(products, null, 2)};`; const blob = new Blob([dataString], { type: 'text/javascript; charset=utf-8' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'updated_products.js'; a.click(); URL.revokeObjectURL(url); };
-  const exportHumanReadableList = () => { let list = `רשימת מוצרים - ${storeInfo.name}\n\n`; products.forEach(p => { list += `שם: ${p.name}\nמחיר: ${p.price}\n\n`; }); const blob = new Blob([list], { type: 'text/plain; charset=utf-8' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'רשימת_מוצרים.txt'; a.click(); URL.revokeObjectURL(url); };
-  
-  if (isLoading) { 
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/20 via-stone-50/30 to-amber-100/40 flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative mb-8">
-            <div className="w-20 h-1 bg-gradient-to-r from-stone-800 via-amber-600 to-stone-800 mx-auto animate-pulse"></div>
-            <div className="absolute inset-0 w-20 h-1 bg-gradient-to-r from-amber-400 to-stone-600 mx-auto animate-pulse opacity-50 blur-sm"></div>
-          </div>
-          <div className="text-xs tracking-[0.4em] text-stone-600 font-light">LOADING LUXURY EXPERIENCE</div>
-          <div className="mt-4 text-lg tracking-[0.2em] text-stone-800 font-extralight">{storeInfo.name}</div>
-        </div>
-      </div>
-    ); 
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/20 via-stone-50/30 to-amber-100/40 text-stone-900 font-light overflow-hidden relative">
-      {/* Enhanced Background Graphics */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -right-32 w-96 h-96 bg-gradient-to-br from-amber-200/40 to-stone-300/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '8s'}}></div>
-        <div className="absolute bottom-1/4 -left-32 w-[500px] h-[500px] bg-gradient-to-tr from-stone-300/35 to-amber-200/45 rounded-full blur-3xl animate-pulse" style={{animationDuration: '12s', animationDelay: '4s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-amber-100/25 to-stone-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
-        
-        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-bl from-amber-200/35 to-stone-200/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '10s', animationDelay: '1s'}}></div>
-        <div className="absolute top-1/3 -left-20 w-72 h-72 bg-gradient-to-r from-stone-200/40 to-amber-200/30 rounded-full blur-2xl animate-pulse" style={{animationDuration: '14s', animationDelay: '6s'}}></div>
-        <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-gradient-to-tr from-amber-100/30 to-stone-100/35 rounded-full blur-2xl animate-pulse" style={{animationDuration: '9s', animationDelay: '3s'}}></div>
-        
-        <div className="absolute top-1/6 left-1/4 w-48 h-48 bg-gradient-to-br from-amber-300/25 to-stone-400/20 rounded-full blur-2xl animate-pulse" style={{animationDuration: '11s', animationDelay: '5s'}}></div>
-        <div className="absolute bottom-1/6 right-1/5 w-56 h-56 bg-gradient-to-tl from-stone-300/30 to-amber-300/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '13s', animationDelay: '7s'}}></div>
-        
-        <div className="absolute top-20 right-20 w-4 h-32 bg-gradient-to-b from-amber-400/40 to-transparent transform rotate-12 animate-pulse" style={{animationDuration: '8s'}}></div>
-        <div className="absolute bottom-40 left-20 w-3 h-28 bg-gradient-to-t from-stone-500/40 to-transparent transform -rotate-12 animate-pulse" style={{animationDuration: '10s', animationDelay: '2s'}}></div>
-        <div className="absolute top-1/3 left-1/4 w-2 h-20 bg-gradient-to-b from-amber-500/50 to-transparent animate-pulse" style={{animationDuration: '9s', animationDelay: '4s'}}></div>
-        <div className="absolute top-2/3 right-1/5 w-2 h-16 bg-gradient-to-b from-amber-400/45 to-transparent transform rotate-45 animate-pulse" style={{animationDuration: '7s', animationDelay: '1s'}}></div>
-        <div className="absolute bottom-1/4 left-1/2 w-3 h-24 bg-gradient-to-t from-stone-400/45 to-transparent transform rotate-30 animate-pulse" style={{animationDuration: '12s', animationDelay: '3s'}}></div>
-        
-        <div className="absolute top-1/5 left-3/4 w-16 h-16 bg-gradient-to-br from-amber-300/30 to-stone-400/25 transform rotate-45 animate-pulse" style={{animationDuration: '15s', animationDelay: '4s'}}></div>
-        <div className="absolute bottom-1/5 left-1/6 w-12 h-12 bg-gradient-to-tr from-stone-300/35 to-amber-300/30 rounded-full animate-pulse" style={{animationDuration: '11s', animationDelay: '6s'}}></div>
-        <div className="absolute top-1/2 right-1/6 w-20 h-20 bg-gradient-to-bl from-amber-200/25 to-stone-300/30 transform rotate-12 animate-pulse" style={{animationDuration: '14s', animationDelay: '2s'}}></div>
-        
-        <div className="absolute bottom-1/5 left-1/3 w-6 h-6 bg-amber-300/50 rounded-full animate-pulse" style={{animationDuration: '6s', animationDelay: '3s'
-                                                                                                                 
+export default App;
