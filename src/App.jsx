@@ -97,11 +97,59 @@ const App = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingStore, setEditingStore] = useState(false);
 
-  const [products, setProducts] = useState([
-    { id: 1, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/Xx3jh94t/Sprayground96.jpg", "https://i.ibb.co/HL8fWng9/Sprayground92.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: true, featured: true },
-    { id: 2, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/TqWYFrDN/Sprayground82.jpg", "https://i.ibb.co/Y7BGVshR/Sprayground79.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: true, featured: false },
-    { id: 3, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/Y7BGVshR/Sprayground79.jpg", "https://i.ibb.co/TqWYFrDN/Sprayground82.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: false, featured: false },
-    { id: 4, name: "תיק גב Sprayground", brand: "SPRAYGROUND", price: 350, category: "lifestyle", images: ["https://i.ibb.co/NgW7L3Lg/Sprayground83.jpg", "https://i.ibb.co/7NyzMHz2/Sprayground80.jpg"], description: "תיק גב בעיצוב ייחודי ואיכותי.", colors: ["MULTI"], sizes: ["ONE SIZE"], isNew: false, featured: false }
+ const [products, setProducts] = useState([
+    { 
+      id: 1, 
+      name: "תיק גב Sprayground", 
+      brand: "SPRAYGROUND", 
+      price: 350, 
+      category: "lifestyle", 
+      images: [
+        "https://i.ibb.co/zpTRDkP/Sprayground77.jpg",
+        "https://i.ibb.co/0Vq2t6mZ/Sprayground64.jpg",
+        "https://i.ibb.co/fYVRrN4g/Sprayground46.jpg"
+      ], 
+      description: "תיק גב בעיצוב ייחודי ואיכותי.", 
+      colors: ["MULTI"], 
+      sizes: ["ONE SIZE"], 
+      isNew: true, 
+      featured: true 
+    },
+    { 
+      id: 2, 
+      name: "תיק גב Sprayground", 
+      brand: "SPRAYGROUND", 
+      price: 350, 
+      category: "lifestyle", 
+      images: [
+        "https://i.ibb.co/YTPFXCpP/Sprayground45.jpg",
+        "https://i.ibb.co/mxDhV4J/Sprayground66.jpg",
+        "https://i.ibb.co/qFjZkLfj/Sprayground68.jpg"
+      ], 
+      description: "תיק גב בעיצוב ייחודי ואיכותי.", 
+      colors: ["MULTI"], 
+      sizes: ["ONE SIZE"], 
+      isNew: true, 
+      featured: false 
+    },
+    { 
+      id: 3, 
+      name: "תיק גב Sprayground", 
+      brand: "SPRAYGROUND", 
+      price: 350, 
+      category: "lifestyle", 
+      images: [
+        "https://i.ibb.co/vvsQwRSy/Sprayground63.jpg",
+        "https://i.ibb.co/zHVPdBT2/Sprayground85.jpg",
+        "https://i.ibb.co/jZ450d5g/Sprayground80.jpg",
+        "https://i.ibb.co/Ps1t5Y5s/Sprayground83.jpg"
+      ], 
+      description: "תיק גב בעיצוב ייחודי ואיכותי.", 
+      colors: ["MULTI"], 
+      sizes: ["ONE SIZE"], 
+      isNew: false, 
+      featured: false 
+    }
   ]);
   
   const [storeInfo, setStoreInfo] = useState({ 
