@@ -108,13 +108,13 @@ const App = () => {
     slogan: "כל המיוחדים אצלנו", 
     phone: "050-5798761",
     whatsapp: "+972505798761",
-    address: "רחוב הרצל 123, תל אביב", 
+    address: "שד' רוטשילד 17, חדרה", 
     instagram: "https://www.instagram.com/asi_abergel_city_shoes?igsh=MTU4Mm16Z2VxbzVxYw==", 
     facebook: "https://www.facebook.com/share/1B32LKgMpx/", 
     tiktok: "https://www.tiktok.com/@asi0505798761?_t=ZS-8xzXQyLNjcI&_r=1",
     heroTitle: "PREMIUM FOOTWEAR EXPERIENCE", 
     heroSubtitle: "קולקציה אקסקלוסיבית של נעלי ספורט ואופנה מהמותגים המובילים בעולם.", 
-    bannerImage: "https://i.ibb.co/LdtBjBNY/Sprayground32.jpg" 
+    bannerImage: "https://i.ibb.co/gMXLwMg6/b447649c-d70a-400e-bf50-f22a1c291eca-1.gif" 
   });
 
   useEffect(() => {
