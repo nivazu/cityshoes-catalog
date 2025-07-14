@@ -154,24 +154,45 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 text-stone-900 font-light overflow-hidden">
-      {/* Background Graphics */}
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/20 via-stone-50/30 to-amber-100/40 text-stone-900 font-light overflow-hidden relative">
+      {/* Enhanced Background Graphics - Much More Visible */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-gradient-to-br from-amber-100/30 to-stone-200/20 rounded-full blur-3xl animate-pulse" style={{animationDuration: '8s'}}></div>
-        <div className="absolute bottom-1/4 -left-32 w-80 h-80 bg-gradient-to-tr from-stone-200/20 to-amber-100/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '12s', animationDelay: '4s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-amber-50/10 to-stone-100/10 rounded-full blur-3xl animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
+        {/* Large Primary Circles */}
+        <div className="absolute top-1/4 -right-32 w-96 h-96 bg-gradient-to-br from-amber-200/40 to-stone-300/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '8s'}}></div>
+        <div className="absolute bottom-1/4 -left-32 w-[500px] h-[500px] bg-gradient-to-tr from-stone-300/35 to-amber-200/45 rounded-full blur-3xl animate-pulse" style={{animationDuration: '12s', animationDelay: '4s'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-amber-100/25 to-stone-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
         
-        <div className="absolute top-3/4 right-1/4 w-48 h-48 bg-gradient-to-bl from-amber-100/20 to-stone-100/15 rounded-full blur-2xl animate-pulse" style={{animationDuration: '10s', animationDelay: '1s'}}></div>
-        <div className="absolute top-1/3 -left-20 w-32 h-64 bg-gradient-to-r from-stone-100/25 to-amber-100/15 rounded-full blur-2xl animate-pulse" style={{animationDuration: '14s', animationDelay: '6s'}}></div>
-        <div className="absolute bottom-1/3 right-1/3 w-40 h-40 bg-gradient-to-tr from-amber-50/20 to-stone-50/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '9s', animationDelay: '3s'}}></div>
+        {/* Medium Secondary Circles */}
+        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-bl from-amber-200/35 to-stone-200/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '10s', animationDelay: '1s'}}></div>
+        <div className="absolute top-1/3 -left-20 w-72 h-72 bg-gradient-to-r from-stone-200/40 to-amber-200/30 rounded-full blur-2xl animate-pulse" style={{animationDuration: '14s', animationDelay: '6s'}}></div>
+        <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-gradient-to-tr from-amber-100/30 to-stone-100/35 rounded-full blur-2xl animate-pulse" style={{animationDuration: '9s', animationDelay: '3s'}}></div>
         
-        <div className="absolute top-20 right-20 w-2 h-20 bg-gradient-to-b from-amber-300/20 to-transparent transform rotate-12"></div>
-        <div className="absolute bottom-40 left-20 w-1 h-16 bg-gradient-to-t from-stone-400/30 to-transparent transform -rotate-12"></div>
-        <div className="absolute top-1/3 left-1/4 w-px h-12 bg-gradient-to-b from-amber-400/40 to-transparent"></div>
+        {/* Additional Floating Elements */}
+        <div className="absolute top-1/6 left-1/4 w-48 h-48 bg-gradient-to-br from-amber-300/25 to-stone-400/20 rounded-full blur-2xl animate-pulse" style={{animationDuration: '11s', animationDelay: '5s'}}></div>
+        <div className="absolute bottom-1/6 right-1/5 w-56 h-56 bg-gradient-to-tl from-stone-300/30 to-amber-300/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '13s', animationDelay: '7s'}}></div>
         
-        <div className="absolute top-2/3 right-1/5 w-px h-8 bg-gradient-to-b from-amber-300/30 to-transparent transform rotate-45"></div>
-        <div className="absolute bottom-1/5 left-1/3 w-2 h-2 bg-amber-200/40 rounded-full"></div>
-        <div className="absolute top-1/5 left-2/3 w-1 h-1 bg-stone-300/50 rounded-full"></div>
+        {/* Decorative Lines - More Visible */}
+        <div className="absolute top-20 right-20 w-4 h-32 bg-gradient-to-b from-amber-400/40 to-transparent transform rotate-12 animate-pulse" style={{animationDuration: '8s'}}></div>
+        <div className="absolute bottom-40 left-20 w-3 h-28 bg-gradient-to-t from-stone-500/40 to-transparent transform -rotate-12 animate-pulse" style={{animationDuration: '10s', animationDelay: '2s'}}></div>
+        <div className="absolute top-1/3 left-1/4 w-2 h-20 bg-gradient-to-b from-amber-500/50 to-transparent animate-pulse" style={{animationDuration: '9s', animationDelay: '4s'}}></div>
+        <div className="absolute top-2/3 right-1/5 w-2 h-16 bg-gradient-to-b from-amber-400/45 to-transparent transform rotate-45 animate-pulse" style={{animationDuration: '7s', animationDelay: '1s'}}></div>
+        <div className="absolute bottom-1/4 left-1/2 w-3 h-24 bg-gradient-to-t from-stone-400/45 to-transparent transform rotate-30 animate-pulse" style={{animationDuration: '12s', animationDelay: '3s'}}></div>
+        
+        {/* Geometric Shapes */}
+        <div className="absolute top-1/5 left-3/4 w-16 h-16 bg-gradient-to-br from-amber-300/30 to-stone-400/25 transform rotate-45 animate-pulse" style={{animationDuration: '15s', animationDelay: '4s'}}></div>
+        <div className="absolute bottom-1/5 left-1/6 w-12 h-12 bg-gradient-to-tr from-stone-300/35 to-amber-300/30 rounded-full animate-pulse" style={{animationDuration: '11s', animationDelay: '6s'}}></div>
+        <div className="absolute top-1/2 right-1/6 w-20 h-20 bg-gradient-to-bl from-amber-200/25 to-stone-300/30 transform rotate-12 animate-pulse" style={{animationDuration: '14s', animationDelay: '2s'}}></div>
+        
+        {/* Small Accent Dots - More Visible */}
+        <div className="absolute bottom-1/5 left-1/3 w-6 h-6 bg-amber-300/50 rounded-full animate-pulse" style={{animationDuration: '6s', animationDelay: '3s'}}></div>
+        <div className="absolute top-1/5 left-2/3 w-4 h-4 bg-stone-400/60 rounded-full animate-pulse" style={{animationDuration: '8s', animationDelay: '1s'}}></div>
+        <div className="absolute top-1/3 right-1/4 w-5 h-5 bg-amber-400/55 rounded-full animate-pulse" style={{animationDuration: '7s', animationDelay: '5s'}}></div>
+        <div className="absolute bottom-1/3 left-1/5 w-4 h-4 bg-stone-500/50 rounded-full animate-pulse" style={{animationDuration: '9s', animationDelay: '2s'}}></div>
+        
+        {/* Flowing Wave Elements */}
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-amber-100/20 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-stone-100/25 to-transparent"></div>
+        <div className="absolute top-1/2 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-200/30 to-transparent animate-pulse" style={{animationDuration: '20s'}}></div>
       </div>
 
       {isAdminMode && (
@@ -280,12 +301,14 @@ const App = () => {
           </div>
         </section>
 
-        <section className="py-12 border-t border-stone-200/50 bg-gradient-to-r from-white/70 via-amber-50/40 to-white/70 backdrop-blur-sm relative overflow-hidden">
+        <section className="py-12 border-t border-stone-200/50 bg-gradient-to-r from-amber-50/60 via-stone-50/70 to-amber-50/60 backdrop-blur-sm relative overflow-hidden">
+          {/* Enhanced Controls Section Background */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/2 -right-20 w-40 h-40 bg-gradient-to-bl from-amber-100/25 to-stone-200/20 rounded-full blur-2xl animate-pulse" style={{animationDuration: '8s'}}></div>
-            <div className="absolute top-1/2 -left-20 w-32 h-32 bg-gradient-to-br from-stone-100/30 to-amber-100/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '12s', animationDelay: '3s'}}></div>
-            <div className="absolute top-0 left-1/3 w-1 h-8 bg-gradient-to-b from-amber-300/30 to-transparent"></div>
-            <div className="absolute bottom-0 right-1/4 w-px h-6 bg-gradient-to-t from-stone-400/25 to-transparent"></div>
+            <div className="absolute top-1/2 -right-20 w-80 h-80 bg-gradient-to-bl from-amber-200/35 to-stone-300/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '8s'}}></div>
+            <div className="absolute top-1/2 -left-20 w-72 h-72 bg-gradient-to-br from-stone-200/40 to-amber-200/35 rounded-full blur-2xl animate-pulse" style={{animationDuration: '12s', animationDelay: '3s'}}></div>
+            <div className="absolute top-0 left-1/3 w-3 h-16 bg-gradient-to-b from-amber-400/40 to-transparent animate-pulse" style={{animationDuration: '6s'}}></div>
+            <div className="absolute bottom-0 right-1/4 w-2 h-12 bg-gradient-to-t from-stone-500/35 to-transparent animate-pulse" style={{animationDuration: '8s', animationDelay: '2s'}}></div>
+            <div className="absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-300/25 to-transparent animate-pulse" style={{animationDuration: '15s'}}></div>
           </div>
           
           <div className="max-w-7xl mx-auto px-6 relative">
@@ -324,24 +347,40 @@ const App = () => {
           </div>
         </section>
 
-        <section className="py-20 bg-gradient-to-br from-stone-50/30 via-amber-50/20 via-stone-50/40 to-amber-100/30 relative overflow-hidden">
+        <section className="py-20 bg-gradient-to-br from-amber-50/50 via-stone-50/60 via-amber-50/40 to-stone-100/50 relative overflow-hidden">
+          {/* Dramatically Enhanced Products Section Background */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/6 -right-40 w-80 h-80 bg-gradient-to-bl from-amber-200/20 to-stone-300/15 rounded-full blur-3xl animate-pulse" style={{animationDuration: '10s', animationDelay: '2s'}}></div>
-            <div className="absolute bottom-1/4 -left-40 w-72 h-72 bg-gradient-to-tr from-stone-300/20 to-amber-200/25 rounded-full blur-3xl animate-pulse" style={{animationDuration: '14s', animationDelay: '5s'}}></div>
-            <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-gradient-to-r from-amber-100/15 to-stone-200/20 rounded-full blur-3xl animate-pulse" style={{animationDuration: '12s', animationDelay: '1s'}}></div>
-            <div className="absolute bottom-1/6 right-1/3 w-56 h-56 bg-gradient-to-bl from-stone-200/25 to-amber-100/20 rounded-full blur-3xl animate-pulse" style={{animationDuration: '16s', animationDelay: '3s'}}></div>
+            {/* Large Flowing Circles */}
+            <div className="absolute top-1/6 -right-40 w-[500px] h-[500px] bg-gradient-to-bl from-amber-300/30 to-stone-400/25 rounded-full blur-3xl animate-pulse" style={{animationDuration: '10s', animationDelay: '2s'}}></div>
+            <div className="absolute bottom-1/4 -left-40 w-[450px] h-[450px] bg-gradient-to-tr from-stone-400/35 to-amber-300/40 rounded-full blur-3xl animate-pulse" style={{animationDuration: '14s', animationDelay: '5s'}}></div>
+            <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-gradient-to-r from-amber-200/25 to-stone-300/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '12s', animationDelay: '1s'}}></div>
+            <div className="absolute bottom-1/6 right-1/3 w-80 h-80 bg-gradient-to-bl from-stone-300/35 to-amber-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '16s', animationDelay: '3s'}}></div>
+            <div className="absolute top-1/3 left-1/6 w-72 h-72 bg-gradient-to-br from-amber-400/25 to-stone-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '11s', animationDelay: '6s'}}></div>
             
-            <div className="absolute top-1/4 left-1/6 w-2 h-32 bg-gradient-to-b from-amber-300/25 to-transparent transform rotate-12 animate-pulse" style={{animationDuration: '8s'}}></div>
-            <div className="absolute bottom-1/3 right-1/5 w-1 h-24 bg-gradient-to-t from-stone-400/30 to-transparent transform -rotate-12 animate-pulse" style={{animationDuration: '11s', animationDelay: '2s'}}></div>
-            <div className="absolute top-2/3 left-1/3 w-px h-16 bg-gradient-to-b from-amber-400/35 to-transparent animate-pulse" style={{animationDuration: '9s', animationDelay: '4s'}}></div>
-            <div className="absolute top-1/6 right-2/3 w-px h-20 bg-gradient-to-b from-stone-300/40 to-transparent transform rotate-45 animate-pulse" style={{animationDuration: '13s', animationDelay: '1s'}}></div>
+            {/* Dynamic Lines and Patterns */}
+            <div className="absolute top-1/4 left-1/6 w-6 h-48 bg-gradient-to-b from-amber-400/35 to-transparent transform rotate-12 animate-pulse" style={{animationDuration: '8s'}}></div>
+            <div className="absolute bottom-1/3 right-1/5 w-4 h-40 bg-gradient-to-t from-stone-500/40 to-transparent transform -rotate-12 animate-pulse" style={{animationDuration: '11s', animationDelay: '2s'}}></div>
+            <div className="absolute top-2/3 left-1/3 w-3 h-32 bg-gradient-to-b from-amber-500/45 to-transparent animate-pulse" style={{animationDuration: '9s', animationDelay: '4s'}}></div>
+            <div className="absolute top-1/6 right-2/3 w-3 h-36 bg-gradient-to-b from-stone-400/50 to-transparent transform rotate-45 animate-pulse" style={{animationDuration: '13s', animationDelay: '1s'}}></div>
+            <div className="absolute bottom-1/5 left-2/3 w-5 h-28 bg-gradient-to-t from-amber-300/40 to-transparent transform rotate-30 animate-pulse" style={{animationDuration: '7s', animationDelay: '3s'}}></div>
             
-            <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-amber-300/30 rounded-full animate-pulse" style={{animationDuration: '7s', animationDelay: '3s'}}></div>
-            <div className="absolute bottom-1/4 left-1/5 w-2 h-2 bg-stone-400/35 rounded-full animate-pulse" style={{animationDuration: '10s', animationDelay: '6s'}}></div>
-            <div className="absolute top-1/2 right-1/6 w-1 h-1 bg-amber-400/40 rounded-full animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
+            {/* Geometric Elements */}
+            <div className="absolute top-1/5 left-3/4 w-24 h-24 bg-gradient-to-br from-amber-300/30 to-stone-400/25 transform rotate-45 animate-pulse" style={{animationDuration: '18s', animationDelay: '4s'}}></div>
+            <div className="absolute bottom-1/5 left-1/6 w-20 h-20 bg-gradient-to-tr from-stone-300/35 to-amber-300/30 rounded-full animate-pulse" style={{animationDuration: '12s', animationDelay: '7s'}}></div>
+            <div className="absolute top-1/2 right-1/6 w-16 h-16 bg-gradient-to-bl from-amber-400/30 to-stone-300/25 transform rotate-30 animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
+            <div className="absolute top-1/3 left-1/2 w-18 h-18 bg-gradient-to-tr from-stone-400/30 to-amber-200/35 rounded-full animate-pulse" style={{animationDuration: '10s', animationDelay: '5s'}}></div>
             
-            <div className="absolute top-1/5 left-3/4 w-8 h-8 bg-gradient-to-br from-amber-200/20 to-stone-300/15 transform rotate-45 animate-pulse" style={{animationDuration: '18s', animationDelay: '4s'}}></div>
-            <div className="absolute bottom-1/5 left-1/6 w-6 h-6 bg-gradient-to-tr from-stone-200/25 to-amber-200/20 rounded-full animate-pulse" style={{animationDuration: '12s', animationDelay: '7s'}}></div>
+            {/* Accent Dots - Much More Visible */}
+            <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-amber-400/60 rounded-full animate-pulse" style={{animationDuration: '7s', animationDelay: '3s'}}></div>
+            <div className="absolute bottom-1/4 left-1/5 w-6 h-6 bg-stone-500/65 rounded-full animate-pulse" style={{animationDuration: '10s', animationDelay: '6s'}}></div>
+            <div className="absolute top-1/2 right-1/6 w-4 h-4 bg-amber-500/70 rounded-full animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
+            <div className="absolute bottom-1/6 left-1/3 w-5 h-5 bg-stone-400/60 rounded-full animate-pulse" style={{animationDuration: '8s', animationDelay: '4s'}}></div>
+            
+            {/* Flowing Background Gradients */}
+            <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-amber-200/20 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-stone-200/25 to-transparent"></div>
+            <div className="absolute top-1/3 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-300/30 to-transparent animate-pulse" style={{animationDuration: '20s'}}></div>
+            <div className="absolute bottom-1/3 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stone-400/25 to-transparent animate-pulse" style={{animationDuration: '25s', animationDelay: '5s'}}></div>
           </div>
 
           <div className="max-w-7xl mx-auto px-6 relative">
