@@ -264,7 +264,7 @@ const App = () => {
                       <img 
                         src={featuredProducts[0].images[0]}
                         alt={featuredProducts[0].name}
-                        className="w-full h-96 lg:h-[600px] object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                        className="w-full h-96 lg:h-[600px] object-cover transition-all duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
                       <div className="absolute bottom-8 left-8 text-white opacity-0 group-hover:opacity-100 transition-all duration-700 transform translate-y-4 group-hover:translate-y-0">
@@ -276,23 +276,6 @@ const App = () => {
                   </div>
                 )}
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16 bg-gradient-to-r from-stone-800 to-amber-800 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"></div>
-          <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative">
-            <div className="text-center md:text-right">
-              <h2 className="text-xs tracking-[0.3em] text-amber-400 mb-4 font-light">מבצעי הקיץ</h2>
-              <p className="text-4xl lg:text-5xl font-black leading-tight mb-6 tracking-tight">קולקציה חדשה <br />עכשיו בחנות!</p>
-              <button className="bg-white text-stone-800 font-bold px-8 py-3 rounded-full hover:bg-amber-100 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
-                לכל הדגמים
-              </button>
-            </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-100/10 to-stone-200/10 rounded-2xl transform rotate-2"></div>
-              <div className="h-80 bg-cover bg-center rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-500" style={{backgroundImage: `url('${storeInfo.bannerImage}')`}}></div>
             </div>
           </div>
         </section>
@@ -386,7 +369,7 @@ const App = () => {
                       <img 
                         src={hoveredProduct === product.id && product.images.length > 1 ? product.images[1] : product.images[0]}
                         alt={product.name}
-                        className="w-full h-80 lg:h-96 object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                        className="w-full h-80 lg:h-96 object-cover transition-all duration-700"
                       />
                     )}
                     
@@ -610,6 +593,23 @@ const App = () => {
                         </div>
                       )}
                     </div>
+                    
+                    {selectedProduct.images && selectedProduct.images.length > 1 && (
+                      <div className="grid grid-cols-3 gap-4">
+                        {selectedProduct.images.map((img, index) => (
+                          <div key={index} className="relative">
+                            <img 
+                              src={img} 
+                              alt={`${selectedProduct.name} ${index + 1}`}
+                              className={`w-full h-24 object-cover cursor-pointer transition-all duration-300 rounded-lg shadow-lg ${
+                                currentImageIndex === index ? 'ring-2 ring-amber-400' : ''
+                              }`}
+                              onClick={() => setCurrentImageIndex(index)}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="space-y-8">
@@ -630,6 +630,33 @@ const App = () => {
                         {selectedProduct.description}
                       </p>
                     </div>
+                    
+                    {selectedProduct.colors && selectedProduct.colors.length > 0 && (
+                      <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+                        <h4 className="text-sm tracking-[0.3em] mb-4 text-amber-700">צבעים זמינים</h4>
+                        <div className="space-y-2">
+                          {selectedProduct.colors.map((color, index) => (
+                            <div key={index} className="text-lg text-stone-700 py-1">{color}</div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
+                      <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+                        <h4 className="text-sm tracking-[0.3em] mb-4 text-amber-700">מידות זמינות</h4>
+                        <div className="grid grid-cols-6 gap-3">
+                          {selectedProduct.sizes.map((size, index) => (
+                            <button 
+                              key={index} 
+                              className="border-2 border-stone-300 py-3 text-center hover:border-amber-500 hover:bg-gradient-to-r hover:from-stone-800 hover:to-amber-800 hover:text-white transition-all duration-300 rounded-lg shadow-lg transform hover:scale-105"
+                            >
+                              {size}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     
                     <div className="flex gap-4 pt-8">
                       <a 
