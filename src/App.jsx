@@ -86,6 +86,7 @@ const App = () => {
   const [hoveredProduct, setHoveredProduct] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [productImageIndexes, setProductImageIndexes] = useState({});
   const [scrollY, setScrollY] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -128,10 +129,26 @@ const App = () => {
   const filteredProducts = selectedCategory === 'all' ? products : products.filter(p => p.category === selectedCategory);
   const featuredProducts = products.filter(p => p.featured);
   
+  const handleProductImageChange = (productId, direction) => {
+    const product = products.find(p => p.id === productId);
+    if (!product || !product.images || product.images.length <= 1) return;
+    
+    setProductImageIndexes(prev => {
+      const currentIndex = prev[productId] || 0;
+      let newIndex;
+      
+      if (direction === 'next') {
+        newIndex = currentIndex < product.images.length - 1 ? currentIndex + 1 : 0;
+      } else {
+        newIndex = currentIndex > 0 ? currentIndex - 1 : product.images.length - 1;
+      }
+      
+      return { ...prev, [productId]: newIndex };
+    });
+  };
   const handleAdminLogin = () => { if (adminPassword === 'admin123') { setIsAdminMode(true); setShowAdminLogin(false); setAdminPassword(''); } else { alert('סיסמה שגויה'); } };
   const handleLogout = () => { setIsAdminMode(false); setEditingProduct(null); setEditingStore(false); };
   const saveStoreInfo = (newStoreInfo) => { setStoreInfo(newStoreInfo); setEditingStore(false); };
-  const handleCategoryChange = (categoryId) => { setIsTransitioning(true); setTimeout(() => { setSelectedCategory(categoryId); setIsTransitioning(false); }, 300); };
   const handleProductSelect = (product) => { if (!isAdminMode) { setSelectedProduct(product); } };
   const saveProduct = (productData) => { if (productData.id) { setProducts(prev => prev.map(p => p.id === productData.id ? productData : p)); } else { const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1; setProducts(prev => [...prev, { ...productData, id: newId }]); } setEditingProduct(null); };
   const deleteProduct = (id) => { if (window.confirm('האם אתה בטוח שברצונך למחוק את המוצר?')) { setProducts(prev => prev.filter(p => p.id !== id)); } };
@@ -268,10 +285,16 @@ const App = () => {
                   {storeInfo.heroSubtitle}
                 </p>
                 <div className="flex items-center gap-6">
-                  <button className="bg-gradient-to-r from-stone-900 to-amber-900 text-white px-8 py-4 text-sm tracking-wide hover:from-amber-900 hover:to-stone-900 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-amber-200/30 transform hover:scale-105">
+                  <button 
+                    onClick={() => document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' })}
+                    className="bg-gradient-to-r from-stone-900 to-amber-900 text-white px-8 py-4 text-sm tracking-wide hover:from-amber-900 hover:to-stone-900 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-amber-200/30 transform hover:scale-105"
+                  >
                     גלה את הקולקציה
                   </button>
-                  <button className="border-2 border-stone-300 px-8 py-4 text-sm tracking-wide hover:bg-gradient-to-r hover:from-stone-800 hover:to-amber-800 hover:text-white hover:border-transparent transition-all duration-500 shadow-lg hover:shadow-xl">
+                  <button 
+                    onClick={() => document.getElementById('contact-section').scrollIntoView({ behavior: 'smooth' })}
+                    className="border-2 border-stone-300 px-8 py-4 text-sm tracking-wide hover:bg-gradient-to-r hover:from-stone-800 hover:to-amber-800 hover:text-white hover:border-transparent transition-all duration-500 shadow-lg hover:shadow-xl"
+                  >
                     צור קשר
                   </button>
                 </div>
@@ -347,7 +370,7 @@ const App = () => {
           </div>
         </section>
 
-        <section className="py-20 bg-gradient-to-br from-amber-50/50 via-stone-50/60 via-amber-50/40 to-stone-100/50 relative overflow-hidden">
+        <section id="products-section" className="py-20 bg-gradient-to-br from-amber-50/50 via-stone-50/60 via-amber-50/40 to-stone-100/50 relative overflow-hidden">
           {/* Dramatically Enhanced Products Section Background */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {/* Large Flowing Circles */}
@@ -384,113 +407,154 @@ const App = () => {
           </div>
 
           <div className="max-w-7xl mx-auto px-6 relative">
-            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 transition-all duration-700 ${isTransitioning ? 'opacity-0 transform translate-y-8' : 'opacity-100 transform translate-y-0'}`}>
-              {filteredProducts.map((product, index) => (
-                <div
-                  key={product.id}
-                  className="group cursor-pointer animate-fadeInUp relative"
-                  onClick={() => handleProductSelect(product)}
-                  onMouseEnter={() => setHoveredProduct(product.id)}
-                  onMouseLeave={() => setHoveredProduct(null)}
-                  style={{animationDelay: `${index * 150}ms`}}
-                >
-                  {isAdminMode && (
-                    <div className="absolute top-4 left-4 z-20 flex gap-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingProduct(product);
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteProduct(product.id);
-                        }}
-                        className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="relative overflow-hidden mb-6 bg-white rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-stone-200/50 transition-all duration-700 transform hover:scale-105">
-                    {product.isNew && (
-                      <div className="absolute top-4 right-4 z-10 text-xs tracking-[0.3em] bg-gradient-to-r from-amber-600 to-stone-800 text-white px-3 py-1 rounded-full shadow-lg">
-                        חדש
-                      </div>
-                    )}
-                    
-                    {!isAdminMode && (
-                      <div className="absolute top-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-0 group-hover:scale-100">
-                        <Heart className="w-5 h-5 text-white hover:text-amber-400 cursor-pointer transition-colors duration-300 drop-shadow-lg" />
-                      </div>
-                    )}
-                    
-                    {product.images && product.images.length > 0 && (
-                      <img 
-                        src={hoveredProduct === product.id && product.images.length > 1 ? product.images[1] : product.images[0]}
-                        alt={product.name}
-                        className="w-full h-80 lg:h-96 object-cover transition-all duration-700"
-                      />
-                    )}
-                    
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                    
-                    {!isAdminMode && (
-                      <div className="absolute bottom-6 left-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-8 group-hover:translate-y-0">
-                        <button className="bg-white/90 backdrop-blur-sm text-stone-800 px-6 py-2 text-sm tracking-wide hover:bg-white transition-all duration-300 rounded-full shadow-xl">
-                          צפה בפרטים
+            <div className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12' : 'space-y-8'} transition-all duration-700 ${isTransitioning ? 'opacity-0 transform translate-y-8' : 'opacity-100 transform translate-y-0'}`}>
+              {filteredProducts.map((product, index) => {
+                const currentProductImageIndex = productImageIndexes[product.id] || 0;
+                return (
+                  <div
+                    key={product.id}
+                    className={`group cursor-pointer animate-fadeInUp relative ${viewMode === 'list' ? 'flex gap-8 items-center bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg' : ''}`}
+                    onClick={() => handleProductSelect(product)}
+                    onMouseEnter={() => setHoveredProduct(product.id)}
+                    onMouseLeave={() => setHoveredProduct(null)}
+                    style={{animationDelay: `${index * 150}ms`}}
+                  >
+                    {isAdminMode && (
+                      <div className="absolute top-4 left-4 z-20 flex gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingProduct(product);
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteProduct(product.id);
+                          }}
+                          className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     )}
-                  </div>
 
-                  <div className="space-y-3 bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg">
-                    <div className="flex items-center justify-between">
-                      <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
-                      <div className="flex items-center gap-2">
-                        {product.originalPrice && product.originalPrice > product.price && (
-                          <>
-                            <span className="text-sm text-stone-400 line-through">₪{product.originalPrice}</span>
-                            <div className="w-1 h-4 bg-stone-300"></div>
-                          </>
-                        )}
-                        <span className="text-lg font-medium bg-gradient-to-r from-stone-800 to-amber-800 bg-clip-text text-transparent">₪{product.price}</span>
+                    <div className={`relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-stone-200/50 transition-all duration-700 transform hover:scale-105 ${viewMode === 'list' ? 'w-48 h-48 flex-shrink-0' : 'mb-6'}`}>
+                      {product.isNew && (
+                        <div className="absolute top-4 right-4 z-10 text-xs tracking-[0.3em] bg-gradient-to-r from-amber-600 to-stone-800 text-white px-3 py-1 rounded-full shadow-lg">
+                          חדש
+                        </div>
+                      )}
+                      
+                      {!isAdminMode && (
+                        <div className="absolute top-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-0 group-hover:scale-100">
+                          <Heart className="w-5 h-5 text-white hover:text-amber-400 cursor-pointer transition-colors duration-300 drop-shadow-lg" />
+                        </div>
+                      )}
+                      
+                      {product.images && product.images.length > 0 && (
+                        <img 
+                          src={product.images[currentProductImageIndex]}
+                          alt={product.name}
+                          className={`w-full object-cover transition-all duration-700 ${viewMode === 'list' ? 'h-full' : 'h-80 lg:h-96'}`}
+                        />
+                      )}
+                      
+                      {/* Navigation arrows for multiple images */}
+                      {product.images && product.images.length > 1 && (
+                        <div className="absolute inset-y-0 left-2 right-2 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <button 
+                            className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleProductImageChange(product.id, 'prev');
+                            }}
+                          >
+                            <ArrowLeft className="w-4 h-4" />
+                          </button>
+                          <button 
+                            className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleProductImageChange(product.id, 'next');
+                            }}
+                          >
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                      
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                      
+                      {!isAdminMode && (
+                        <div className="absolute bottom-6 left-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-8 group-hover:translate-y-0">
+                          <button className="bg-white/90 backdrop-blur-sm text-stone-800 px-6 py-2 text-sm tracking-wide hover:bg-white transition-all duration-300 rounded-full shadow-xl">
+                            צפה בפרטים
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={`space-y-3 ${viewMode === 'list' ? 'flex-1' : 'bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg'}`}>
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
+                        <div className="flex items-center gap-2">
+                          {product.originalPrice && product.originalPrice > product.price && (
+                            <>
+                              <span className="text-sm text-stone-400 line-through">₪{product.originalPrice}</span>
+                              <div className="w-1 h-4 bg-stone-300"></div>
+                            </>
+                          )}
+                          <span className="text-lg font-medium bg-gradient-to-r from-stone-800 to-amber-800 bg-clip-text text-transparent">₪{product.price}</span>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
-                      {product.name}
-                    </h3>
-                    
-                    <div className="text-sm text-stone-600 leading-relaxed">
-                      {product.description}
-                    </div>
-                    
-                    <div className="flex items-center gap-3 pt-2">
-                      {product.colors && product.colors.slice(0, 3).map((color, index) => (
-                        <span key={index} className="text-xs tracking-wide text-stone-500">
-                          {color}
-                          {index < Math.min(product.colors.length - 1, 2) && <span className="mx-2 text-amber-400">•</span>}
-                        </span>
-                      ))}
-                      {product.colors && product.colors.length > 3 && (
-                        <span className="text-xs text-amber-600 font-medium">+{product.colors.length - 3}</span>
+                      
+                      <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
+                        {product.name}
+                      </h3>
+                      
+                      <div className="text-sm text-stone-600 leading-relaxed">
+                        {product.description}
+                      </div>
+                      
+                      <div className="flex items-center gap-3 pt-2">
+                        {product.colors && product.colors.slice(0, 3).map((color, index) => (
+                          <span key={index} className="text-xs tracking-wide text-stone-500">
+                            {color}
+                            {index < Math.min(product.colors.length - 1, 2) && <span className="mx-2 text-amber-400">•</span>}
+                          </span>
+                        ))}
+                        {product.colors && product.colors.length > 3 && (
+                          <span className="text-xs text-amber-600 font-medium">+{product.colors.length - 3}</span>
+                        )}
+                      </div>
+                      
+                      {/* Image indicators for multiple images */}
+                      {product.images && product.images.length > 1 && (
+                        <div className="flex justify-center gap-2 pt-2">
+                          {product.images.map((_, imgIndex) => (
+                            <div
+                              key={imgIndex}
+                              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                currentProductImageIndex === imgIndex ? 'bg-amber-600' : 'bg-stone-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="py-32 bg-gradient-to-br from-stone-100 to-amber-50/50 relative overflow-hidden">
+      <footer id="contact-section" className="py-32 bg-gradient-to-br from-stone-100 to-amber-50/50 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
         <div className="max-w-4xl mx-auto px-6 text-center relative">
           <div className="text-xs tracking-[0.4em] text-amber-600 mb-6">צור קשר</div>
@@ -504,7 +568,7 @@ const App = () => {
                 <Phone className="w-6 h-6 text-white" />
               </div>
               <div className="text-sm tracking-wide mb-2 text-stone-600">טלפון</div>
-              <div className="text-lg font-medium">{storeInfo.phone}</div>
+              <a href={`tel:${storeInfo.phone}`} className="text-lg font-medium hover:text-amber-700 transition-colors duration-300">{storeInfo.phone}</a>
             </div>
             
             <div className="text-center bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105">
@@ -512,7 +576,7 @@ const App = () => {
                 <MapPin className="w-6 h-6 text-white" />
               </div>
               <div className="text-sm tracking-wide mb-2 text-stone-600">כתובת</div>
-              <div className="text-lg font-medium">{storeInfo.address}</div>
+              <a href={`https://maps.google.com/?q=${encodeURIComponent(storeInfo.address)}`} target="_blank" rel="noopener noreferrer" className="text-lg font-medium hover:text-amber-700 transition-colors duration-300">{storeInfo.address}</a>
             </div>
             
             <div className="text-center bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105">
@@ -520,7 +584,7 @@ const App = () => {
                 <Instagram className="w-6 h-6 text-white" />
               </div>
               <div className="text-sm tracking-wide mb-2 text-stone-600">אינסטגרם</div>
-              <div className="text-lg font-medium">@{storeInfo.instagram.split('@')[1] || 'store'}</div>
+              <a href={storeInfo.instagram} target="_blank" rel="noopener noreferrer" className="text-lg font-medium hover:text-amber-700 transition-colors duration-300">@asi_abergel_city_shoes</a>
             </div>
           </div>
 
@@ -586,7 +650,7 @@ const App = () => {
               </div>
               
               <div className="text-xs text-stone-500 bg-white/50 backdrop-blur-sm p-3 rounded-lg">
-                <strong>סיסמה לדוגמה:</strong> admin123
+                <strong>הזן את סיסמת הניהול שלך</strong>
               </div>
               
               <div className="flex gap-4">
