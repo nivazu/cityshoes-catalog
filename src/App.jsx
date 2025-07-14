@@ -320,9 +320,7 @@ const App = () => {
 />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
                       <div className="absolute bottom-8 left-8 text-white opacity-0 group-hover:opacity-100 transition-all duration-700 transform translate-y-4 group-hover:translate-y-0">
-                        <div className="text-xs tracking-[0.3em] mb-2">{featuredProducts[0].brand}</div>
-                        <div className="text-2xl font-bold mb-2">{featuredProducts[0].name}</div>
-                        <div className="text-lg">₪{featuredProducts[0].price}</div>
+  
                       </div>
                     </div>
                   </div>
