@@ -168,6 +168,24 @@ const App = () => {
   isNew: false, 
   featured: false 
 }
+   ,
+{ 
+  id: 5, 
+  name: "תיק גב Sprayground", 
+  brand: "SPRAYGROUND", 
+  price: 350, 
+  category: "lifestyle", 
+  images: [
+    "https://i.ibb.co/TdBNXZQ/Sprayground51.jpg",
+    "https://i.ibb.co/RkkN7MwG/Sprayground57.jpg",
+    "https://i.ibb.co/DHnYNzvF/Sprayground100.jpg"
+  ], 
+  description: "תיק גב בעיצוב ייחודי ואיכותי.", 
+  colors: ["MULTI"], 
+  sizes: ["ONE SIZE"], 
+  isNew: false, 
+  featured: false 
+}
   ]);
   
   const [storeInfo, setStoreInfo] = useState({ 
