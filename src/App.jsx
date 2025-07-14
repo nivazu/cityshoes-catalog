@@ -854,6 +854,7 @@ const LuxuryShoeCatalogWithAdmin = () => {
               </div>
             </div>
           </div>
+          </div>
         </div>
       )}
     </div>
