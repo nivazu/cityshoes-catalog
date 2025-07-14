@@ -116,6 +116,7 @@ const App = () => {
   useEffect(() => { const handleScroll = () => setScrollY(window.scrollY); window.addEventListener('scroll', handleScroll); setTimeout(() => setIsLoading(false), 2500); return () => window.removeEventListener('scroll', handleScroll); }, []);
   
   const filteredProducts = selectedCategory === 'all' ? products : products.filter(p => p.category === selectedCategory);
+  const featuredProducts = products.filter(p => p.featured);
   
   const handleAdminLogin = () => { if (adminPassword === 'admin123') { setIsAdminMode(true); setShowAdminLogin(false); setAdminPassword(''); } else { alert('סיסמה שגויה'); } };
   const handleLogout = () => { setIsAdminMode(false); setEditingProduct(null); setEditingStore(false); };
