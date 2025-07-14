@@ -313,10 +313,11 @@ const App = () => {
                   <div className="relative group">
                     <div className="absolute inset-0 bg-gradient-to-br from-amber-100/20 to-stone-200/20 rounded-3xl transform rotate-3 group-hover:rotate-6 transition-transform duration-700"></div>
                     <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-700 transform group-hover:scale-105">
-                     <img 
+// הקוד המתוקן
+<img 
   src={storeInfo.bannerImage}
   alt={storeInfo.heroTitle}
-  className="w-full h-96 lg:h-[600px] object-cover transition-all duration-700"
+  className="w-full h-96 lg:h-[600px] object-contain transition-all duration-700"
 />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
                       <div className="absolute bottom-8 left-8 text-white opacity-0 group-hover:opacity-100 transition-all duration-700 transform translate-y-4 group-hover:translate-y-0">
