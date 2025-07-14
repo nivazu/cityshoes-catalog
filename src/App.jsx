@@ -362,16 +362,18 @@ const App = () => {
                 </div>
               </div>
               
-              <div className="flex items-center gap-6">
-                <button onClick={exportDataForCode} className="flex items-center gap-2 text-sm tracking-wide text-stone-600 hover:text-amber-700 transition-colors duration-300 bg-white/50 px-4 py-2 rounded-full shadow-lg hover:shadow-xl">
-                  <Download className="w-4 h-4" />
-                  ייצא נתונים לקוד
-                </button>
-                <button onClick={exportHumanReadableList} className="flex items-center gap-2 text-sm tracking-wide text-stone-600 hover:text-amber-700 transition-colors duration-300 bg-white/50 px-4 py-2 rounded-full shadow-lg hover:shadow-xl">
-                  <Download className="w-4 h-4" />
-                  ייצא רשימה פשוטה
-                </button>
-              </div>
+ {isAdminMode && (
+  <div className="flex items-center gap-6">
+    <button onClick={exportDataForCode} className="flex items-center gap-2 text-sm tracking-wide text-stone-600 hover:text-amber-700 transition-colors duration-300 bg-white/50 px-4 py-2 rounded-full shadow-lg hover:shadow-xl">
+      <Download className="w-4 h-4" />
+      ייצא נתונים לקוד
+    </button>
+    <button onClick={exportHumanReadableList} className="flex items-center gap-2 text-sm tracking-wide text-stone-600 hover:text-amber-700 transition-colors duration-300 bg-white/50 px-4 py-2 rounded-full shadow-lg hover:shadow-xl">
+      <Download className="w-4 h-4" />
+      ייצא רשימה פשוטה
+    </button>
+  </div>
+)}
             </div>
           </div>
         </section>
