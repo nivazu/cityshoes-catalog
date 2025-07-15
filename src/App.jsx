@@ -1115,7 +1115,7 @@ const App = () => {
                     
                     <div className="flex gap-4 pt-8">
                       <a 
-                        href={`https://wa.me/${storeInfo.whatsapp.replace('+', '')}?text=היי, אני מעוניין ב${selectedProduct.name} במחיר ₪${selectedProduct.price}`}
+                         href={`https://wa.me/${storeInfo.whatsapp.replace('+', '')}?text=היי, אני מעוניין ב${selectedProduct.name}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white py-4 text-center text-sm tracking-wide hover:from-green-700 hover:to-green-800 transition-all duration-500 rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105"
