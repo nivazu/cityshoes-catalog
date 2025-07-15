@@ -850,19 +850,8 @@ const App = () => {
                     </div>
 
                     <div className={`space-y-3 ${viewMode === 'list' ? 'flex-1' : 'bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg'}`}>
-                      <div className="flex items-center justify-between">
-                        <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
-                        <div className="flex items-center gap-2">
-                          {product.originalPrice && product.originalPrice > product.price && (
-                            <>
-                              <span className="text-sm text-stone-400 line-through">₪{product.originalPrice}</span>
-                              <div className="w-1 h-4 bg-stone-300"></div>
-                            </>
-                          )}
-                          <span className="text-lg font-medium bg-gradient-to-r from-stone-800 to-amber-800 bg-clip-text text-transparent">₪{product.price}</span>
-                        </div>
-                      </div>
-                      
+                   
+     
                       <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
                         {product.name}
                       </h3>
@@ -1091,17 +1080,6 @@ const App = () => {
                   
                   <div className="space-y-8">
                     <div>
-                      <div className="flex items-center gap-4 mb-6">
-                        <span className="text-3xl font-medium bg-gradient-to-r from-stone-800 to-amber-800 bg-clip-text text-transparent">₪{selectedProduct.price}</span>
-                        {selectedProduct.originalPrice && selectedProduct.originalPrice > selectedProduct.price && (
-                          <>
-                            <span className="text-xl text-stone-400 line-through">₪{selectedProduct.originalPrice}</span>
-                            <span className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
-                              -{Math.round((1 - selectedProduct.price / selectedProduct.originalPrice) * 100)}%
-                            </span>
-                          </>
-                        )}
-                      </div>
                       
                       <p className="text-lg text-stone-600 leading-relaxed mb-8">
                         {selectedProduct.description}
