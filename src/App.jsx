@@ -355,6 +355,95 @@ const App = () => {
       isNew: false, 
       featured: false 
     }
+,
+    { 
+      id: 16, 
+      name: "תיק גב Sprayground", 
+      brand: "SPRAYGROUND", 
+      price: 350, 
+      category: "lifestyle", 
+      images: [
+        "https://i.ibb.co/fVtY2dHv/Sprayground104.jpg",
+        "https://i.ibb.co/RTfjQp5Z/Sprayground113.jpg",
+        "https://i.ibb.co/3y40THrb/Sprayground156.jpg",
+        "https://i.ibb.co/LXRqXGgb/Sprayground171.jpg"
+      ], 
+      description: "תיק גב בעיצוב ייחודי ואיכותי.", 
+      colors: ["MULTI"], 
+      sizes: ["ONE SIZE"], 
+      isNew: false, 
+      featured: false 
+    },
+    { 
+      id: 17, 
+      name: "תיק גב Sprayground", 
+      brand: "SPRAYGROUND", 
+      price: 350, 
+      category: "lifestyle", 
+      images: [
+        "https://i.ibb.co/jkgnw52D/Sprayground161.jpg",
+        "https://i.ibb.co/4RdXswXK/Sprayground168.jpg",
+        "https://i.ibb.co/svw3nhd2/Backpack0706.jpg"
+      ], 
+      description: "תיק גב בעיצוב ייחודי ואיכותי.", 
+      colors: ["MULTI"], 
+      sizes: ["ONE SIZE"], 
+      isNew: false, 
+      featured: false 
+    },
+    { 
+      id: 18, 
+      name: "תיק גב Sprayground", 
+      brand: "SPRAYGROUND", 
+      price: 350, 
+      category: "lifestyle", 
+      images: [
+        "https://i.ibb.co/yBBDzTW9/Sprayground150.jpg",
+        "https://i.ibb.co/rCLbc8p/Sprayground174.jpg"
+      ], 
+      description: "תיק גב בעיצוב ייחודי ואיכותי.", 
+      colors: ["MULTI"], 
+      sizes: ["ONE SIZE"], 
+      isNew: false, 
+      featured: false 
+    },
+    { 
+      id: 19, 
+      name: "תיק גב Sprayground", 
+      brand: "SPRAYGROUND", 
+      price: 350, 
+      category: "lifestyle", 
+      images: [
+        "https://i.ibb.co/zVrxTp9P/Sprayground79.jpg",
+        "https://i.ibb.co/60BpHgvF/Sprayground82.jpg",
+        "https://i.ibb.co/nqy1PmjK/Sprayground87.jpg",
+        "https://i.ibb.co/FL2K4YCt/Sprayground92.jpg",
+        "https://i.ibb.co/gbbBvY8d/Sprayground96.jpg"
+      ], 
+      description: "תיק גב בעיצוב ייחודי ואיכותי.", 
+      colors: ["MULTI"], 
+      sizes: ["ONE SIZE"], 
+      isNew: false, 
+      featured: false 
+    },
+    { 
+      id: 20, 
+      name: "תיק צד Sprayground", 
+      brand: "SPRAYGROUND", 
+      price: 350, 
+      category: "lifestyle", 
+      images: [
+        "https://i.ibb.co/Z6SpPyN3/Sprayground99.jpg",
+        "https://i.ibb.co/vCxD8yPn/Backpack1003.jpg",
+        "https://i.ibb.co/1GbqgJXc/Backpack1004.jpg"
+      ], 
+      description: "תיק צד בעיצוב ייחודי ואיכותי.", 
+      colors: ["MULTI"], 
+      sizes: ["ONE SIZE"], 
+      isNew: false, 
+      featured: false 
+    }
+
   ]);
 
   
