@@ -297,6 +297,7 @@ const App = () => {
       id: 1,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/jvvk2f1p/Backpack0103.jpg",
@@ -313,6 +314,7 @@ const App = () => {
       id: 2,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/60WgfJqg/Backpack0203.jpg",
@@ -329,6 +331,7 @@ const App = () => {
       id: 3,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/8L8cZ3yX/Backpack0303.jpg",
@@ -345,6 +348,7 @@ const App = () => {
       id: 4,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/4nRMJ85f/Backpack0401.jpg",
@@ -361,6 +365,7 @@ const App = () => {
       id: 5,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/HpF6FN4f/Backpack0502.jpg",
@@ -377,6 +382,7 @@ const App = () => {
       id: 6,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/xKkMsmBt/Backpack0604.jpg",
@@ -393,6 +399,7 @@ const App = () => {
       id: 7,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/Xrj0L2R5/Backpack0705.jpg",
@@ -408,6 +415,7 @@ const App = () => {
       id: 8,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/5x2WN56S/Backpack0702.jpg",
@@ -424,6 +432,7 @@ const App = () => {
       id: 9,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/HTS0CbN0/Backpack0804.jpg",
@@ -441,6 +450,7 @@ const App = () => {
       id: 10,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/2pYdqst/Backpack0904.jpg",
@@ -458,6 +468,7 @@ const App = () => {
       id: 11,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/Ndh0fPWJ/Sprayground135.jpg",
@@ -474,6 +485,7 @@ const App = () => {
       id: 12,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/h1gVvLGL/Sprayground51.jpg",
@@ -490,6 +502,7 @@ const App = () => {
       id: 13,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/xqBYG9PQ/Sprayground45.jpg",
@@ -506,6 +519,7 @@ const App = () => {
       id: 14,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/Y49WJpDq/Sprayground46.jpg",
@@ -522,6 +536,7 @@ const App = () => {
       id: 15,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/G350LyZP/Sprayground84.jpg",
@@ -534,11 +549,13 @@ const App = () => {
       sizes: ["ONE SIZE"],
       isNew: false,
       featured: false
-    },
+    }
+    ,
     {
       id: 16,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/fVtY2dHv/Sprayground104.jpg",
@@ -556,6 +573,7 @@ const App = () => {
       id: 17,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/jkgnw52D/Sprayground161.jpg",
@@ -572,6 +590,7 @@ const App = () => {
       id: 18,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/yBBDzTW9/Sprayground150.jpg",
@@ -587,6 +606,7 @@ const App = () => {
       id: 19,
       name: "תיק גב Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/zVrxTp9P/Sprayground79.jpg",
@@ -605,6 +625,7 @@ const App = () => {
       id: 20,
       name: "תיק צד Sprayground",
       brand: "SPRAYGROUND",
+      price: 350,
       category: "lifestyle",
       images: [
         "https://i.ibb.co/Z6SpPyN3/Sprayground99.jpg",
@@ -905,6 +926,8 @@ const App = () => {
                       alt={storeInfo.heroTitle}
                       className="w-full h-96 lg:h-[600px] object-contain transition-all duration-700"
                       loading="lazy"
+                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
                   </div>
@@ -1284,6 +1307,8 @@ const App = () => {
                         src={selectedProduct.images && selectedProduct.images[currentImageIndex]} 
                         alt={selectedProduct.name}
                         className="w-full h-96 lg:h-[600px] object-cover"
+                        crossOrigin="anonymous"
+                        referrerPolicy="no-referrer"
                       />
                       
                       {selectedProduct.images && selectedProduct.images.length > 1 && (
@@ -1315,6 +1340,8 @@ const App = () => {
                                 currentImageIndex === index ? 'ring-2 ring-amber-400' : ''
                               }`}
                               onClick={() => setCurrentImageIndex(index)}
+                              crossOrigin="anonymous"
+                              referrerPolicy="no-referrer"
                             />
                           </div>
                         ))}
