@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Phone, MapPin, Instagram, Search, Filter, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Plus, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from './services/productService';
 import ImageUpload from './components/ImageUpload';
+import StorageTest from './components/StorageTest';
 
 const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
   const [formData, setFormData] = useState({
@@ -286,6 +287,7 @@ const App = () => {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
+  const [showStorageTest, setShowStorageTest] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingStore, setEditingStore] = useState(false);
@@ -882,6 +884,9 @@ const App = () => {
               <span className="text-sm font-medium">מצב ניהול פעיל</span>
             </div>
             <div className="flex items-center gap-4">
+              <button onClick={() => setShowStorageTest(!showStorageTest)} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
+                בדיקת העלאות
+              </button>
               <button onClick={() => setEditingStore(true)} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
                 ערוך פרטי חנות
               </button>
@@ -1450,6 +1455,26 @@ const App = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Storage Test Modal */}
+      {showStorageTest && isAdminMode && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
+          <div className="bg-white rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">
+                בדיקת מערכת העלאות
+              </h2>
+              <button 
+                onClick={() => setShowStorageTest(false)} 
+                className="text-stone-400 hover:text-amber-700 transition-colors duration-300"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <StorageTest />
           </div>
         </div>
       )}
