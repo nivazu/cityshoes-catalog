@@ -1,10 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { Upload, X, Image as ImageIcon, Plus } from 'lucide-react';
-import { uploadImage } from '../services/productService';
+import { Upload, X, Image as ImageIcon, Plus, AlertCircle, CheckCircle } from 'lucide-react';
+import ImageService from '../services/imageService';
 
 const ImageUpload = ({ images = [], onImagesChange, productId }) => {
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState(null);
+  const [errors, setErrors] = useState([]);
   const fileInputRef = useRef(null);
 
   const handleDrag = (e) => {
@@ -35,35 +37,67 @@ const ImageUpload = ({ images = [], onImagesChange, productId }) => {
     if (!files.length) return;
 
     setUploading(true);
-    const newImages = [...images];
-
+    setUploadStatus(null);
+    setErrors([]);
+    
     try {
-      for (const file of files) {
-        if (file.type.startsWith('image/')) {
-          if (productId) {
-            // If we have a product ID, try to upload to Supabase
-            try {
-              const imageUrl = await uploadImage(file, productId);
-              newImages.push(imageUrl);
-            } catch (error) {
-              console.warn('Supabase upload failed, using local preview:', error);
-              // Fallback to local file URL for preview
-              const localUrl = URL.createObjectURL(file);
-              newImages.push(localUrl);
-            }
-          } else {
-            // For new products without ID, use local preview
+      if (productId) {
+        // Upload to Supabase if we have a product ID
+        const result = await ImageService.uploadMultipleImages(files, productId);
+        
+        if (result.errors.length > 0) {
+          setErrors(result.errors);
+          setUploadStatus('partial');
+        } else {
+          setUploadStatus('success');
+        }
+        
+        if (result.success.length > 0) {
+          const newImages = [...images, ...result.urls];
+          onImagesChange(newImages);
+        }
+      } else {
+        // For new products without ID, use local preview
+        const newImages = [...images];
+        const fileErrors = [];
+        
+        for (const file of files) {
+          const validationErrors = ImageService.validateImage(file);
+          if (validationErrors.length > 0) {
+            fileErrors.push({
+              file: file.name,
+              error: validationErrors.join(', ')
+            });
+            continue;
+          }
+          
+          if (file.type.startsWith('image/')) {
             const localUrl = URL.createObjectURL(file);
             newImages.push(localUrl);
           }
         }
+        
+        if (fileErrors.length > 0) {
+          setErrors(fileErrors);
+          setUploadStatus('partial');
+        } else {
+          setUploadStatus('success');
+        }
+        
+        onImagesChange(newImages);
       }
-      
-      onImagesChange(newImages);
     } catch (error) {
       console.error('Error handling files:', error);
+      setErrors([{ file: 'Upload', error: error.message }]);
+      setUploadStatus('error');
     } finally {
       setUploading(false);
+      
+      // Clear status after 3 seconds
+      setTimeout(() => {
+        setUploadStatus(null);
+        setErrors([]);
+      }, 3000);
     }
   };
 
@@ -149,6 +183,42 @@ const ImageUpload = ({ images = [], onImagesChange, productId }) => {
           </div>
         </div>
       </div>
+
+      {/* Upload Status */}
+      {uploadStatus && (
+        <div className={`p-4 rounded-lg border ${
+          uploadStatus === 'success' ? 'bg-green-50 border-green-200' :
+          uploadStatus === 'partial' ? 'bg-yellow-50 border-yellow-200' :
+          'bg-red-50 border-red-200'
+        }`}>
+          <div className="flex items-center gap-2">
+            {uploadStatus === 'success' ? (
+              <CheckCircle className="w-5 h-5 text-green-600" />
+            ) : (
+              <AlertCircle className="w-5 h-5 text-yellow-600" />
+            )}
+            <span className={`font-medium ${
+              uploadStatus === 'success' ? 'text-green-800' :
+              uploadStatus === 'partial' ? 'text-yellow-800' :
+              'text-red-800'
+            }`}>
+              {uploadStatus === 'success' ? 'התמונות הועלו בהצלחה!' :
+               uploadStatus === 'partial' ? 'חלק מהתמונות הועלו בהצלחה' :
+               'שגיאה בהעלאת התמונות'}
+            </span>
+          </div>
+          
+          {errors.length > 0 && (
+            <div className="mt-2 space-y-1">
+              {errors.map((error, index) => (
+                <p key={index} className="text-sm text-red-600">
+                  <strong>{error.file}:</strong> {error.error}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Image Preview Grid */}
       {images.length > 0 && (
