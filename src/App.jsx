@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, MapPin, Instagram, Search, Filter, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Plus, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
+import { getProducts, createProduct, updateProduct, deleteProduct } from './services/productService';
+import ImageUpload from './components/ImageUpload';
 
 const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
   const [formData, setFormData] = useState({
@@ -9,7 +11,7 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
     description: product.description || '',
     colors: product.colors?.join(', ') || '',
     sizes: product.sizes?.join(', ') || '',
-    images: product.images?.join('\n') || '',
+    images: product.images || [],
     isNew: product.isNew || false,
     featured: product.featured || false
   });
@@ -21,7 +23,7 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
       ...formData,
       colors: formData.colors.split(',').map(c => c.trim()).filter(Boolean),
       sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
-      images: formData.images.split('\n').map(i => i.trim()).filter(Boolean)
+      images: Array.isArray(formData.images) ? formData.images : [formData.images].filter(Boolean)
     };
     onSave(productData);
   };
@@ -70,15 +72,11 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-stone-700 mb-2">קישורי תמונות (כל קישור בשורה חדשה)</label>
-            <textarea
-              value={formData.images}
-              onChange={(e) => setFormData(p => ({...p, images: e.target.value}))}
-              rows={4}
-              className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
-            />
-          </div>
+          <ImageUpload
+            images={formData.images}
+            onImagesChange={(images) => setFormData(p => ({...p, images}))}
+            productId={product.id}
+          />
           <div className="flex gap-4">
             <label className="flex items-center gap-2">
               <input
@@ -291,8 +289,29 @@ const App = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingStore, setEditingStore] = useState(false);
+  const [error, setError] = useState(null);
 
-  const [products, setProducts] = useState([
+  const [products, setProducts] = useState([]); 
+
+  // Load products from Supabase
+  const loadProducts = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getProducts();
+      setProducts(data);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      setError('שגיאה בטעינת המוצרים. ננסה שוב בעוד כמה שניות...');
+      // Fallback to sample data for development
+      setProducts(sampleProducts);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Sample fallback data
+  const sampleProducts = [
     {
       id: 1,
       name: "תיק גב Sprayground",
@@ -638,7 +657,7 @@ const App = () => {
       isNew: false,
       featured: false
     }
-  ]);
+  ];
   
   const [storeInfo, setStoreInfo] = useState({ 
     name: "נעלי העיר", 
@@ -653,6 +672,46 @@ const App = () => {
     heroSubtitle: "קולקציה אקסקלוסיבית של נעלי ספורט ואופנה מהמותגים המובילים בעולם.", 
     bannerImage: "https://i.ibb.co/gMXLwMg6/b447649c-d70a-400e-bf50-f22a1c291eca-1.gif" 
   });
+
+  // Load products on component mount
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  // Product CRUD operations
+  const handleSaveProduct = async (productData) => {
+    try {
+      setError(null);
+      if (productData.id) {
+        // Update existing product
+        const updatedProduct = await updateProduct(productData.id, productData);
+        setProducts(prev => prev.map(p => p.id === productData.id ? updatedProduct : p));
+      } else {
+        // Create new product
+        const newProduct = await createProduct(productData);
+        setProducts(prev => [...prev, newProduct]);
+      }
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Error saving product:', error);
+      setError('שגיאה בשמירת המוצר. אנא נסה שוב.');
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    if (!window.confirm('האם אתה בטוח שברצונך למחוק את המוצר?')) {
+      return;
+    }
+    
+    try {
+      setError(null);
+      await deleteProduct(productId);
+      setProducts(prev => prev.filter(p => p.id !== productId));
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      setError('שגיאה במחיקת המוצר. אנא נסה שוב.');
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -729,21 +788,9 @@ const App = () => {
     }
   };
 
-  const saveProduct = (productData) => {
-    if (productData.id) {
-      setProducts(prev => prev.map(p => p.id === productData.id ? productData : p));
-    } else {
-      const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-      setProducts(prev => [...prev, { ...productData, id: newId }]);
-    }
-    setEditingProduct(null);
-  };
-
-  const deleteProduct = (id) => {
-    if (window.confirm('האם אתה בטוח שברצונך למחוק את המוצר?')) {
-      setProducts(prev => prev.filter(p => p.id !== id));
-    }
-  };
+  // Use the new Supabase functions
+  const saveProduct = handleSaveProduct;
+  const deleteProductLocal = handleDeleteProduct;
 
   const exportDataForCode = () => {
     const dataString = `const newProducts = ${JSON.stringify(products, null, 2)};`;
@@ -1041,7 +1088,7 @@ const App = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            deleteProduct(product.id);
+                            deleteProductLocal(product.id);
                           }}
                           className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
                         >
