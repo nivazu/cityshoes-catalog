@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Phone, MapPin, Instagram, Search, Filter, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Plus, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from './services/productService';
 import ImageUpload from './components/ImageUpload';
 import StorageTest from './components/StorageTest';
@@ -277,7 +277,6 @@ const StoreEditModal = ({ storeInfo, onSave, onCancel }) => {
 const App = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
-  const [hoveredProduct, setHoveredProduct] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [productImageIndexes, setProductImageIndexes] = useState({});
@@ -291,29 +290,11 @@ const App = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingStore, setEditingStore] = useState(false);
-  const [error, setError] = useState(null);
 
   const [products, setProducts] = useState([]); 
 
-  // Load products from Supabase
-  const loadProducts = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const data = await getProducts();
-      setProducts(data);
-    } catch (error) {
-      console.error('Error loading products:', error);
-      setError('שגיאה בטעינת המוצרים. ננסה שוב בעוד כמה שניות...');
-      // Fallback to sample data for development
-      setProducts(sampleProducts);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Sample fallback data
-  const sampleProducts = [
+  const sampleProducts = useMemo(() => [
     {
       id: 1,
       name: "תיק גב Sprayground",
@@ -659,7 +640,22 @@ const App = () => {
       isNew: false,
       featured: false
     }
-  ];
+  ], []);
+
+  // Load products from Supabase
+  const loadProducts = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await getProducts();
+      setProducts(data);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      // Fallback to sample data for development
+      setProducts(sampleProducts);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [sampleProducts]);
   
   const [storeInfo, setStoreInfo] = useState({ 
     name: "נעלי העיר", 
@@ -678,12 +674,11 @@ const App = () => {
   // Load products on component mount
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [loadProducts]);
 
   // Product CRUD operations
   const handleSaveProduct = async (productData) => {
     try {
-      setError(null);
       if (productData.id) {
         // Update existing product
         const updatedProduct = await updateProduct(productData.id, productData);
@@ -696,7 +691,6 @@ const App = () => {
       setEditingProduct(null);
     } catch (error) {
       console.error('Error saving product:', error);
-      setError('שגיאה בשמירת המוצר. אנא נסה שוב.');
     }
   };
 
@@ -706,12 +700,10 @@ const App = () => {
     }
     
     try {
-      setError(null);
       await deleteProduct(productId);
       setProducts(prev => prev.filter(p => p.id !== productId));
     } catch (error) {
       console.error('Error deleting product:', error);
-      setError('שגיאה במחיקת המוצר. אנא נסה שוב.');
     }
   };
 
@@ -1075,8 +1067,6 @@ const App = () => {
                     key={product.id}
                     className={`group cursor-pointer animate-fadeInUp relative ${viewMode === 'list' ? 'flex flex-col md:flex-row gap-8 items-center bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg' : ''}`}
                     onClick={() => handleProductSelect(product)}
-                    onMouseEnter={() => setHoveredProduct(product.id)}
-                    onMouseLeave={() => setHoveredProduct(null)}
                     style={{animationDelay: `${index * 150}ms`}}
                   >
                     {isAdminMode && (

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, X, Image as ImageIcon, Plus, AlertCircle, CheckCircle } from 'lucide-react';
+import { Upload, X, AlertCircle, CheckCircle } from 'lucide-react';
 import ImageService from '../services/imageService';
 
 const ImageUpload = ({ images = [], onImagesChange, productId }) => {

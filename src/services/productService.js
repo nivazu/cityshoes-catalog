@@ -155,7 +155,7 @@ export const uploadImage = async (file, productId) => {
     const fileName = `${productId}-${Date.now()}.${fileExt}`
     const filePath = `products/${fileName}`
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('product-images')
       .upload(filePath, file)
 
