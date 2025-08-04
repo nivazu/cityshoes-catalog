@@ -41,49 +41,22 @@ const ImageUpload = ({ images = [], onImagesChange, productId }) => {
     setErrors([]);
     
     try {
-      if (productId) {
-        // Upload to Supabase if we have a product ID
-        const result = await ImageService.uploadMultipleImages(files, productId);
-        
-        if (result.errors.length > 0) {
-          setErrors(result.errors);
-          setUploadStatus('partial');
-        } else {
-          setUploadStatus('success');
-        }
-        
-        if (result.success.length > 0) {
-          const newImages = [...images, ...result.urls];
-          onImagesChange(newImages);
-        }
+      // For new products without ID, we'll upload to a temporary folder
+      const uploadProductId = productId || 'temp';
+      
+      // Always try to upload to Supabase
+      console.log('Uploading files to Supabase Storage...');
+      const result = await ImageService.uploadMultipleImages(files, uploadProductId);
+      
+      if (result.errors.length > 0) {
+        setErrors(result.errors);
+        setUploadStatus('partial');
       } else {
-        // For new products without ID, use local preview
-        const newImages = [...images];
-        const fileErrors = [];
-        
-        for (const file of files) {
-          const validationErrors = ImageService.validateImage(file);
-          if (validationErrors.length > 0) {
-            fileErrors.push({
-              file: file.name,
-              error: validationErrors.join(', ')
-            });
-            continue;
-          }
-          
-          if (file.type.startsWith('image/')) {
-            const localUrl = URL.createObjectURL(file);
-            newImages.push(localUrl);
-          }
-        }
-        
-        if (fileErrors.length > 0) {
-          setErrors(fileErrors);
-          setUploadStatus('partial');
-        } else {
-          setUploadStatus('success');
-        }
-        
+        setUploadStatus('success');
+      }
+      
+      if (result.success.length > 0) {
+        const newImages = [...images, ...result.urls];
         onImagesChange(newImages);
       }
     } catch (error) {
