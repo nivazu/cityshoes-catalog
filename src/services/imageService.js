@@ -38,11 +38,16 @@ export class ImageService {
     const randomId = Math.random().toString(36).substring(2, 8);
     const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
     
-    if (productId) {
-      return `products/${productId}/${timestamp}-${randomId}.${fileExt}`;
+    // Clean the file extension
+    const cleanExt = fileExt.replace(/[^a-z0-9]/gi, '').toLowerCase();
+    const validExt = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(cleanExt) ? cleanExt : 'jpg';
+    
+    if (productId && productId !== 'temp') {
+      return `products/${productId}/${timestamp}-${randomId}.${validExt}`;
     }
     
-    return `products/temp/${timestamp}-${randomId}.${fileExt}`;
+    // For temporary uploads or new products
+    return `products/temp/${timestamp}-${randomId}.${validExt}`;
   }
 
   /**
@@ -50,6 +55,13 @@ export class ImageService {
    */
   static async uploadImage(file, productId = null) {
     try {
+      // First check connection
+      console.log('Checking storage connection...');
+      const connectionTest = await this.testConnection();
+      if (!connectionTest.connected) {
+        throw new Error(`Storage not connected: ${connectionTest.error || 'Unknown error'}`);
+      }
+      
       // Validate file
       const validationErrors = this.validateImage(file);
       if (validationErrors.length > 0) {
@@ -60,6 +72,8 @@ export class ImageService {
       const filePath = this.generateFileName(file, productId);
 
       console.log(`Uploading image: ${file.name} -> ${filePath}`);
+      console.log(`File size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+      console.log(`File type: ${file.type}`);
 
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
@@ -71,6 +85,18 @@ export class ImageService {
 
       if (error) {
         console.error('Supabase upload error:', error);
+        console.error('Error details:', {
+          message: error.message,
+          statusCode: error.statusCode,
+          error: error.error,
+          details: error.details
+        });
+        
+        // Check if bucket exists
+        if (error.message?.includes('Bucket not found')) {
+          throw new Error('Storage bucket "product-images" does not exist. Please create it in Supabase dashboard.');
+        }
+        
         throw new Error(`Upload failed: ${error.message}`);
       }
 

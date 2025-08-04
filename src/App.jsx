@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
+import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube, Plus } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from './services/productService';
 import ImageUpload from './components/ImageUpload';
 import StorageTest from './components/StorageTest';
+import StorageDebugger from './components/StorageDebugger';
 
 const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
   const [formData, setFormData] = useState({
@@ -269,6 +270,137 @@ const StoreEditModal = ({ storeInfo, onSave, onCancel }) => {
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+};
+
+const ProductModal = ({ product, onClose, storeInfo }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  if (!product) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-2xl transition-all duration-500" onClick={onClose}>
+      <div className="h-full flex items-center justify-center p-6">
+        <div className="max-w-6xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl shadow-2xl transition-all duration-500 transform" onClick={e => e.stopPropagation()}>
+          <div className="p-8">
+            <div className="flex justify-between items-center mb-12">
+              <div>
+                <div className="text-xs tracking-[0.3em] text-amber-600 mb-2">{product.brand}</div>
+                <h2 className="text-4xl font-black bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">{product.name}</h2>
+              </div>
+              <button 
+                onClick={onClose}
+                className="text-stone-400 hover:text-stone-700 transition-colors duration-300 p-2 hover:bg-stone-100 rounded-full"
+              >
+                <X className="w-8 h-8" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+              <div>
+                <div className="relative mb-6 bg-stone-50 rounded-2xl overflow-hidden shadow-xl">
+                  <img 
+                    src={product.images && product.images[currentImageIndex]} 
+                    alt={product.name}
+                    className="w-full h-96 lg:h-[600px] object-cover"
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                  />
+                  
+                  {product.images && product.images.length > 1 && (
+                    <div className="absolute inset-y-0 left-4 right-4 flex items-center justify-between pointer-events-none">
+                      <button 
+                        className="pointer-events-auto bg-white/90 hover:bg-white p-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
+                        onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : product.images.length - 1)}
+                      >
+                        <ArrowRight className="w-5 h-5" />
+                      </button>
+                      <button 
+                        className="pointer-events-auto bg-white/90 hover:bg-white p-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
+                        onClick={() => setCurrentImageIndex(prev => prev < product.images.length - 1 ? prev + 1 : 0)}
+                      >
+                        <ArrowLeft className="w-5 h-5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
+                {product.images && product.images.length > 1 && (
+                  <div className="grid grid-cols-3 gap-4">
+                    {product.images.map((img, index) => (
+                      <div key={index} className="relative">
+                        <img 
+                          src={img} 
+                          alt={`${product.name} ${index + 1}`}
+                          className={`w-full h-24 object-cover cursor-pointer transition-all duration-300 rounded-lg shadow-lg ${
+                            currentImageIndex === index ? 'ring-2 ring-amber-400' : ''
+                          }`}
+                          onClick={() => setCurrentImageIndex(index)}
+                          crossOrigin="anonymous"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <div className="space-y-8">
+                <div>
+                  <p className="text-lg text-stone-600 leading-relaxed mb-8">
+                    {product.description}
+                  </p>
+                </div>
+                
+                {product.colors && product.colors.length > 0 && (
+                  <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+                    <h4 className="text-sm tracking-[0.3em] mb-4 text-amber-700">צבעים זמינים</h4>
+                    <div className="space-y-2">
+                      {product.colors.map((color, index) => (
+                        <div key={index} className="text-lg text-stone-700 py-1">{color}</div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {product.sizes && product.sizes.length > 0 && (
+                  <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+                    <h4 className="text-sm tracking-[0.3em] mb-4 text-amber-700">מידות זמינות</h4>
+                    <div className="grid grid-cols-6 gap-3">
+                      {product.sizes.map((size, index) => (
+                        <button 
+                          key={index} 
+                          className="border-2 border-stone-300 py-3 text-center hover:border-amber-500 hover:bg-gradient-to-r hover:from-stone-800 hover:to-amber-800 hover:text-white transition-all duration-300 rounded-lg shadow-lg transform hover:scale-105"
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="flex gap-4 pt-8">
+                  <a 
+                    href={`https://wa.me/${storeInfo.whatsapp.replace('+', '')}?text=היי, אני מעוניין ב${product.name}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white py-4 text-center text-sm tracking-wide hover:from-green-700 hover:to-green-800 transition-all duration-500 rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105"
+                  >
+                    הזמן בווטסאפ
+                  </a>
+                  <a 
+                    href={`tel:${storeInfo.phone}`}
+                    className="flex-1 bg-gradient-to-r from-stone-800 to-amber-800 text-white py-4 text-center text-sm tracking-wide hover:from-amber-800 hover:to-stone-800 transition-all duration-500 rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105"
+                  >
+                    התקשר
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -670,6 +802,8 @@ const App = () => {
     heroSubtitle: "קולקציה אקסקלוסיבית של נעלי ספורט ואופנה מהמותגים המובילים בעולם.", 
     bannerImage: "https://i.ibb.co/gMXLwMg6/b447649c-d70a-400e-bf50-f22a1c291eca-1.gif" 
   });
+  
+  const [showStorageDebugger, setShowStorageDebugger] = useState(false);
 
   // Load products on component mount
   useEffect(() => {
@@ -679,18 +813,26 @@ const App = () => {
   // Product CRUD operations
   const handleSaveProduct = async (productData) => {
     try {
+      console.log('Saving product:', productData);
+      
       if (productData.id) {
         // Update existing product
         const updatedProduct = await updateProduct(productData.id, productData);
         setProducts(prev => prev.map(p => p.id === productData.id ? updatedProduct : p));
+        console.log('Product updated successfully:', updatedProduct);
       } else {
         // Create new product
         const newProduct = await createProduct(productData);
         setProducts(prev => [...prev, newProduct]);
+        console.log('Product created successfully:', newProduct);
       }
       setEditingProduct(null);
+      
+      // Show success message
+      alert('המוצר נשמר בהצלחה!');
     } catch (error) {
       console.error('Error saving product:', error);
+      alert('שגיאה בשמירת המוצר: ' + error.message);
     }
   };
 
@@ -876,6 +1018,9 @@ const App = () => {
               <span className="text-sm font-medium">מצב ניהול פעיל</span>
             </div>
             <div className="flex items-center gap-4">
+              <button onClick={() => setShowStorageDebugger(true)} className="bg-yellow-500/20 hover:bg-yellow-500/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
+                🔧 אבחון Storage
+              </button>
               <button onClick={() => setShowStorageTest(!showStorageTest)} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
                 בדיקת העלאות
               </button>
@@ -1323,132 +1468,8 @@ const App = () => {
 
       {editingProduct && <ProductEditModal product={editingProduct} onSave={saveProduct} onCancel={() => setEditingProduct(null)} categories={categories} />}
       {editingStore && <StoreEditModal storeInfo={storeInfo} onSave={saveStoreInfo} onCancel={() => setEditingStore(false)} />}
+      {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} storeInfo={storeInfo} />}
       
-      {selectedProduct && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-2xl transition-all duration-500" onClick={() => setSelectedProduct(null)}>
-          <div className="h-full flex items-center justify-center p-6">
-            <div className="max-w-6xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl shadow-2xl transition-all duration-500 transform" onClick={e => e.stopPropagation()}>
-              <div className="p-8">
-                <div className="flex justify-between items-center mb-12">
-                  <div>
-                    <div className="text-xs tracking-[0.3em] text-amber-600 mb-2">{selectedProduct.brand}</div>
-                    <h2 className="text-4xl font-black bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">{selectedProduct.name}</h2>
-                  </div>
-                  <button 
-                    onClick={() => setSelectedProduct(null)}
-                    className="text-stone-400 hover:text-stone-700 transition-colors duration-300 p-2 hover:bg-stone-100 rounded-full"
-                  >
-                    <X className="w-8 h-8" />
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                  <div>
-                    <div className="relative mb-6 bg-stone-50 rounded-2xl overflow-hidden shadow-xl">
-                      <img 
-                        src={selectedProduct.images && selectedProduct.images[currentImageIndex]} 
-                        alt={selectedProduct.name}
-                        className="w-full h-96 lg:h-[600px] object-cover"
-                        crossOrigin="anonymous"
-                        referrerPolicy="no-referrer"
-                      />
-                      
-                      {selectedProduct.images && selectedProduct.images.length > 1 && (
-                        <div className="absolute inset-y-0 left-4 right-4 flex items-center justify-between pointer-events-none">
-                          <button 
-                            className="pointer-events-auto bg-white/90 hover:bg-white p-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
-                            onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : selectedProduct.images.length - 1)}
-                          >
-                            <ArrowRight className="w-5 h-5" />
-                          </button>
-                          <button 
-                            className="pointer-events-auto bg-white/90 hover:bg-white p-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
-                            onClick={() => setCurrentImageIndex(prev => prev < selectedProduct.images.length - 1 ? prev + 1 : 0)}
-                          >
-                            <ArrowLeft className="w-5 h-5" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {selectedProduct.images && selectedProduct.images.length > 1 && (
-                      <div className="grid grid-cols-3 gap-4">
-                        {selectedProduct.images.map((img, index) => (
-                          <div key={index} className="relative">
-                            <img 
-                              src={img} 
-                              alt={`${selectedProduct.name} ${index + 1}`}
-                              className={`w-full h-24 object-cover cursor-pointer transition-all duration-300 rounded-lg shadow-lg ${
-                                currentImageIndex === index ? 'ring-2 ring-amber-400' : ''
-                              }`}
-                              onClick={() => setCurrentImageIndex(index)}
-                              crossOrigin="anonymous"
-                              referrerPolicy="no-referrer"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-8">
-                    <div>
-                      <p className="text-lg text-stone-600 leading-relaxed mb-8">
-                        {selectedProduct.description}
-                      </p>
-                    </div>
-                    
-                    {selectedProduct.colors && selectedProduct.colors.length > 0 && (
-                      <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 shadow-lg">
-                        <h4 className="text-sm tracking-[0.3em] mb-4 text-amber-700">צבעים זמינים</h4>
-                        <div className="space-y-2">
-                          {selectedProduct.colors.map((color, index) => (
-                            <div key={index} className="text-lg text-stone-700 py-1">{color}</div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
-                      <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 shadow-lg">
-                        <h4 className="text-sm tracking-[0.3em] mb-4 text-amber-700">מידות זמינות</h4>
-                        <div className="grid grid-cols-6 gap-3">
-                          {selectedProduct.sizes.map((size, index) => (
-                            <button 
-                              key={index} 
-                              className="border-2 border-stone-300 py-3 text-center hover:border-amber-500 hover:bg-gradient-to-r hover:from-stone-800 hover:to-amber-800 hover:text-white transition-all duration-300 rounded-lg shadow-lg transform hover:scale-105"
-                            >
-                              {size}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className="flex gap-4 pt-8">
-                      <a 
-                        href={`https://wa.me/${storeInfo.whatsapp.replace('+', '')}?text=היי, אני מעוניין ב${selectedProduct.name}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white py-4 text-center text-sm tracking-wide hover:from-green-700 hover:to-green-800 transition-all duration-500 rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105"
-                      >
-                        הזמן בווטסאפ
-                      </a>
-                      <a 
-                        href={`tel:${storeInfo.phone}`}
-                        className="flex-1 bg-gradient-to-r from-stone-800 to-amber-800 text-white py-4 text-center text-sm tracking-wide hover:from-amber-800 hover:to-stone-800 transition-all duration-500 rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105"
-                      >
-                        התקשר
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Storage Test Modal */}
       {showStorageTest && isAdminMode && (
         <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
@@ -1467,6 +1488,10 @@ const App = () => {
             <StorageTest />
           </div>
         </div>
+      )}
+      
+      {showStorageDebugger && (
+        <StorageDebugger onClose={() => setShowStorageDebugger(false)} />
       )}
     </div>
   );

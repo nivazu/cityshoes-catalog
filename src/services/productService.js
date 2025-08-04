@@ -67,6 +67,8 @@ export const getProduct = async (id) => {
 // Create a new product
 export const createProduct = async (productData) => {
   try {
+    console.log('Creating product with data:', productData);
+    
     const { data, error } = await supabase
       .from(TABLES.PRODUCTS)
       .insert([{
@@ -85,9 +87,16 @@ export const createProduct = async (productData) => {
 
     if (error) {
       console.error('Error creating product:', error)
+      console.error('Error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      })
       throw error
     }
 
+    console.log('Product created successfully:', data);
     return data
   } catch (error) {
     console.error('Error in createProduct:', error)
