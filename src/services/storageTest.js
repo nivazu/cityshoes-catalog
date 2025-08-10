@@ -55,7 +55,7 @@ export class StorageTestService {
     console.log('Testing bucket permissions...');
     try {
       // Try to list files (tests read permission)
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('product-images')
         .list('', { limit: 1 });
         
