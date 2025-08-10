@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube, Plus } from 'lucide-react';
+import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from './services/productService';
 import ImageUpload from './components/ImageUpload';
 import StorageTest from './components/StorageTest';
@@ -410,7 +410,6 @@ const App = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [productImageIndexes, setProductImageIndexes] = useState({});
   const [scrollY, setScrollY] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -920,7 +919,6 @@ const App = () => {
   const handleProductSelect = (product) => {
     if (!isAdminMode) {
       setSelectedProduct(product);
-      setCurrentImageIndex(0);
     }
   };
 
