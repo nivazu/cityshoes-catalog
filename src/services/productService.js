@@ -69,19 +69,31 @@ export const createProduct = async (productData) => {
   try {
     console.log('Creating product with data:', productData);
     
+    // For new products, ensure we're using the brand_id field correctly
+    const productToInsert = {
+      name: productData.name,
+      brand: productData.brand,
+      brand_id: productData.brand_id || null, // Add support for brand_id
+      category: productData.category,
+      category_id: productData.category_id || productData.category, // Support both fields
+      description: productData.description,
+      colors: productData.colors || [],
+      sizes: productData.sizes || [],
+      images: productData.images || [],
+      is_new: productData.isNew || false,
+      featured: productData.featured || false
+    };
+    
+    // Remove undefined fields
+    Object.keys(productToInsert).forEach(key => {
+      if (productToInsert[key] === undefined) {
+        delete productToInsert[key];
+      }
+    });
+    
     const { data, error } = await supabase
       .from(TABLES.PRODUCTS)
-      .insert([{
-        name: productData.name,
-        brand: productData.brand,
-        category: productData.category,
-        description: productData.description,
-        colors: productData.colors || [],
-        sizes: productData.sizes || [],
-        images: productData.images || [],
-        is_new: productData.isNew || false,
-        featured: productData.featured || false
-      }])
+      .insert([productToInsert])
       .select()
       .single()
 
@@ -97,6 +109,10 @@ export const createProduct = async (productData) => {
     }
 
     console.log('Product created successfully:', data);
+    
+    // If there were temporary images, we might want to move them to the product folder
+    // This would be handled by a separate function if needed
+    
     return data
   } catch (error) {
     console.error('Error in createProduct:', error)

@@ -226,6 +226,73 @@ export class ImageService {
   }
 
   /**
+   * Move temporary images to product folder after product creation
+   */
+  static async moveTemporaryImages(imageUrls, newProductId) {
+    if (!imageUrls || imageUrls.length === 0) return imageUrls;
+    
+    const movedUrls = [];
+    
+    for (const url of imageUrls) {
+      try {
+        // Check if this is a temporary image from our storage
+        const imageInfo = this.getImageInfoFromUrl(url);
+        
+        if (imageInfo && imageInfo.isSupabaseImage && imageInfo.path.includes('temp/')) {
+          // Download the image data
+          const { data: fileData, error: downloadError } = await supabase.storage
+            .from(this.BUCKET_NAME)
+            .download(imageInfo.path);
+            
+          if (downloadError) {
+            console.error('Error downloading temp image:', downloadError);
+            movedUrls.push(url); // Keep the original URL if download fails
+            continue;
+          }
+          
+          // Create new path in product folder
+          const fileName = imageInfo.filename;
+          const newPath = `products/${newProductId}/${fileName}`;
+          
+          // Upload to new location
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from(this.BUCKET_NAME)
+            .upload(newPath, fileData, {
+              cacheControl: '3600',
+              upsert: true
+            });
+            
+          if (uploadError) {
+            console.error('Error uploading to product folder:', uploadError);
+            movedUrls.push(url); // Keep the original URL if upload fails
+            continue;
+          }
+          
+          // Get new public URL
+          const { data: { publicUrl } } = supabase.storage
+            .from(this.BUCKET_NAME)
+            .getPublicUrl(newPath);
+            
+          // Delete the temporary file
+          await this.deleteImage(imageInfo.path).catch(err => 
+            console.warn('Failed to delete temp image:', err)
+          );
+          
+          movedUrls.push(publicUrl);
+        } else {
+          // Not a temporary image or external URL, keep as is
+          movedUrls.push(url);
+        }
+      } catch (error) {
+        console.error('Error moving image:', error);
+        movedUrls.push(url); // Keep the original URL if any error occurs
+      }
+    }
+    
+    return movedUrls;
+  }
+
+  /**
    * Test storage connection
    */
   static async testConnection() {

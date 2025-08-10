@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube, Plus } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from './services/productService';
+import { getPublicImageUrl } from './lib/supabase';
 import ImageUpload from './components/ImageUpload';
 import StorageTest from './components/StorageTest';
 import StorageDebugger from './components/StorageDebugger';
@@ -302,11 +303,14 @@ const ProductModal = ({ product, onClose, storeInfo }) => {
               <div>
                 <div className="relative mb-6 bg-stone-50 rounded-2xl overflow-hidden shadow-xl">
                   <img 
-                    src={product.images && product.images[currentImageIndex]} 
+                    src={getPublicImageUrl(product.images && product.images[currentImageIndex])} 
                     alt={product.name}
                     className="w-full h-96 lg:h-[600px] object-cover"
                     crossOrigin="anonymous"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik02MCA2MEgxNDBWMTQwSDYwVjYwWiIgZmlsbD0iI0Q1RDlERCIvPgo8L3N2Zz4K';
+                    }}
                   />
                   
                   {product.images && product.images.length > 1 && (
@@ -332,7 +336,7 @@ const ProductModal = ({ product, onClose, storeInfo }) => {
                     {product.images.map((img, index) => (
                       <div key={index} className="relative">
                         <img 
-                          src={img} 
+                          src={getPublicImageUrl(img)} 
                           alt={`${product.name} ${index + 1}`}
                           className={`w-full h-24 object-cover cursor-pointer transition-all duration-300 rounded-lg shadow-lg ${
                             currentImageIndex === index ? 'ring-2 ring-amber-400' : ''
@@ -340,6 +344,9 @@ const ProductModal = ({ product, onClose, storeInfo }) => {
                           onClick={() => setCurrentImageIndex(index)}
                           crossOrigin="anonymous"
                           referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik02MCA2MEgxNDBWMTQwSDYwVjYwWiIgZmlsbD0iI0Q1RDlERCIvPgo8L3N2Zz4K';
+                          }}
                         />
                       </div>
                     ))}
@@ -1252,12 +1259,15 @@ const App = () => {
                       
                       {product.images && product.images.length > 0 && (
                         <img 
-                          src={product.images[currentProductImageIndex]}
+                          src={getPublicImageUrl(product.images[currentProductImageIndex])}
                           alt={product.name}
                           className={`w-full object-cover transition-all duration-700 ${viewMode === 'list' ? 'h-full' : 'h-80 lg:h-96'}`}
                           loading="lazy"
                           crossOrigin="anonymous"
                           referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik02MCA2MEgxNDBWMTQwSDYwVjYwWiIgZmlsbD0iI0Q1RDlERCIvPgo8L3N2Zz4K';
+                          }}
                         />
                       )}
                       
