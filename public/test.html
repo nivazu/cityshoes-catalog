@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>בדיקת מערכת</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>בדיקת מערכת נעלי העיר</h1>
+    
+    <div class="test">
+        <h2>סטטוס חיבור</h2>
+        <div id="connection-status">בודק...</div>
+    </div>
+    
+    <div class="test">
+        <h2>בדיקת מוצרים</h2>
+        <button onclick="testProducts()">בדוק מוצרים</button>
+        <div id="products-status"></div>
+    </div>
+    
+    <div class="test">
+        <h2>בדיקת מותגים</h2>
+        <button onclick="testBrands()">בדוק מותגים</button>
+        <div id="brands-status"></div>
+    </div>
+    
+    <div class="test">
+        <h2>בדיקת אחסון תמונות</h2>
+        <button onclick="testStorage()">בדוק אחסון</button>
+        <div id="storage-status"></div>
+    </div>
+    
+    <div class="test">
+        <h2>בדיקת הוספת מוצר</h2>
+        <button onclick="testCreateProduct()">נסה להוסיף מוצר</button>
+        <div id="create-status"></div>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://xdfsuynadmnvkyhsxbhi.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkZnN1eW5hZG1udmt5aHN4YmhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4Mjk4MzUsImV4cCI6MjA3MDQwNTgzNX0.-SP9CXpjuljrrrq5W8Vd9tF6n2nfeUq9zV-WlmTTKO0';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Check connection
+        document.getElementById('connection-status').innerHTML = 
+            `<span class="success">✓ מחובר לסופאבייס</span><br>
+             <span class="info">URL: ${SUPABASE_URL}</span>`;
+        
+        async function testProducts() {
+            const status = document.getElementById('products-status');
+            status.innerHTML = 'בודק...';
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select(`
+                        *,
+                        brand:brands(id, name),
+                        category:categories(id, name, name_en)
+                    `)
+                    .limit(5);
+                
+                if (error) throw error;
+                
+                status.innerHTML = `
+                    <span class="success">✓ נמצאו ${data.length} מוצרים</span><br>
+                    ${data.map(p => `• ${p.name} - ${p.brand?.name || 'ללא מותג'}`).join('<br>')}
+                `;
+            } catch (error) {
+                status.innerHTML = `<span class="error">✗ שגיאה: ${error.message}</span>`;
+            }
+        }
+        
+        async function testBrands() {
+            const status = document.getElementById('brands-status');
+            status.innerHTML = 'בודק...';
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('brands')
+                    .select('*');
+                
+                if (error) throw error;
+                
+                status.innerHTML = `
+                    <span class="success">✓ נמצאו ${data.length} מותגים</span><br>
+                    ${data.map(b => `• ${b.name}`).join('<br>')}
+                `;
+            } catch (error) {
+                status.innerHTML = `<span class="error">✗ שגיאה: ${error.message}</span>`;
+            }
+        }
+        
+        async function testStorage() {
+            const status = document.getElementById('storage-status');
+            status.innerHTML = 'בודק...';
+            
+            try {
+                const { data: buckets, error } = await supabaseClient.storage.listBuckets();
+                
+                if (error) throw error;
+                
+                const hasBucket = buckets.some(b => b.name === 'product-images');
+                
+                if (hasBucket) {
+                    // Test upload
+                    const testFile = new Blob(['test'], { type: 'text/plain' });
+                    const fileName = `test-${Date.now()}.txt`;
+                    
+                    const { error: uploadError } = await supabaseClient.storage
+                        .from('product-images')
+                        .upload(fileName, testFile);
+                    
+                    if (uploadError) {
+                        status.innerHTML = `
+                            <span class="error">✗ ה-bucket קיים אבל אין הרשאות העלאה</span><br>
+                            <span class="error">שגיאה: ${uploadError.message}</span>
+                        `;
+                    } else {
+                        await supabaseClient.storage.from('product-images').remove([fileName]);
+                        status.innerHTML = '<span class="success">✓ אחסון תמונות עובד!</span>';
+                    }
+                } else {
+                    status.innerHTML = `
+                        <span class="error">✗ חסר bucket לתמונות</span><br>
+                        <span class="info">יש להריץ את COMPLETE_STORAGE_SETUP.sql בסופאבייס</span>
+                    `;
+                }
+            } catch (error) {
+                status.innerHTML = `<span class="error">✗ שגיאה: ${error.message}</span>`;
+            }
+        }
+        
+        async function testCreateProduct() {
+            const status = document.getElementById('create-status');
+            status.innerHTML = 'בודק...';
+            
+            try {
+                // Get first brand and category
+                const { data: brands } = await supabaseClient.from('brands').select('id').limit(1);
+                const { data: categories } = await supabaseClient.from('categories').select('id').limit(1);
+                
+                if (!brands?.length || !categories?.length) {
+                    status.innerHTML = '<span class="error">✗ חסרים מותגים או קטגוריות</span>';
+                    return;
+                }
+                
+                const testProduct = {
+                    name: 'מוצר בדיקה ' + new Date().toLocaleTimeString('he-IL'),
+                    brand_id: brands[0].id,
+                    category_id: categories[0].id,
+                    description: 'מוצר בדיקה - ניתן למחוק',
+                    colors: ['שחור', 'לבן'],
+                    sizes: ['40', '41', '42'],
+                    images: ['https://via.placeholder.com/300'],
+                    is_new: true,
+                    featured: false
+                };
+                
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .insert([testProduct])
+                    .select('*')
+                    .single();
+                
+                if (error) throw error;
+                
+                // Delete the test product
+                await supabaseClient.from('products').delete().eq('id', data.id);
+                
+                status.innerHTML = '<span class="success">✓ ניתן להוסיף ולמחוק מוצרים!</span>';
+            } catch (error) {
+                status.innerHTML = `
+                    <span class="error">✗ לא ניתן להוסיף מוצרים</span><br>
+                    <span class="error">שגיאה: ${error.message}</span><br>
+                    <span class="info">יש להריץ את FIX_RLS_POLICIES.sql בסופאבייס</span>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

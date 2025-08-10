@@ -54,5 +54,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // Database table names
 export const TABLES = {
   PRODUCTS: 'products',
-  CATEGORIES: 'categories'
+  CATEGORIES: 'categories',
+  BRANDS: 'brands'
 }

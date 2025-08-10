@@ -5,16 +5,20 @@ export const getProducts = async (filters = {}) => {
   try {
     let query = supabase
       .from(TABLES.PRODUCTS)
-      .select('*')
+      .select(`
+        *,
+        brand:brands(id, name),
+        category:categories(id, name, name_en)
+      `)
       .order('created_at', { ascending: false })
 
     // Apply filters
     if (filters.category && filters.category !== 'all') {
-      query = query.eq('category', filters.category)
+      query = query.eq('category_id', filters.category)
     }
     
     if (filters.brand) {
-      query = query.ilike('brand', `%${filters.brand}%`)
+      query = query.eq('brand_id', filters.brand)
     }
     
     if (filters.search) {
@@ -48,7 +52,11 @@ export const getProduct = async (id) => {
   try {
     const { data, error } = await supabase
       .from(TABLES.PRODUCTS)
-      .select('*')
+      .select(`
+        *,
+        brand:brands(id, name),
+        category:categories(id, name, name_en)
+      `)
       .eq('id', id)
       .single()
 
@@ -73,8 +81,8 @@ export const createProduct = async (productData) => {
       .from(TABLES.PRODUCTS)
       .insert([{
         name: productData.name,
-        brand: productData.brand,
-        category: productData.category,
+        brand_id: productData.brandId || productData.brand_id,
+        category_id: productData.categoryId || productData.category_id || productData.category,
         description: productData.description,
         colors: productData.colors || [],
         sizes: productData.sizes || [],
@@ -82,7 +90,11 @@ export const createProduct = async (productData) => {
         is_new: productData.isNew || false,
         featured: productData.featured || false
       }])
-      .select()
+      .select(`
+        *,
+        brand:brands(id, name),
+        category:categories(id, name, name_en)
+      `)
       .single()
 
     if (error) {
@@ -111,8 +123,8 @@ export const updateProduct = async (id, productData) => {
       .from(TABLES.PRODUCTS)
       .update({
         name: productData.name,
-        brand: productData.brand,
-        category: productData.category,
+        brand_id: productData.brandId || productData.brand_id,
+        category_id: productData.categoryId || productData.category_id || productData.category,
         description: productData.description,
         colors: productData.colors || [],
         sizes: productData.sizes || [],
@@ -122,7 +134,11 @@ export const updateProduct = async (id, productData) => {
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
-      .select()
+      .select(`
+        *,
+        brand:brands(id, name),
+        category:categories(id, name, name_en)
+      `)
       .single()
 
     if (error) {
@@ -210,5 +226,25 @@ export const getCategories = async () => {
       { id: 'training', name: 'אימונים', name_en: 'training' },
       { id: 'casual', name: 'קז\'ואל', name_en: 'casual' }
     ]
+  }
+}
+
+// Get brands
+export const getBrands = async () => {
+  try {
+    const { data, error } = await supabase
+      .from(TABLES.BRANDS)
+      .select('*')
+      .order('name')
+
+    if (error) {
+      console.error('Error fetching brands:', error)
+      throw error
+    }
+
+    return data || []
+  } catch (error) {
+    console.error('Error in getBrands:', error)
+    return []
   }
 }

@@ -1,20 +1,34 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
-import { getProducts, createProduct, updateProduct, deleteProduct } from './services/productService';
-import ImageUpload from './components/ImageUpload';
-import StorageTest from './components/StorageTest';
-import StorageDebugger from './components/StorageDebugger';
+import React, { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, X, Settings, Save, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
+import { getProducts, createProduct, updateProduct, deleteProduct, getBrands } from './services/productService';
+import ProductCard from './components/ProductCard';
 
-const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
+// Lazy load heavy components
+const ImageUpload = lazy(() => import('./components/ImageUpload'));
+const StorageTest = lazy(() => import('./components/StorageTest'));
+const StorageDebugger = lazy(() => import('./components/StorageDebugger'));
+
+// Helper functions to safely get brand and category names
+const getBrandName = (product) => {
+  if (typeof product.brand === 'string') return product.brand;
+  return product.brand?.name || '';
+};
+
+const getCategoryId = (product) => {
+  if (typeof product.category === 'string') return product.category;
+  return product.category_id || product.category?.id || 'lifestyle';
+};
+
+const ProductEditModal = ({ product, onSave, onCancel, categories, brands }) => {
   const [formData, setFormData] = useState({
     name: product.name || '',
-    brand: product.brand || '',
-    category: product.category || 'lifestyle',
+    brand_id: product.brand_id || product.brand?.id || '',
+    category_id: getCategoryId(product),
     description: product.description || '',
     colors: product.colors?.join(', ') || '',
     sizes: product.sizes?.join(', ') || '',
     images: product.images || [],
-    isNew: product.isNew || false,
+    isNew: product.is_new || false,
     featured: product.featured || false
   });
 
@@ -55,14 +69,32 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-2">מותג</label>
-              <input
-                type="text"
-                value={formData.brand}
-                onChange={(e) => setFormData(p => ({...p, brand: e.target.value}))}
+              <select
+                value={formData.brand_id}
+                onChange={(e) => setFormData(p => ({...p, brand_id: e.target.value}))}
                 className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
                 required
-              />
+              >
+                <option value="">בחר מותג</option>
+                {brands?.map(brand => (
+                  <option key={brand.id} value={brand.id}>{brand.name}</option>
+                ))}
+              </select>
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-2">קטגוריה</label>
+            <select
+              value={formData.category_id}
+              onChange={(e) => setFormData(p => ({...p, category_id: e.target.value}))}
+              className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+              required
+            >
+              <option value="">בחר קטגוריה</option>
+              {categories?.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-2">תיאור</label>
@@ -74,11 +106,35 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
               required
             />
           </div>
-          <ImageUpload
-            images={formData.images}
-            onImagesChange={(images) => setFormData(p => ({...p, images}))}
-            productId={product.id}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-2">צבעים (מופרדים בפסיק)</label>
+              <input
+                type="text"
+                value={formData.colors}
+                onChange={(e) => setFormData(p => ({...p, colors: e.target.value}))}
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+                placeholder="לדוגמה: שחור, לבן, אדום"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-2">מידות (מופרדות בפסיק)</label>
+              <input
+                type="text"
+                value={formData.sizes}
+                onChange={(e) => setFormData(p => ({...p, sizes: e.target.value}))}
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+                placeholder="לדוגמה: 40, 41, 42, 43"
+              />
+            </div>
+          </div>
+          <Suspense fallback={<div className="text-center py-4">טוען...</div>}>
+            <ImageUpload
+              images={formData.images}
+              onImagesChange={(images) => setFormData(p => ({...p, images}))}
+              productId={product.id}
+            />
+          </Suspense>
           <div className="flex gap-4">
             <label className="flex items-center gap-2">
               <input
@@ -287,7 +343,7 @@ const ProductModal = ({ product, onClose, storeInfo }) => {
           <div className="p-8">
             <div className="flex justify-between items-center mb-12">
               <div>
-                <div className="text-xs tracking-[0.3em] text-amber-600 mb-2">{product.brand}</div>
+                <div className="text-xs tracking-[0.3em] text-amber-600 mb-2">{getBrandName(product)}</div>
                 <h2 className="text-4xl font-black bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">{product.name}</h2>
               </div>
               <button 
@@ -422,7 +478,8 @@ const App = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingStore, setEditingStore] = useState(false);
 
-  const [products, setProducts] = useState([]); 
+  const [products, setProducts] = useState([]);
+  const [brands, setBrands] = useState([]); 
 
   // Sample fallback data
   const sampleProducts = useMemo(() => [
@@ -787,6 +844,16 @@ const App = () => {
       setIsLoading(false);
     }
   }, [sampleProducts]);
+
+  // Load brands from Supabase
+  const loadBrands = useCallback(async () => {
+    try {
+      const data = await getBrands();
+      setBrands(data);
+    } catch (error) {
+      console.error('Error loading brands:', error);
+    }
+  }, []);
   
   const [storeInfo, setStoreInfo] = useState({ 
     name: "נעלי העיר", 
@@ -807,7 +874,8 @@ const App = () => {
   // Load products on component mount
   useEffect(() => {
     loadProducts();
-  }, [loadProducts]);
+    loadBrands();
+  }, [loadProducts, loadBrands]);
 
   // Product CRUD operations
   const handleSaveProduct = async (productData) => {
@@ -860,7 +928,7 @@ const App = () => {
     { id: 'lifestyle', name: 'לייפסטייל' }
   ];
   
-  const filteredProducts = selectedCategory === 'all' ? products : products.filter(p => p.category === selectedCategory);
+  const filteredProducts = selectedCategory === 'all' ? products : products.filter(p => p.category_id === selectedCategory || p.category?.id === selectedCategory);
   
   const handleCategoryChange = (categoryId) => {
     setIsTransitioning(true);
@@ -870,7 +938,7 @@ const App = () => {
     }, 500);
   };
 
-  const handleProductImageChange = (productId, direction) => {
+  const handleProductImageChange = useCallback((productId, direction) => {
     const product = products.find(p => p.id === productId);
     if (!product || !product.images || product.images.length <= 1) return;
     
@@ -886,14 +954,36 @@ const App = () => {
       
       return { ...prev, [productId]: newIndex };
     });
-  };
+  }, [products]);
 
-  const handleProductImageDotClick = (productId, index) => {
-    setProductImageIndexes(prev => ({
-        ...prev,
-        [productId]: index
-    }));
-  };
+
+
+  // Toggle product featured status
+  const toggleProductFeatured = useCallback(async (product) => {
+    try {
+      const updatedProduct = await updateProduct(product.id, {
+        ...product,
+        featured: !product.featured
+      });
+      setProducts(prev => prev.map(p => p.id === product.id ? updatedProduct : p));
+    } catch (error) {
+      console.error('Error toggling featured:', error);
+    }
+  }, []);
+
+  // Toggle product new status
+  const toggleProductNew = useCallback(async (product) => {
+    try {
+      const updatedProduct = await updateProduct(product.id, {
+        ...product,
+        is_new: !product.is_new,
+        isNew: !product.is_new
+      });
+      setProducts(prev => prev.map(p => p.id === product.id ? updatedProduct : p));
+    } catch (error) {
+      console.error('Error toggling new:', error);
+    }
+  }, []);
 
   const handleAdminLogin = () => {
     if (adminPassword === 'admin123') {
@@ -1203,141 +1293,21 @@ const App = () => {
 
           <div className="max-w-7xl mx-auto px-6 relative">
             <div className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12' : 'space-y-8'} transition-all duration-700 ${isTransitioning ? 'opacity-0 transform translate-y-8' : 'opacity-100 transform translate-y-0'}`}>
-              {filteredProducts.map((product, index) => {
-                const currentProductImageIndex = productImageIndexes[product.id] || 0;
-                return (
-                  <div
-                    key={product.id}
-                    className={`group cursor-pointer animate-fadeInUp relative ${viewMode === 'list' ? 'flex flex-col md:flex-row gap-8 items-center bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg' : ''}`}
-                    onClick={() => handleProductSelect(product)}
-                    style={{animationDelay: `${index * 150}ms`}}
-                  >
-                    {isAdminMode && (
-                      <div className="absolute top-4 right-4 z-20 flex gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingProduct(product);
-                          }}
-                          className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteProductLocal(product.id);
-                          }}
-                          className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-
-                    <div className={`relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-stone-200/50 transition-all duration-700 transform group-hover:scale-105 ${viewMode === 'list' ? 'w-full md:w-48 h-48 flex-shrink-0 mb-4 md:mb-0' : 'mb-6'}`}>
-                      {product.isNew && (
-                        <div className="absolute top-4 left-4 z-10 text-xs tracking-[0.3em] bg-gradient-to-r from-amber-600 to-stone-800 text-white px-3 py-1 rounded-full shadow-lg">
-                          חדש
-                        </div>
-                      )}
-                      
-                      {!isAdminMode && (
-                        <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-0 group-hover:scale-100">
-                          <Heart className="w-5 h-5 text-white hover:text-amber-400 cursor-pointer transition-colors duration-300 drop-shadow-lg" />
-                        </div>
-                      )}
-                      
-                      {product.images && product.images.length > 0 && (
-                        <img 
-                          src={product.images[currentProductImageIndex]}
-                          alt={product.name}
-                          className={`w-full object-cover transition-all duration-700 ${viewMode === 'list' ? 'h-full' : 'h-80 lg:h-96'}`}
-                          loading="lazy"
-                          crossOrigin="anonymous"
-                          referrerPolicy="no-referrer"
-                        />
-                      )}
-                      
-                      {product.images && product.images.length > 1 && (
-                        <div className="absolute inset-y-0 left-2 right-2 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300">
-                          <button 
-                            className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleProductImageChange(product.id, 'prev');
-                            }}
-                          >
-                            <ArrowRight className="w-4 h-4" />
-                          </button>
-                          <button 
-                            className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleProductImageChange(product.id, 'next');
-                            }}
-                          >
-                            <ArrowLeft className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
-                      
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                      
-                      {!isAdminMode && (
-                        <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-8 group-hover:translate-y-0">
-                          <button className="bg-white/90 backdrop-blur-sm text-stone-800 px-6 py-2 text-sm tracking-wide hover:bg-white transition-all duration-300 rounded-full shadow-xl">
-                            צפה בפרטים
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className={`space-y-3 ${viewMode === 'list' ? 'flex-1' : 'bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg'}`}>
-                      <div className="flex items-center justify-between">
-                        <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
-                      </div>
-                      
-                      <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
-                        {product.name}
-                      </h3>
-                      
-                      <div className="text-sm text-stone-600 leading-relaxed">
-                        {product.description}
-                      </div>
-                      
-                      <div className="flex items-center gap-3 pt-2">
-                        {product.colors && product.colors.slice(0, 3).map((color, index) => (
-                          <span key={index} className="text-xs tracking-wide text-stone-500">
-                            {color}
-                            {index < Math.min(product.colors.length - 1, 2) && <span className="mx-2 text-amber-400">•</span>}
-                          </span>
-                        ))}
-                        {product.colors && product.colors.length > 3 && (
-                          <span className="text-xs text-amber-600 font-medium">+{product.colors.length - 3}</span>
-                        )}
-                      </div>
-                      
-                      {product.images && product.images.length > 1 && (
-                        <div className="flex justify-center gap-2 pt-2">
-                          {product.images.map((_, imgIndex) => (
-                            <button
-                              key={imgIndex}
-                              onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleProductImageDotClick(product.id, imgIndex);
-                              }}
-                              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                currentProductImageIndex === imgIndex ? 'bg-amber-600 scale-125' : 'bg-stone-300'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+              {filteredProducts.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  viewMode={viewMode}
+                  isAdminMode={isAdminMode}
+                  productImageIndices={productImageIndexes}
+                  onProductClick={handleProductSelect}
+                  onEditClick={(product) => setEditingProduct(product)}
+                  onDeleteClick={(product) => deleteProductLocal(product.id)}
+                  onToggleFeatured={toggleProductFeatured}
+                  onToggleNew={toggleProductNew}
+                  onImageChange={handleProductImageChange}
+                />
+              ))}
             </div>
           </div>
         </section>
@@ -1464,7 +1434,7 @@ const App = () => {
         </div>
       )}
 
-      {editingProduct && <ProductEditModal product={editingProduct} onSave={saveProduct} onCancel={() => setEditingProduct(null)} categories={categories} />}
+      {editingProduct && <ProductEditModal product={editingProduct} onSave={saveProduct} onCancel={() => setEditingProduct(null)} categories={categories} brands={brands} />}
       {editingStore && <StoreEditModal storeInfo={storeInfo} onSave={saveStoreInfo} onCancel={() => setEditingStore(false)} />}
       {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} storeInfo={storeInfo} />}
       
@@ -1483,13 +1453,17 @@ const App = () => {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <StorageTest />
+            <Suspense fallback={<div className="text-center py-4">טוען...</div>}>
+              <StorageTest />
+            </Suspense>
           </div>
         </div>
       )}
       
       {showStorageDebugger && (
-        <StorageDebugger onClose={() => setShowStorageDebugger(false)} />
+        <Suspense fallback={<div className="text-center py-4">טוען...</div>}>
+          <StorageDebugger onClose={() => setShowStorageDebugger(false)} />
+        </Suspense>
       )}
     </div>
   );

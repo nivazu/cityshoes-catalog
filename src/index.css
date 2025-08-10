@@ -28,6 +28,61 @@ code {
   }
 }
 
+/* Performance Optimizations for INP */
+/* Use GPU acceleration for transforms */
+.transform {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Optimize hover transitions */
+.transition-optimized {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  will-change: transform, box-shadow;
+}
+
+/* Reduce paint areas */
+.contain-paint {
+  contain: paint;
+}
+
+/* Optimize backdrop filters */
+.backdrop-optimized {
+  will-change: backdrop-filter;
+  backface-visibility: hidden;
+}
+
+/* Reduce animation complexity on interaction */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Optimize image rendering */
+img {
+  content-visibility: auto;
+  contain-intrinsic-size: 300px;
+}
+
+/* Optimize scroll performance */
+.scroll-optimized {
+  will-change: scroll-position;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Reduce reflows during hover */
+.hover-optimized {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.hover-optimized:hover {
+  transform: translateZ(0) scale(1.05);
+}
+
 .animate-fadeInUp {
   animation: fadeInUp 0.8s ease-out forwards;
   animation-fill-mode: both;
