@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
-import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
+import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, X, Settings, Save, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct, getBrands } from './services/productService';
 import ProductCard from './components/ProductCard';
-import { useDebouncedCallback } from './hooks/useDebounce';
 
 // Lazy load heavy components
 const ImageUpload = lazy(() => import('./components/ImageUpload'));
@@ -957,12 +956,7 @@ const App = () => {
     });
   }, [products]);
 
-    const handleProductImageDotClick = (productId, index) => {
-    setProductImageIndexes(prev => ({
-      ...prev,
-      [productId]: index
-    }));
-  };
+
 
   // Toggle product featured status
   const toggleProductFeatured = useCallback(async (product) => {

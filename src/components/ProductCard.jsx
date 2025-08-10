@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Edit3, Trash2, Eye, EyeOff, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Edit3, Trash2, Eye, EyeOff, ArrowLeft, ArrowRight } from 'lucide-react';
 
 const ProductCard = React.memo(({ 
   product, 
