@@ -1,20 +1,31 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
-import { getProducts, createProduct, updateProduct, deleteProduct } from './services/productService';
+import { getProducts, createProduct, updateProduct, deleteProduct, getBrands } from './services/productService';
 import ImageUpload from './components/ImageUpload';
 import StorageTest from './components/StorageTest';
 import StorageDebugger from './components/StorageDebugger';
 
-const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
+// Helper functions to safely get brand and category names
+const getBrandName = (product) => {
+  if (typeof product.brand === 'string') return product.brand;
+  return product.brand?.name || '';
+};
+
+const getCategoryId = (product) => {
+  if (typeof product.category === 'string') return product.category;
+  return product.category_id || product.category?.id || 'lifestyle';
+};
+
+const ProductEditModal = ({ product, onSave, onCancel, categories, brands }) => {
   const [formData, setFormData] = useState({
     name: product.name || '',
-    brand: product.brand || '',
-    category: product.category || 'lifestyle',
+    brand_id: product.brand_id || product.brand?.id || '',
+    category_id: getCategoryId(product),
     description: product.description || '',
     colors: product.colors?.join(', ') || '',
     sizes: product.sizes?.join(', ') || '',
     images: product.images || [],
-    isNew: product.isNew || false,
+    isNew: product.is_new || false,
     featured: product.featured || false
   });
 
@@ -55,14 +66,32 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-2">מותג</label>
-              <input
-                type="text"
-                value={formData.brand}
-                onChange={(e) => setFormData(p => ({...p, brand: e.target.value}))}
+              <select
+                value={formData.brand_id}
+                onChange={(e) => setFormData(p => ({...p, brand_id: e.target.value}))}
                 className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
                 required
-              />
+              >
+                <option value="">בחר מותג</option>
+                {brands?.map(brand => (
+                  <option key={brand.id} value={brand.id}>{brand.name}</option>
+                ))}
+              </select>
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-2">קטגוריה</label>
+            <select
+              value={formData.category_id}
+              onChange={(e) => setFormData(p => ({...p, category_id: e.target.value}))}
+              className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+              required
+            >
+              <option value="">בחר קטגוריה</option>
+              {categories?.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-2">תיאור</label>
@@ -73,6 +102,28 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
               className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
               required
             />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-2">צבעים (מופרדים בפסיק)</label>
+              <input
+                type="text"
+                value={formData.colors}
+                onChange={(e) => setFormData(p => ({...p, colors: e.target.value}))}
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+                placeholder="לדוגמה: שחור, לבן, אדום"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-2">מידות (מופרדות בפסיק)</label>
+              <input
+                type="text"
+                value={formData.sizes}
+                onChange={(e) => setFormData(p => ({...p, sizes: e.target.value}))}
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+                placeholder="לדוגמה: 40, 41, 42, 43"
+              />
+            </div>
           </div>
           <ImageUpload
             images={formData.images}
@@ -287,7 +338,7 @@ const ProductModal = ({ product, onClose, storeInfo }) => {
           <div className="p-8">
             <div className="flex justify-between items-center mb-12">
               <div>
-                <div className="text-xs tracking-[0.3em] text-amber-600 mb-2">{product.brand}</div>
+                <div className="text-xs tracking-[0.3em] text-amber-600 mb-2">{getBrandName(product)}</div>
                 <h2 className="text-4xl font-black bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">{product.name}</h2>
               </div>
               <button 
@@ -422,7 +473,8 @@ const App = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingStore, setEditingStore] = useState(false);
 
-  const [products, setProducts] = useState([]); 
+  const [products, setProducts] = useState([]);
+  const [brands, setBrands] = useState([]); 
 
   // Sample fallback data
   const sampleProducts = useMemo(() => [
@@ -787,6 +839,16 @@ const App = () => {
       setIsLoading(false);
     }
   }, [sampleProducts]);
+
+  // Load brands from Supabase
+  const loadBrands = useCallback(async () => {
+    try {
+      const data = await getBrands();
+      setBrands(data);
+    } catch (error) {
+      console.error('Error loading brands:', error);
+    }
+  }, []);
   
   const [storeInfo, setStoreInfo] = useState({ 
     name: "נעלי העיר", 
@@ -807,7 +869,8 @@ const App = () => {
   // Load products on component mount
   useEffect(() => {
     loadProducts();
-  }, [loadProducts]);
+    loadBrands();
+  }, [loadProducts, loadBrands]);
 
   // Product CRUD operations
   const handleSaveProduct = async (productData) => {
@@ -860,7 +923,7 @@ const App = () => {
     { id: 'lifestyle', name: 'לייפסטייל' }
   ];
   
-  const filteredProducts = selectedCategory === 'all' ? products : products.filter(p => p.category === selectedCategory);
+  const filteredProducts = selectedCategory === 'all' ? products : products.filter(p => p.category_id === selectedCategory || p.category?.id === selectedCategory);
   
   const handleCategoryChange = (categoryId) => {
     setIsTransitioning(true);
@@ -1295,7 +1358,7 @@ const App = () => {
 
                     <div className={`space-y-3 ${viewMode === 'list' ? 'flex-1' : 'bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg'}`}>
                       <div className="flex items-center justify-between">
-                        <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
+                        <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{getBrandName(product)}</div>
                       </div>
                       
                       <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
@@ -1464,7 +1527,7 @@ const App = () => {
         </div>
       )}
 
-      {editingProduct && <ProductEditModal product={editingProduct} onSave={saveProduct} onCancel={() => setEditingProduct(null)} categories={categories} />}
+      {editingProduct && <ProductEditModal product={editingProduct} onSave={saveProduct} onCancel={() => setEditingProduct(null)} categories={categories} brands={brands} />}
       {editingStore && <StoreEditModal storeInfo={storeInfo} onSave={saveStoreInfo} onCancel={() => setEditingStore(false)} />}
       {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} storeInfo={storeInfo} />}
       
