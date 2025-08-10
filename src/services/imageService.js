@@ -255,7 +255,7 @@ export class ImageService {
           const newPath = `products/${newProductId}/${fileName}`;
           
           // Upload to new location
-          const { data: uploadData, error: uploadError } = await supabase.storage
+          const { error: uploadError } = await supabase.storage
             .from(this.BUCKET_NAME)
             .upload(newPath, fileData, {
               cacheControl: '3600',
