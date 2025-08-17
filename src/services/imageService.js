@@ -237,7 +237,7 @@ export class ImageService {
     try {
       // Instead of listing buckets (which requires special permissions),
       // we'll test by trying to list files in our bucket
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from(this.BUCKET_NAME)
         .list('', { limit: 1 });
       
