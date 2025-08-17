@@ -857,15 +857,15 @@ const App = () => {
               <div className="text-xs tracking-[0.3em] text-stone-500 font-light">{storeInfo.slogan}</div>
             </div>
 
-            <nav className="hidden lg:flex items-center gap-2 bg-white/30 backdrop-blur-sm rounded-full p-1 shadow-lg">
+            <nav className="hidden lg:flex items-center gap-3 bg-white/80 backdrop-blur-md rounded-full p-2 shadow-xl border border-stone-200">
               {categories.map(category => (
                 <button
                   key={category.id}
                   onClick={() => handleCategoryChange(category.id)}
-                  className={`px-6 py-2 rounded-full text-sm tracking-wide transition-all duration-300 ${
+                  className={`px-6 py-3 rounded-full text-sm font-medium tracking-wide transition-all duration-300 ${
                     selectedCategory === category.id
-                      ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg'
-                      : 'text-stone-600 hover:text-stone-800 hover:bg-white/50'
+                      ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg scale-105'
+                      : 'text-stone-700 hover:text-stone-900 hover:bg-stone-100'
                   }`}
                 >
                   <span>{category.name}</span>
@@ -883,6 +883,22 @@ const App = () => {
           </div>
         </div>
       </header>
+
+      {/* Floating Home Button */}
+      {selectedCategory !== 'home' && (
+        <button
+          onClick={() => handleCategoryChange('home')}
+          className="fixed bottom-8 left-8 z-50 bg-gradient-to-r from-stone-800 to-amber-800 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 group"
+          aria-label="חזרה לעמוד הבית"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          <span className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            עמוד הבית
+          </span>
+        </button>
+      )}
 
       <main className={`pt-32 ${isAdminMode ? 'sm:pt-40' : 'sm:pt-28'} min-h-screen`}>
         {/* Hero Section - Show only on home page */}
@@ -902,7 +918,7 @@ const App = () => {
                   </p>
                   <div className="flex items-center gap-6">
                     <button 
-                      onClick={() => document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' })}
+                      onClick={() => handleCategoryChange(categories.find(cat => !cat.isHomePage)?.id || 'all')}
                       className="bg-gradient-to-r from-stone-900 to-amber-900 text-white px-8 py-4 text-sm tracking-wide hover:from-amber-900 hover:to-stone-900 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-amber-200/30 transform hover:scale-105"
                     >
                       גלה את הקולקציה
@@ -937,68 +953,7 @@ const App = () => {
           </section>
         )}
 
-        {/* Featured Products on Home Page */}
-        {selectedCategory === 'home' && products.length > 0 && (
-          <div className="max-w-7xl mx-auto px-6 py-20">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-5xl font-black mb-4 tracking-tight bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">
-                מוצרים מומלצים
-              </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-amber-400 to-stone-600 mx-auto rounded-full shadow-lg"></div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {products.filter(p => p.featured).slice(0, 6).map((product, index) => {
-                const currentProductImageIndex = productImageIndexes[product.id] || 0;
-                return (
-                  <div
-                    key={product.id}
-                    className="group cursor-pointer animate-fadeInUp bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-500"
-                    onClick={() => handleProductSelect(product)}
-                    style={{animationDelay: `${index * 150}ms`}}
-                  >
-                    <div className="relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-700 transform group-hover:scale-105 mb-6">
-                      {product.images && product.images.length > 0 && (
-                        <img 
-                          src={product.images[currentProductImageIndex]}
-                          alt={product.name}
-                          className="w-full h-64 object-cover transition-all duration-700"
-                          loading="lazy"
-                          crossOrigin="anonymous"
-                          referrerPolicy="no-referrer"
-                        />
-                      )}
-                      {product.isNew && (
-                        <div className="absolute top-4 left-4 z-10 text-xs tracking-[0.3em] bg-gradient-to-r from-amber-600 to-stone-800 text-white px-3 py-1 rounded-full shadow-lg">
-                          חדש
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
-                      <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
-                        {product.name}
-                      </h3>
-                      <div className="text-sm text-stone-600 leading-relaxed">
-                        {product.description}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            
-            <div className="text-center mt-12">
-              <button 
-                onClick={() => handleCategoryChange('all')}
-                className="bg-gradient-to-r from-stone-900 to-amber-900 text-white px-8 py-4 text-sm tracking-wide hover:from-amber-900 hover:to-stone-900 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-amber-200/30 transform hover:scale-105"
-              >
-                צפה בכל המוצרים
-              </button>
-            </div>
-          </div>
-        )}
+
 
         {/* Products Section - Show for all categories except home */}
         {selectedCategory !== 'home' && (
