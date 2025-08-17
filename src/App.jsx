@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube, Menu } from 'lucide-react';
+import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from './services/productService';
 import ImageUpload from './components/ImageUpload';
 import StorageTest from './components/StorageTest';
@@ -599,7 +599,6 @@ const App = () => {
   ]);
   
   const [showCategoryManager, setShowCategoryManager] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   
   // Load products from Supabase
   const loadProducts = useCallback(async () => {
@@ -887,19 +886,18 @@ const App = () => {
               <div className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent cursor-pointer" onClick={() => !isAdminMode && setShowAdminLogin(true)}>
                 {storeInfo.name}
               </div>
-              <div className="w-1 h-6 bg-gradient-to-b from-amber-400 to-stone-600 mx-4 shadow-sm hidden sm:block"></div>
-              <div className="text-xs tracking-[0.3em] text-stone-500 font-light hidden sm:block">{storeInfo.slogan}</div>
+              <div className="w-1 h-6 bg-gradient-to-b from-amber-400 to-stone-600 mx-4 shadow-sm"></div>
+              <div className="text-xs tracking-[0.3em] text-stone-500 font-light">{storeInfo.slogan}</div>
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-3 bg-white/80 backdrop-blur-md rounded-full p-2 shadow-xl border border-stone-200 max-w-xl overflow-x-auto">
+            <nav className="hidden lg:flex items-center gap-3 bg-white/80 backdrop-blur-md rounded-full p-2 shadow-xl border border-stone-200">
               {categories.map(category => (
                 <button
                   key={category.id}
                   onClick={() => handleCategoryChange(category.id)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium tracking-wide transition-all duration-300 whitespace-nowrap ${
+                  className={`px-6 py-3 rounded-full text-sm font-medium tracking-wide transition-all duration-300 ${
                     selectedCategory === category.id
-                      ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg'
+                      ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg scale-105'
                       : 'text-stone-700 hover:text-stone-900 hover:bg-stone-100'
                   }`}
                 >
@@ -911,57 +909,13 @@ const App = () => {
               ))}
             </nav>
 
-            {/* Mobile Menu Button */}
-            <button 
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="lg:hidden p-2 rounded-lg hover:bg-stone-100 transition-colors"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
+            <a href={`https://wa.me/${storeInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 text-sm tracking-wide hover:from-green-600 hover:to-green-700 transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-green-200/50 transform hover:scale-105 rounded-full flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" /> 
+              דברו איתנו ב-Whatsapp
+            </a>
           </div>
-
-          {/* Mobile Menu */}
-          {showMobileMenu && (
-            <div className="lg:hidden mt-4 bg-white/90 backdrop-blur-md rounded-xl p-4 shadow-xl border border-stone-200">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {categories.map(category => (
-                  <button
-                    key={category.id}
-                    onClick={() => {
-                      handleCategoryChange(category.id);
-                      setShowMobileMenu(false);
-                    }}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium tracking-wide transition-all duration-300 ${
-                      selectedCategory === category.id
-                        ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg'
-                        : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
-                    }`}
-                  >
-                    <span>{category.name}</span>
-                    {!category.isHomePage && (
-                      <div className="text-xs opacity-70">({getCategoryCount(category.id)})</div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </header>
-
-      {/* Floating WhatsApp Button */}
-      <a 
-        href={`https://wa.me/${storeInfo.whatsapp}`} 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="fixed bottom-8 right-8 z-50 bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 group"
-        aria-label="דברו איתנו בוואטסאפ"
-      >
-        <MessageSquare className="w-6 h-6" />
-        <span className="absolute -top-12 right-0 bg-green-600 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          דברו איתנו ב-WhatsApp
-        </span>
-      </a>
 
       {/* Floating Home Button */}
       {selectedCategory !== 'home' && (
