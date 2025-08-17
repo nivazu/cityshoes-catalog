@@ -823,13 +823,19 @@ const App = () => {
               </div>
               <div className="flex items-center gap-4 bg-white/50 rounded-full p-1 shadow-lg">
                 <button
-                  onClick={() => setViewMode('grid')}
+                  onClick={() => {
+                    console.log('Setting view mode to grid');
+                    setViewMode('grid');
+                  }}
                   className={`p-3 rounded-full transition-all duration-300 ${viewMode === 'grid' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-400 hover:text-stone-700'}`}
                 >
                   <Grid className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => setViewMode('list')}
+                  onClick={() => {
+                    console.log('Setting view mode to list');
+                    setViewMode('list');
+                  }}
                   className={`p-3 rounded-full transition-all duration-300 ${viewMode === 'list' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-400 hover:text-stone-700'}`}
                 >
                   <List className="w-4 h-4" />
