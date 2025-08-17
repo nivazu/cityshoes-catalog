@@ -1,39 +1,30 @@
 import { supabase, TABLES } from '../lib/supabase'
 
-// Get all products with optional filtering
-export const getProducts = async (filters = {}) => {
+// Get all products
+export const getProducts = async () => {
   try {
-    let query = supabase
+    console.log('Fetching products from Supabase...');
+    
+    const { data, error } = await supabase
       .from(TABLES.PRODUCTS)
       .select('*')
       .order('created_at', { ascending: false })
 
-    // Apply filters
-    if (filters.category && filters.category !== 'all') {
-      query = query.eq('category', filters.category)
-    }
-    
-    if (filters.brand) {
-      query = query.ilike('brand', `%${filters.brand}%`)
-    }
-    
-    if (filters.search) {
-      query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
-    }
-    
-    if (filters.isNew !== undefined) {
-      query = query.eq('is_new', filters.isNew)
-    }
-    
-    if (filters.featured !== undefined) {
-      query = query.eq('featured', filters.featured)
-    }
-
-    const { data, error } = await query
-
     if (error) {
       console.error('Error fetching products:', error)
       throw error
+    }
+
+    console.log(`Successfully fetched ${data?.length || 0} products from Supabase`);
+    
+    // Log first few products for debugging
+    if (data && data.length > 0) {
+      console.log('Sample products:', data.slice(0, 3).map(p => ({
+        id: p.id,
+        name: p.name,
+        brand: p.brand,
+        category: p.category
+      })));
     }
 
     return data || []
@@ -69,30 +60,40 @@ export const createProduct = async (productData) => {
   try {
     console.log('Creating product with data:', productData);
     
+    // Ensure brand field exists
+    const productToCreate = {
+      name: productData.name,
+      brand: productData.brand || '', // Ensure brand is at least empty string
+      category: productData.category,
+      description: productData.description,
+      colors: productData.colors || [],
+      sizes: productData.sizes || [],
+      images: productData.images || [],
+      is_new: productData.isNew || false,
+      featured: productData.featured || false
+    };
+    
+    console.log('Product data to insert:', productToCreate);
+    
     const { data, error } = await supabase
       .from(TABLES.PRODUCTS)
-      .insert([{
-        name: productData.name,
-        brand: productData.brand,
-        category: productData.category,
-        description: productData.description,
-        colors: productData.colors || [],
-        sizes: productData.sizes || [],
-        images: productData.images || [],
-        is_new: productData.isNew || false,
-        featured: productData.featured || false
-      }])
+      .insert([productToCreate])
       .select()
       .single()
 
     if (error) {
-      console.error('Error creating product:', error)
+      console.error('Supabase error:', error);
       console.error('Error details:', {
         message: error.message,
         details: error.details,
         hint: error.hint,
         code: error.code
-      })
+      });
+      
+      // If brand column is missing, provide helpful error
+      if (error.message.includes('brand')) {
+        throw new Error('נראה שיש בעיה עם עמודת המותג. אנא הרץ את הסקריפט fix-brand-column.sql ב-Supabase.');
+      }
       throw error
     }
 
@@ -107,26 +108,37 @@ export const createProduct = async (productData) => {
 // Update an existing product
 export const updateProduct = async (id, productData) => {
   try {
+    console.log('Updating product:', id, productData);
+    
+    const updateData = {
+      name: productData.name,
+      brand: productData.brand || '', // Ensure brand is at least empty string
+      category: productData.category,
+      description: productData.description,
+      colors: productData.colors || [],
+      sizes: productData.sizes || [],
+      images: productData.images || [],
+      is_new: productData.isNew || false,
+      featured: productData.featured || false,
+      updated_at: new Date().toISOString()
+    };
+    
+    console.log('Update data:', updateData);
+    
     const { data, error } = await supabase
       .from(TABLES.PRODUCTS)
-      .update({
-        name: productData.name,
-        brand: productData.brand,
-        category: productData.category,
-        description: productData.description,
-        colors: productData.colors || [],
-        sizes: productData.sizes || [],
-        images: productData.images || [],
-        is_new: productData.isNew || false,
-        featured: productData.featured || false,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single()
 
     if (error) {
-      console.error('Error updating product:', error)
+      console.error('Supabase update error:', error);
+      
+      // If brand column is missing, provide helpful error
+      if (error.message.includes('brand')) {
+        throw new Error('נראה שיש בעיה עם עמודת המותג. אנא הרץ את הסקריפט fix-brand-column.sql ב-Supabase.');
+      }
       throw error
     }
 

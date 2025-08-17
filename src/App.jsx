@@ -9,7 +9,7 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
   const [formData, setFormData] = useState({
     name: product.name || '',
     brand: product.brand || '',
-    category: product.category || 'lifestyle',
+    category: product.category || '',
     description: product.description || '',
     colors: product.colors?.join(', ') || '',
     sizes: product.sizes?.join(', ') || '',
@@ -63,6 +63,24 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
                 required
               />
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-2">קטגוריה</label>
+            <select
+              value={formData.category}
+              onChange={(e) => setFormData(p => ({...p, category: e.target.value}))}
+              className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+            >
+              <option value="">ללא קטגוריה (יופיע רק בעמוד הבית ובכל המוצרים)</option>
+              {categories.filter(cat => !cat.isHomePage && cat.id !== 'all').map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-stone-500 mt-1">
+              מוצרים ללא קטגוריה יוצגו רק בעמוד הבית וב"כל המוצרים"
+            </p>
           </div>
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-2">תיאור</label>
@@ -406,8 +424,152 @@ const ProductModal = ({ product, onClose, storeInfo }) => {
   );
 };
 
+const CategoryManager = ({ categories, setCategories, products, setProducts, onClose }) => {
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [editingCategoryId, setEditingCategoryId] = useState(null);
+  const [editingCategoryName, setEditingCategoryName] = useState('');
+
+  const handleAddCategory = (e) => {
+    e.preventDefault();
+    if (newCategoryName.trim()) {
+      const newCategory = {
+        id: newCategoryName.toLowerCase().replace(/\s+/g, '-'),
+        name: newCategoryName.trim(),
+        editable: true
+      };
+      setCategories([...categories, newCategory]);
+      setNewCategoryName('');
+    }
+  };
+
+  const handleUpdateCategory = (categoryId) => {
+    if (editingCategoryName.trim()) {
+      setCategories(categories.map(cat => 
+        cat.id === categoryId 
+          ? { ...cat, name: editingCategoryName.trim() }
+          : cat
+      ));
+      setEditingCategoryId(null);
+      setEditingCategoryName('');
+    }
+  };
+
+  const handleDeleteCategory = (categoryId) => {
+    const productsInCategory = products.filter(p => p.category === categoryId);
+    const confirmMessage = productsInCategory.length > 0 
+      ? `יש ${productsInCategory.length} מוצרים בקטגוריה זו. הם יוצגו רק בעמוד הבית ובכל המוצרים. האם להמשיך?`
+      : 'האם אתה בטוח שברצונך למחוק קטגוריה זו?';
+    
+    if (window.confirm(confirmMessage)) {
+      // Update products in this category to have no category
+      if (productsInCategory.length > 0) {
+        setProducts(products.map(p => 
+          p.category === categoryId ? { ...p, category: '' } : p
+        ));
+      }
+      setCategories(categories.filter(cat => cat.id !== categoryId));
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-all duration-300" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-8 m-auto mt-20" onClick={e => e.stopPropagation()}>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-black bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">
+            ניהול קטגוריות
+          </h2>
+          <button onClick={onClose} className="text-stone-400 hover:text-stone-700 transition-colors duration-300">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <form onSubmit={handleAddCategory} className="mb-8">
+          <div className="flex gap-3">
+            <input
+              type="text"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder="שם קטגוריה חדשה"
+              className="flex-1 px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+            <button
+              type="submit"
+              className="bg-gradient-to-r from-stone-800 to-amber-800 text-white px-6 py-3 rounded-xl font-medium hover:from-amber-800 hover:to-stone-800 transition-all duration-500"
+            >
+              הוסף קטגוריה
+            </button>
+          </div>
+        </form>
+
+        <div className="space-y-3">
+          {categories.map(category => (
+            <div key={category.id} className="flex items-center justify-between p-4 bg-stone-50 rounded-xl">
+              {editingCategoryId === category.id ? (
+                <div className="flex items-center gap-3 flex-1">
+                  <input
+                    type="text"
+                    value={editingCategoryName}
+                    onChange={(e) => setEditingCategoryName(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                  <button
+                    onClick={() => handleUpdateCategory(category.id)}
+                    className="text-green-600 hover:text-green-700 transition-colors"
+                  >
+                    <Save className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingCategoryId(null);
+                      setEditingCategoryName('');
+                    }}
+                    className="text-stone-400 hover:text-stone-700 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <span className="font-medium text-stone-800">{category.name}</span>
+                    <span className="text-xs text-stone-500 mr-2">
+                      ({products.filter(p => p.category === category.id).length} מוצרים)
+                    </span>
+                    {!category.editable && (
+                      <span className="text-xs text-stone-500 mr-2">(לא ניתן לעריכה)</span>
+                    )}
+                  </div>
+                  {category.editable && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingCategoryId(category.id);
+                          setEditingCategoryName(category.name);
+                        }}
+                        className="text-blue-600 hover:text-blue-700 transition-colors"
+                      >
+                        <Edit3 className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteCategory(category.id)}
+                        className="text-red-600 hover:text-red-700 transition-colors"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const App = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('home');
   const [viewMode, setViewMode] = useState('grid');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productImageIndexes, setProductImageIndexes] = useState({});
@@ -424,369 +586,36 @@ const App = () => {
 
   const [products, setProducts] = useState([]); 
 
-  // Sample fallback data
-  const sampleProducts = useMemo(() => [
-    {
-      id: 1,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/jvvk2f1p/Backpack0103.jpg",
-        "https://i.ibb.co/BVKDWKKh/Backpack0102.jpg",
-        "https://i.ibb.co/sd6qNM2y/Backpack0101.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: true,
-      featured: true
-    },
-    {
-      id: 2,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/60WgfJqg/Backpack0203.jpg",
-        "https://i.ibb.co/0yT3ZMzP/Backpack0202.jpg",
-        "https://i.ibb.co/bMhG2GjF/Backpack0201.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 3,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/8L8cZ3yX/Backpack0303.jpg",
-        "https://i.ibb.co/4RJZs42H/Backpack0302.jpg",
-        "https://i.ibb.co/k6X7GPsz/Backpack0301.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 4,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/4nRMJ85f/Backpack0401.jpg",
-        "https://i.ibb.co/6Jvwq5nL/Backpack0403.jpg",
-        "https://i.ibb.co/KxQTD1kh/Backpack0402.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 5,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/HpF6FN4f/Backpack0502.jpg",
-        "https://i.ibb.co/twBHs2JY/Backpack0501.jpg",
-        "https://i.ibb.co/k2hKN2X6/Backpack0503.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 6,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/xKkMsmBt/Backpack0604.jpg",
-        "https://i.ibb.co/0jX9V0rw/Backpack0603.jpg",
-        "https://i.ibb.co/fYx7dkLR/Backpack0601.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 7,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/Xrj0L2R5/Backpack0705.jpg",
-        "https://i.ibb.co/QvvTb6GN/Backpack0704.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 8,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/5x2WN56S/Backpack0702.jpg",
-        "https://i.ibb.co/X6skvTF/Backpack0701.jpg",
-        "https://i.ibb.co/d0xmCJYk/Backpack0703.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 9,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/HTS0CbN0/Backpack0804.jpg",
-        "https://i.ibb.co/SwwGLQc4/Backpack0803.jpg",
-        "https://i.ibb.co/1Y3gY595/Backpack0802.jpg",
-        "https://i.ibb.co/jvMpP6Z5/Backpack0801.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 10,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/2pYdqst/Backpack0904.jpg",
-        "https://i.ibb.co/pjhVV5c6/Backpack0903.jpg",
-        "https://i.ibb.co/rfGvj36f/Backpack0902.jpg",
-        "https://i.ibb.co/Ndrt2K49/Backpack0901.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 11,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/Ndh0fPWJ/Sprayground135.jpg",
-        "https://i.ibb.co/399Vg9HV/Sprayground108.jpg",
-        "https://i.ibb.co/XfHLCpQN/Sprayground184.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 12,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/h1gVvLGL/Sprayground51.jpg",
-        "https://i.ibb.co/fPY5MQD/Sprayground57.jpg",
-        "https://i.ibb.co/5XJnKQzB/Sprayground100.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 13,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/xqBYG9PQ/Sprayground45.jpg",
-        "https://i.ibb.co/Nnm507W1/Sprayground68.jpg",
-        "https://i.ibb.co/rfRs7frx/Sprayground66.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 14,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/Y49WJpDq/Sprayground46.jpg",
-        "https://i.ibb.co/S7W9TB5D/Sprayground77.jpg",
-        "https://i.ibb.co/spScHSf4/Sprayground64.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 15,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/G350LyZP/Sprayground84.jpg",
-        "https://i.ibb.co/8LjdcB4Y/Sprayground148.jpg",
-        "https://i.ibb.co/Y4p0cLRv/Sprayground181.jpg",
-        "https://i.ibb.co/LXRqXGgb/Sprayground171.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    }
-    ,
-    {
-      id: 16,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/fVtY2dHv/Sprayground104.jpg",
-        "https://i.ibb.co/RTfjQp5Z/Sprayground113.jpg",
-        "https://i.ibb.co/3y40THrb/Sprayground156.jpg",
-        "https://i.ibb.co/LXRqXGgb/Sprayground171.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 17,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/jkgnw52D/Sprayground161.jpg",
-        "https://i.ibb.co/4RdXswXK/Sprayground168.jpg",
-        "https://i.ibb.co/svw3nhd2/Backpack0706.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 18,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/yBBDzTW9/Sprayground150.jpg",
-        "https://i.ibb.co/rCLbc8p/Sprayground174.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 19,
-      name: "תיק גב Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/zVrxTp9P/Sprayground79.jpg",
-        "https://i.ibb.co/60BpHgvF/Sprayground82.jpg",
-        "https://i.ibb.co/nqy1PmjK/Sprayground87.jpg",
-        "https://i.ibb.co/FL2K4YCt/Sprayground92.jpg",
-        "https://i.ibb.co/gbbBvY8d/Sprayground96.jpg"
-      ],
-      description: "תיק גב בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    },
-    {
-      id: 20,
-      name: "תיק צד Sprayground",
-      brand: "SPRAYGROUND",
-      price: 350,
-      category: "lifestyle",
-      images: [
-        "https://i.ibb.co/Z6SpPyN3/Sprayground99.jpg",
-        "https://i.ibb.co/vCxD8yPn/Backpack1003.jpg",
-        "https://i.ibb.co/1GbqgJXc/Backpack1004.jpg"
-      ],
-      description: "תיק צד בעיצוב ייחודי ואיכותי.",
-      colors: ["MULTI"],
-      sizes: ["ONE SIZE"],
-      isNew: false,
-      featured: false
-    }
-  ], []);
-
+  // Categories state
+  const [categories, setCategories] = useState([
+    { id: 'home', name: 'עמוד הבית', editable: false, isHomePage: true },
+    { id: 'all', name: 'כל המוצרים', editable: false },
+    { id: 'lifestyle', name: 'לייפסטייל', editable: true },
+    { id: 'basketball', name: 'כדורסל', editable: true },
+    { id: 'football', name: 'כדורגל', editable: true },
+    { id: 'running', name: 'ריצה', editable: true },
+    { id: 'training', name: 'אימונים', editable: true },
+    { id: 'casual', name: 'קז\'ואל', editable: true }
+  ]);
+  
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+  
   // Load products from Supabase
   const loadProducts = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await getProducts();
+      console.log('Loaded products from Supabase:', data.length);
       setProducts(data);
     } catch (error) {
       console.error('Error loading products:', error);
-      // Fallback to sample data for development
-      setProducts(sampleProducts);
+      alert(`שגיאה בטעינת מוצרים: ${error.message}`);
+      // Don't fallback to sample products - show the real error
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }
-  }, [sampleProducts]);
+  }, []);
   
   const [storeInfo, setStoreInfo] = useState({ 
     name: "נעלי העיר", 
@@ -854,20 +683,28 @@ const App = () => {
     setTimeout(() => setIsLoading(false), 2500);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const categories = [
-    { id: 'all', name: 'כל המוצרים' }, 
-    { id: 'lifestyle', name: 'לייפסטייל' }
-  ];
   
-  const filteredProducts = selectedCategory === 'all' ? products : products.filter(p => p.category === selectedCategory);
+  // Improved filtering with count
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === 'all' || selectedCategory === 'home') {
+      return products;
+    }
+    // Show only products with matching category
+    return products.filter(p => p.category === selectedCategory);
+  }, [selectedCategory, products]);
+  
+  // Get product count per category
+  const getCategoryCount = useCallback((categoryId) => {
+    if (categoryId === 'all') return products.length;
+    return products.filter(p => p.category === categoryId).length;
+  }, [products]);
   
   const handleCategoryChange = (categoryId) => {
     setIsTransitioning(true);
     setTimeout(() => {
         setSelectedCategory(categoryId);
         setIsTransitioning(false);
-    }, 500);
+    }, 200);
   };
 
   const handleProductImageChange = (productId, direction) => {
@@ -1009,26 +846,32 @@ const App = () => {
       </div>
 
       {isAdminMode && (
-        <div className="fixed top-0 left-0 right-0 z-[60] bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 shadow-lg">
-          <div className="flex items-center justify-between max-w-7xl mx-auto">
+        <div className="fixed top-0 left-0 right-0 z-[60] bg-gradient-to-r from-red-600 to-red-700 text-white px-4 sm:px-6 py-3 shadow-lg">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between max-w-7xl mx-auto gap-4">
             <div className="flex items-center gap-4">
               <Settings className="w-5 h-5" />
               <span className="text-sm font-medium">מצב ניהול פעיל</span>
             </div>
-            <div className="flex items-center gap-4">
-              <button onClick={() => setShowStorageDebugger(true)} className="bg-yellow-500/20 hover:bg-yellow-500/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
-                🔧 אבחון Storage
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              <button onClick={() => setShowStorageDebugger(true)} className="bg-yellow-500/20 hover:bg-yellow-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                🔧 אבחון
               </button>
-              <button onClick={() => setShowStorageTest(!showStorageTest)} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
-                בדיקת העלאות
+              <button onClick={() => setShowStorageTest(!showStorageTest)} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                בדיקות
               </button>
-              <button onClick={() => setEditingStore(true)} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
-                ערוך פרטי חנות
+              <button onClick={loadProducts} className="bg-green-500/20 hover:bg-green-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                🔄 רענן מוצרים
               </button>
-              <button onClick={() => setEditingProduct({})} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
-                הוסף מוצר
+              <button onClick={() => setEditingStore(true)} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                ערוך חנות
               </button>
-              <button onClick={handleLogout} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
+              <button onClick={() => setShowCategoryManager(true)} className="bg-purple-500/20 hover:bg-purple-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                🏷️ ניהול קטגוריות
+              </button>
+              <button onClick={() => setEditingProduct({})} className="bg-amber-500 hover:bg-amber-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-300">
+                ➕ הוסף מוצר
+              </button>
+              <button onClick={handleLogout} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
                 יציאה
               </button>
             </div>
@@ -1036,7 +879,7 @@ const App = () => {
         </div>
       )}
 
-      <header className={`fixed ${isAdminMode ? 'top-12' : 'top-0'} left-0 right-0 z-40 transition-all duration-700 ${scrollY > 50 ? 'bg-white/80 backdrop-blur-2xl border-b border-stone-200/50 shadow-lg shadow-stone-200/20' : 'bg-transparent'}`}>
+      <header className={`fixed ${isAdminMode ? 'top-16 sm:top-12' : 'top-0'} left-0 right-0 z-40 transition-all duration-700 ${scrollY > 50 ? 'bg-white/80 backdrop-blur-2xl border-b border-stone-200/50 shadow-lg shadow-stone-200/20' : 'bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -1047,107 +890,211 @@ const App = () => {
               <div className="text-xs tracking-[0.3em] text-stone-500 font-light">{storeInfo.slogan}</div>
             </div>
 
-            <nav className="hidden lg:flex items-center gap-12">
-              {categories.map(category => (
-                <button
-                  key={category.id}
-                  onClick={() => handleCategoryChange(category.id)}
-                  className={`text-sm tracking-wide transition-all duration-500 relative group ${
-                    selectedCategory === category.id
-                      ? 'text-stone-800 font-medium'
-                      : 'text-stone-400 hover:text-stone-700'
-                  }`}
-                >
-                  {category.name}
-                  <div className={`absolute -bottom-2 right-0 h-px bg-gradient-to-l from-amber-400 to-stone-600 transition-all duration-500 ${
-                    selectedCategory === category.id ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}></div>
-                </button>
-              ))}
-            </nav>
+            <div className="flex flex-col items-end gap-3">
+              <nav className="hidden lg:flex items-center gap-3 bg-white/80 backdrop-blur-md rounded-full p-2 shadow-xl border border-stone-200">
+                {categories.map(category => (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryChange(category.id)}
+                    className={`px-6 py-3 rounded-full text-sm font-medium tracking-wide transition-all duration-300 ${
+                      selectedCategory === category.id
+                        ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg scale-105'
+                        : 'text-stone-700 hover:text-stone-900 hover:bg-stone-100'
+                    }`}
+                  >
+                    <span>{category.name}</span>
+                    {!category.isHomePage && (
+                      <span className="text-xs opacity-70 mr-1">({getCategoryCount(category.id)})</span>
+                    )}
+                  </button>
+                ))}
+              </nav>
 
-            <a href={`https://wa.me/${storeInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 text-sm tracking-wide hover:from-green-600 hover:to-green-700 transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-green-200/50 transform hover:scale-105 rounded-full flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" /> 
-              דברו איתנו ב-Whatsapp
-            </a>
+              <a href={`https://wa.me/${storeInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 text-sm tracking-wide hover:from-green-600 hover:to-green-700 transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-green-200/50 transform hover:scale-105 rounded-full flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" /> 
+                דברו איתנו ב-Whatsapp
+              </a>
+            </div>
           </div>
         </div>
       </header>
 
-      <main>
-        <section className={`relative ${isAdminMode ? 'pt-44' : 'pt-32'} pb-20 min-h-screen flex items-center`}>
-          <div className="max-w-7xl mx-auto px-6 w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <div className={`transition-all duration-1000 ${isTransitioning ? 'opacity-0 transform translate-x-8' : 'opacity-100 transform translate-x-0'}`}>
-                <div className="text-xs tracking-[0.4em] text-amber-600 mb-6 font-light">COLLECTION 2025</div>
-                <h1 className="text-6xl lg:text-8xl font-black leading-none mb-8 tracking-tight">
-                  <span className="bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">{storeInfo.heroTitle.split(' ').slice(0, 1).join(' ')}</span><br />
-                  <span className="text-stone-800">{storeInfo.heroTitle.split(' ').slice(1, 2).join(' ')}</span><br />
-                  <span className="text-stone-400 text-5xl lg:text-6xl">{storeInfo.heroTitle.split(' ').slice(2).join(' ')}</span>
-                </h1>
-                <p className="text-lg text-stone-600 mb-12 leading-relaxed max-w-md">
-                  {storeInfo.heroSubtitle}
-                </p>
-                <div className="flex items-center gap-6">
-                  <button 
-                    onClick={() => document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' })}
-                    className="bg-gradient-to-r from-stone-900 to-amber-900 text-white px-8 py-4 text-sm tracking-wide hover:from-amber-900 hover:to-stone-900 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-amber-200/30 transform hover:scale-105"
-                  >
-                    גלה את הקולקציה
-                  </button>
-                  <button 
-                    onClick={() => document.getElementById('contact-section').scrollIntoView({ behavior: 'smooth' })}
-                    className="border-2 border-stone-300 px-8 py-4 text-sm tracking-wide hover:bg-gradient-to-r hover:from-stone-800 hover:to-amber-800 hover:text-white hover:border-transparent transition-all duration-500 shadow-lg hover:shadow-xl"
-                  >
-                    צור קשר
-                  </button>
+      {/* Floating Home Button */}
+      {selectedCategory !== 'home' && (
+        <button
+          onClick={() => handleCategoryChange('home')}
+          className="fixed bottom-8 left-8 z-50 bg-gradient-to-r from-stone-800 to-amber-800 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 group"
+          aria-label="חזרה לעמוד הבית"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          <span className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            עמוד הבית
+          </span>
+        </button>
+      )}
+
+      <main className={`pt-32 ${isAdminMode ? 'sm:pt-40' : 'sm:pt-28'} min-h-screen`}>
+        {/* Hero Section - Show only on home page */}
+        {selectedCategory === 'home' && (
+          <section className={`relative ${isAdminMode ? 'pt-44' : 'pt-32'} pb-20 min-h-screen flex items-center`}>
+            <div className="max-w-7xl mx-auto px-6 w-full">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div className="transition-all duration-1000">
+                  <div className="text-xs tracking-[0.4em] text-amber-600 mb-6 font-light">COLLECTION 2025</div>
+                  <h1 className="text-6xl lg:text-8xl font-black leading-none mb-8 tracking-tight">
+                    <span className="bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">{storeInfo.heroTitle.split(' ').slice(0, 1).join(' ')}</span><br />
+                    <span className="text-stone-800">{storeInfo.heroTitle.split(' ').slice(1, 2).join(' ')}</span><br />
+                    <span className="text-stone-400 text-5xl lg:text-6xl">{storeInfo.heroTitle.split(' ').slice(2).join(' ')}</span>
+                  </h1>
+                  <p className="text-lg text-stone-600 mb-12 leading-relaxed max-w-md">
+                    {storeInfo.heroSubtitle}
+                  </p>
+                  <div className="flex items-center gap-6">
+                    <button 
+                      onClick={() => handleCategoryChange(categories.find(cat => !cat.isHomePage)?.id || 'all')}
+                      className="bg-gradient-to-r from-stone-900 to-amber-900 text-white px-8 py-4 text-sm tracking-wide hover:from-amber-900 hover:to-stone-900 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-amber-200/30 transform hover:scale-105"
+                    >
+                      גלה את הקולקציה
+                    </button>
+                    <button 
+                      onClick={() => document.getElementById('contact-section').scrollIntoView({ behavior: 'smooth' })}
+                      className="border-2 border-stone-300 px-8 py-4 text-sm tracking-wide hover:bg-gradient-to-r hover:from-stone-800 hover:to-amber-800 hover:text-white hover:border-transparent transition-all duration-500 shadow-lg hover:shadow-xl"
+                    >
+                      צור קשר
+                    </button>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="relative">
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-bl from-amber-100/20 to-stone-200/20 rounded-3xl transform rotate-3 group-hover:rotate-6 transition-transform duration-700"></div>
-                  <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-700 transform group-hover:scale-105">
-                    <img 
-                      src={storeInfo.bannerImage}
-                      alt={storeInfo.heroTitle}
-                      className="w-full h-96 lg:h-[600px] object-contain transition-all duration-700"
-                      loading="lazy"
-                      crossOrigin="anonymous"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                
+                <div className="relative">
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-bl from-amber-100/20 to-stone-200/20 rounded-3xl transform rotate-3 group-hover:rotate-6 transition-transform duration-700"></div>
+                    <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-700 transform group-hover:scale-105">
+                      <img 
+                        src={storeInfo.bannerImage}
+                        alt={storeInfo.heroTitle}
+                        className="w-full h-96 lg:h-[600px] object-contain transition-all duration-700"
+                        loading="lazy"
+                        crossOrigin="anonymous"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
-        <section className="py-12 border-t border-stone-200/50 bg-gradient-to-r from-amber-50/60 via-stone-50/70 to-amber-50/60 backdrop-blur-sm relative overflow-hidden">
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/2 -left-20 w-80 h-80 bg-gradient-to-br from-amber-200/35 to-stone-300/25 rounded-full blur-2xl animate-pulse" style={{animationDuration: '8s'}}></div>
-            <div className="absolute top-1/2 -right-20 w-72 h-72 bg-gradient-to-bl from-stone-200/40 to-amber-200/35 rounded-full blur-2xl animate-pulse" style={{animationDuration: '12s', animationDelay: '3s'}}></div>
-            <div className="absolute top-0 right-1/3 w-3 h-16 bg-gradient-to-b from-amber-400/40 to-transparent animate-pulse" style={{animationDuration: '6s'}}></div>
-            <div className="absolute bottom-0 left-1/4 w-2 h-12 bg-gradient-to-t from-stone-500/35 to-transparent animate-pulse" style={{animationDuration: '8s', animationDelay: '2s'}}></div>
-            <div className="absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-300/25 to-transparent animate-pulse" style={{animationDuration: '15s'}}></div>
+        {/* Products by Category on Home Page */}
+        {selectedCategory === 'home' && (
+          <div className="max-w-7xl mx-auto px-6 py-20">
+            {categories.filter(cat => !cat.isHomePage && cat.id !== 'all' && products.filter(p => p.category === cat.id).length > 0).map(category => (
+              <div key={category.id} className="mb-20">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">
+                    {category.name}
+                  </h2>
+                  <button 
+                    onClick={() => handleCategoryChange(category.id)}
+                    className="text-sm text-amber-700 hover:text-amber-900 transition-colors duration-300 font-medium"
+                  >
+                    צפה בכל המוצרים ←
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {products.filter(p => p.category === category.id).slice(0, 4).map((product, index) => {
+                    const currentProductImageIndex = productImageIndexes[product.id] || 0;
+                    return (
+                      <div
+                        key={product.id}
+                        className="group cursor-pointer animate-fadeInUp bg-white/30 backdrop-blur-sm rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-500"
+                        onClick={() => handleProductSelect(product)}
+                        style={{animationDelay: `${index * 100}ms`}}
+                      >
+                        <div className="relative overflow-hidden bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-700 transform group-hover:scale-105 mb-4">
+                          {product.images && product.images.length > 0 && (
+                            <img 
+                              src={product.images[currentProductImageIndex]}
+                              alt={product.name}
+                              className="w-full h-48 object-cover transition-all duration-700"
+                              loading="lazy"
+                              crossOrigin="anonymous"
+                              referrerPolicy="no-referrer"
+                            />
+                          )}
+                          {product.isNew && (
+                            <div className="absolute top-2 left-2 text-xs bg-gradient-to-r from-amber-600 to-stone-800 text-white px-2 py-1 rounded-full shadow-md">
+                              חדש
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="text-xs tracking-[0.2em] text-amber-700 font-medium">{product.brand}</div>
+                          <h3 className="text-sm font-medium group-hover:text-amber-700 transition-colors duration-300 line-clamp-2">
+                            {product.name}
+                          </h3>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
-          
-          <div className="max-w-7xl mx-auto px-6 relative">
-            <div className="flex items-center justify-between">
+        )}
+
+        {/* Products Section - Show for all categories except home */}
+        {selectedCategory !== 'home' && (
+          <div className="max-w-7xl mx-auto px-6">
+            {/* Category Title */}
+            <div className="text-center mb-12 pt-10">
+              <h1 className="text-4xl lg:text-6xl font-black mb-4 tracking-tight bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">
+                {categories.find(cat => cat.id === selectedCategory)?.name}
+              </h1>
+              <div className="w-32 h-1 bg-gradient-to-r from-amber-400 to-stone-600 mx-auto rounded-full shadow-lg"></div>
+            </div>
+
+            {/* Mobile Category Selector */}
+            <div className="lg:hidden mb-8">
+              <select
+                value={selectedCategory}
+                onChange={(e) => handleCategoryChange(e.target.value)}
+                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-700"
+              >
+                {categories.filter(cat => !cat.isHomePage).map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name} ({getCategoryCount(category.id)})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Product Grid */}
+            <div className="mb-8 flex items-center justify-between">
               <div className="flex items-center gap-8">
                 <div className="text-sm tracking-wide text-stone-600">
                   {filteredProducts.length} פריטים
                 </div>
                 <div className="flex items-center gap-4 bg-white/50 rounded-full p-1 shadow-lg">
                   <button
-                    onClick={() => setViewMode('grid')}
+                    onClick={() => {
+                      console.log('Setting view mode to grid');
+                      setViewMode('grid');
+                    }}
                     className={`p-3 rounded-full transition-all duration-300 ${viewMode === 'grid' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-400 hover:text-stone-700'}`}
                   >
                     <Grid className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => setViewMode('list')}
+                    onClick={() => {
+                      console.log('Setting view mode to list');
+                      setViewMode('list');
+                    }}
                     className={`p-3 rounded-full transition-all duration-300 ${viewMode === 'list' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-400 hover:text-stone-700'}`}
                   >
                     <List className="w-4 h-4" />
@@ -1168,179 +1115,183 @@ const App = () => {
                 </div>
               )}
             </div>
-          </div>
-        </section>
 
-        <section id="products-section" className="py-20 bg-gradient-to-br from-amber-50/50 via-stone-50/60 via-amber-50/40 to-stone-100/50 relative overflow-hidden">
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/6 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-amber-300/30 to-stone-400/25 rounded-full blur-3xl animate-pulse" style={{animationDuration: '10s', animationDelay: '2s'}}></div>
-            <div className="absolute bottom-1/4 -right-40 w-[450px] h-[450px] bg-gradient-to-tl from-stone-400/35 to-amber-300/40 rounded-full blur-3xl animate-pulse" style={{animationDuration: '14s', animationDelay: '5s'}}></div>
-            <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-gradient-to-l from-amber-200/25 to-stone-300/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '12s', animationDelay: '1s'}}></div>
-            <div className="absolute bottom-1/6 left-1/3 w-80 h-80 bg-gradient-to-br from-stone-300/35 to-amber-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '16s', animationDelay: '3s'}}></div>
-            <div className="absolute top-1/3 right-1/6 w-72 h-72 bg-gradient-to-bl from-amber-400/25 to-stone-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '11s', animationDelay: '6s'}}></div>
-            
-            <div className="absolute top-1/4 right-1/6 w-6 h-48 bg-gradient-to-b from-amber-400/35 to-transparent transform -rotate-12 animate-pulse" style={{animationDuration: '8s'}}></div>
-            <div className="absolute bottom-1/3 left-1/5 w-4 h-40 bg-gradient-to-t from-stone-500/40 to-transparent transform rotate-12 animate-pulse" style={{animationDuration: '11s', animationDelay: '2s'}}></div>
-            <div className="absolute top-2/3 right-1/3 w-3 h-32 bg-gradient-to-b from-amber-500/45 to-transparent animate-pulse" style={{animationDuration: '9s', animationDelay: '4s'}}></div>
-            <div className="absolute top-1/6 left-2/3 w-3 h-36 bg-gradient-to-b from-stone-400/50 to-transparent transform -rotate-45 animate-pulse" style={{animationDuration: '13s', animationDelay: '1s'}}></div>
-            <div className="absolute bottom-1/5 right-2/3 w-5 h-28 bg-gradient-to-t from-amber-300/40 to-transparent transform -rotate-30 animate-pulse" style={{animationDuration: '7s', animationDelay: '3s'}}></div>
-            
-            <div className="absolute top-1/5 right-3/4 w-24 h-24 bg-gradient-to-bl from-amber-300/30 to-stone-400/25 transform -rotate-45 animate-pulse" style={{animationDuration: '18s', animationDelay: '4s'}}></div>
-            <div className="absolute bottom-1/5 right-1/6 w-20 h-20 bg-gradient-to-tl from-stone-300/35 to-amber-300/30 rounded-full animate-pulse" style={{animationDuration: '12s', animationDelay: '7s'}}></div>
-            <div className="absolute top-1/2 left-1/6 w-16 h-16 bg-gradient-to-br from-amber-400/30 to-stone-300/25 transform -rotate-30 animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
-            <div className="absolute top-1/3 right-1/2 w-18 h-18 bg-gradient-to-tl from-stone-400/30 to-amber-200/35 rounded-full animate-pulse" style={{animationDuration: '10s', animationDelay: '5s'}}></div>
-            
-            <div className="absolute top-1/3 left-1/4 w-8 h-8 bg-amber-400/60 rounded-full animate-pulse" style={{animationDuration: '7s', animationDelay: '3s'}}></div>
-            <div className="absolute bottom-1/4 right-1/5 w-6 h-6 bg-stone-500/65 rounded-full animate-pulse" style={{animationDuration: '10s', animationDelay: '6s'}}></div>
-            <div className="absolute top-1/2 left-1/6 w-4 h-4 bg-amber-500/70 rounded-full animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
-            <div className="absolute bottom-1/6 right-1/3 w-5 h-5 bg-stone-400/60 rounded-full animate-pulse" style={{animationDuration: '8s', animationDelay: '4s'}}></div>
-            
-            <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-amber-200/20 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-stone-200/25 to-transparent"></div>
-            <div className="absolute top-1/3 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-300/30 to-transparent animate-pulse" style={{animationDuration: '20s'}}></div>
-            <div className="absolute bottom-1/3 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stone-400/25 to-transparent animate-pulse" style={{animationDuration: '25s', animationDelay: '5s'}}></div>
-          </div>
+            <section id="products-section" className="py-20 bg-gradient-to-br from-amber-50/50 via-stone-50/60 via-amber-50/40 to-stone-100/50 relative overflow-hidden">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-1/6 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-amber-300/30 to-stone-400/25 rounded-full blur-3xl animate-pulse" style={{animationDuration: '10s', animationDelay: '2s'}}></div>
+                <div className="absolute bottom-1/4 -right-40 w-[450px] h-[450px] bg-gradient-to-tl from-stone-400/35 to-amber-300/40 rounded-full blur-3xl animate-pulse" style={{animationDuration: '14s', animationDelay: '5s'}}></div>
+                <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-gradient-to-l from-amber-200/25 to-stone-300/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '12s', animationDelay: '1s'}}></div>
+                <div className="absolute bottom-1/6 left-1/3 w-80 h-80 bg-gradient-to-br from-stone-300/35 to-amber-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '16s', animationDelay: '3s'}}></div>
+                <div className="absolute top-1/3 right-1/6 w-72 h-72 bg-gradient-to-bl from-amber-400/25 to-stone-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '11s', animationDelay: '6s'}}></div>
+                
+                <div className="absolute top-1/4 right-1/6 w-6 h-48 bg-gradient-to-b from-amber-400/35 to-transparent transform -rotate-12 animate-pulse" style={{animationDuration: '8s'}}></div>
+                <div className="absolute bottom-1/3 left-1/5 w-4 h-40 bg-gradient-to-t from-stone-500/40 to-transparent transform rotate-12 animate-pulse" style={{animationDuration: '11s', animationDelay: '2s'}}></div>
+                <div className="absolute top-2/3 right-1/3 w-3 h-32 bg-gradient-to-b from-amber-500/45 to-transparent animate-pulse" style={{animationDuration: '9s', animationDelay: '4s'}}></div>
+                <div className="absolute top-1/6 left-2/3 w-3 h-36 bg-gradient-to-b from-stone-400/50 to-transparent transform -rotate-45 animate-pulse" style={{animationDuration: '13s', animationDelay: '1s'}}></div>
+                <div className="absolute bottom-1/5 right-2/3 w-5 h-28 bg-gradient-to-t from-amber-300/40 to-transparent transform -rotate-30 animate-pulse" style={{animationDuration: '7s', animationDelay: '3s'}}></div>
+                
+                <div className="absolute top-1/5 right-3/4 w-24 h-24 bg-gradient-to-bl from-amber-300/30 to-stone-400/25 transform -rotate-45 animate-pulse" style={{animationDuration: '18s', animationDelay: '4s'}}></div>
+                <div className="absolute bottom-1/5 right-1/6 w-20 h-20 bg-gradient-to-tl from-stone-300/35 to-amber-300/30 rounded-full animate-pulse" style={{animationDuration: '12s', animationDelay: '7s'}}></div>
+                <div className="absolute top-1/2 left-1/6 w-16 h-16 bg-gradient-to-br from-amber-400/30 to-stone-300/25 transform -rotate-30 animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
+                <div className="absolute top-1/3 right-1/2 w-18 h-18 bg-gradient-to-tl from-stone-400/30 to-amber-200/35 rounded-full animate-pulse" style={{animationDuration: '10s', animationDelay: '5s'}}></div>
+                
+                <div className="absolute top-1/3 left-1/4 w-8 h-8 bg-amber-400/60 rounded-full animate-pulse" style={{animationDuration: '7s', animationDelay: '3s'}}></div>
+                <div className="absolute bottom-1/4 right-1/5 w-6 h-6 bg-stone-500/65 rounded-full animate-pulse" style={{animationDuration: '10s', animationDelay: '6s'}}></div>
+                <div className="absolute top-1/2 left-1/6 w-4 h-4 bg-amber-500/70 rounded-full animate-pulse" style={{animationDuration: '15s', animationDelay: '2s'}}></div>
+                <div className="absolute bottom-1/6 right-1/3 w-5 h-5 bg-stone-400/60 rounded-full animate-pulse" style={{animationDuration: '8s', animationDelay: '4s'}}></div>
+                
+                <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-amber-200/20 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-stone-200/25 to-transparent"></div>
+                <div className="absolute top-1/3 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-300/30 to-transparent animate-pulse" style={{animationDuration: '20s'}}></div>
+                <div className="absolute bottom-1/3 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stone-400/25 to-transparent animate-pulse" style={{animationDuration: '25s', animationDelay: '5s'}}></div>
+              </div>
 
-          <div className="max-w-7xl mx-auto px-6 relative">
-            <div className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12' : 'space-y-8'} transition-all duration-700 ${isTransitioning ? 'opacity-0 transform translate-y-8' : 'opacity-100 transform translate-y-0'}`}>
-              {filteredProducts.map((product, index) => {
-                const currentProductImageIndex = productImageIndexes[product.id] || 0;
-                return (
-                  <div
-                    key={product.id}
-                    className={`group cursor-pointer animate-fadeInUp relative ${viewMode === 'list' ? 'flex flex-col md:flex-row gap-8 items-center bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg' : ''}`}
-                    onClick={() => handleProductSelect(product)}
-                    style={{animationDelay: `${index * 150}ms`}}
-                  >
-                    {isAdminMode && (
-                      <div className="absolute top-4 right-4 z-20 flex gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingProduct(product);
-                          }}
-                          className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteProductLocal(product.id);
-                          }}
-                          className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-
-                    <div className={`relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-stone-200/50 transition-all duration-700 transform group-hover:scale-105 ${viewMode === 'list' ? 'w-full md:w-48 h-48 flex-shrink-0 mb-4 md:mb-0' : 'mb-6'}`}>
-                      {product.isNew && (
-                        <div className="absolute top-4 left-4 z-10 text-xs tracking-[0.3em] bg-gradient-to-r from-amber-600 to-stone-800 text-white px-3 py-1 rounded-full shadow-lg">
-                          חדש
-                        </div>
-                      )}
-                      
-                      {!isAdminMode && (
-                        <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-0 group-hover:scale-100">
-                          <Heart className="w-5 h-5 text-white hover:text-amber-400 cursor-pointer transition-colors duration-300 drop-shadow-lg" />
-                        </div>
-                      )}
-                      
-                      {product.images && product.images.length > 0 && (
-                        <img 
-                          src={product.images[currentProductImageIndex]}
-                          alt={product.name}
-                          className={`w-full object-cover transition-all duration-700 ${viewMode === 'list' ? 'h-full' : 'h-80 lg:h-96'}`}
-                          loading="lazy"
-                          crossOrigin="anonymous"
-                          referrerPolicy="no-referrer"
-                        />
-                      )}
-                      
-                      {product.images && product.images.length > 1 && (
-                        <div className="absolute inset-y-0 left-2 right-2 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300">
-                          <button 
-                            className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleProductImageChange(product.id, 'prev');
-                            }}
-                          >
-                            <ArrowRight className="w-4 h-4" />
-                          </button>
-                          <button 
-                            className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleProductImageChange(product.id, 'next');
-                            }}
-                          >
-                            <ArrowLeft className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
-                      
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                      
-                      {!isAdminMode && (
-                        <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-8 group-hover:translate-y-0">
-                          <button className="bg-white/90 backdrop-blur-sm text-stone-800 px-6 py-2 text-sm tracking-wide hover:bg-white transition-all duration-300 rounded-full shadow-xl">
-                            צפה בפרטים
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className={`space-y-3 ${viewMode === 'list' ? 'flex-1' : 'bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg'}`}>
-                      <div className="flex items-center justify-between">
-                        <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
-                      </div>
-                      
-                      <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
-                        {product.name}
-                      </h3>
-                      
-                      <div className="text-sm text-stone-600 leading-relaxed">
-                        {product.description}
-                      </div>
-                      
-                      <div className="flex items-center gap-3 pt-2">
-                        {product.colors && product.colors.slice(0, 3).map((color, index) => (
-                          <span key={index} className="text-xs tracking-wide text-stone-500">
-                            {color}
-                            {index < Math.min(product.colors.length - 1, 2) && <span className="mx-2 text-amber-400">•</span>}
-                          </span>
-                        ))}
-                        {product.colors && product.colors.length > 3 && (
-                          <span className="text-xs text-amber-600 font-medium">+{product.colors.length - 3}</span>
-                        )}
-                      </div>
-                      
-                      {product.images && product.images.length > 1 && (
-                        <div className="flex justify-center gap-2 pt-2">
-                          {product.images.map((_, imgIndex) => (
+              <div className="max-w-7xl mx-auto px-6 relative">
+                <div className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12' : 'space-y-8'} transition-all duration-700 ${isTransitioning ? 'opacity-0 transform translate-y-8' : 'opacity-100 transform translate-y-0'}`}>
+                  {filteredProducts.map((product, index) => {
+                    const currentProductImageIndex = productImageIndexes[product.id] || 0;
+                    return (
+                      <div
+                        key={product.id}
+                        className={`group cursor-pointer animate-fadeInUp relative ${
+                          viewMode === 'list' 
+                            ? 'flex flex-col md:flex-row gap-8 items-center bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg' 
+                            : 'bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-500'
+                        }`}
+                        onClick={() => handleProductSelect(product)}
+                        style={{animationDelay: `${index * 150}ms`}}
+                      >
+                        {isAdminMode && (
+                          <div className="absolute top-4 right-4 z-20 flex gap-2">
                             <button
-                              key={imgIndex}
                               onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleProductImageDotClick(product.id, imgIndex);
+                                e.stopPropagation();
+                                setEditingProduct(product);
                               }}
-                              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                currentProductImageIndex === imgIndex ? 'bg-amber-600 scale-125' : 'bg-stone-300'
-                              }`}
+                              className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteProductLocal(product.id);
+                              }}
+                              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+
+                        <div className={`relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-stone-200/50 transition-all duration-700 transform group-hover:scale-105 ${viewMode === 'list' ? 'w-full md:w-48 h-48 flex-shrink-0 mb-4 md:mb-0' : 'mb-6'}`}>
+                          {product.isNew && (
+                            <div className="absolute top-4 left-4 z-10 text-xs tracking-[0.3em] bg-gradient-to-r from-amber-600 to-stone-800 text-white px-3 py-1 rounded-full shadow-lg">
+                              חדש
+                            </div>
+                          )}
+                          
+                          {!isAdminMode && (
+                            <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-0 group-hover:scale-100">
+                              <Heart className="w-5 h-5 text-white hover:text-amber-400 cursor-pointer transition-colors duration-300 drop-shadow-lg" />
+                            </div>
+                          )}
+                          
+                          {product.images && product.images.length > 0 && (
+                            <img 
+                              src={product.images[currentProductImageIndex]}
+                              alt={product.name}
+                              className={`w-full object-cover transition-all duration-700 ${viewMode === 'list' ? 'h-full' : 'h-80 lg:h-96'}`}
+                              loading="lazy"
+                              crossOrigin="anonymous"
+                              referrerPolicy="no-referrer"
                             />
-                          ))}
+                          )}
+                          
+                          {product.images && product.images.length > 1 && (
+                            <div className="absolute inset-y-0 left-2 right-2 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300">
+                              <button 
+                                className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleProductImageChange(product.id, 'prev');
+                                }}
+                              >
+                                <ArrowRight className="w-4 h-4" />
+                              </button>
+                              <button 
+                                className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleProductImageChange(product.id, 'next');
+                                }}
+                              >
+                                <ArrowLeft className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
+                          
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                          
+                          {!isAdminMode && (
+                            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-8 group-hover:translate-y-0">
+                              <button className="bg-white/90 backdrop-blur-sm text-stone-800 px-6 py-2 text-sm tracking-wide hover:bg-white transition-all duration-300 rounded-full shadow-xl">
+                                צפה בפרטים
+                              </button>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+
+                        <div className={`space-y-3 ${viewMode === 'list' ? 'flex-1' : 'bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg'}`}>
+                          <div className="flex items-center justify-between">
+                            <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
+                          </div>
+                          
+                          <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
+                            {product.name}
+                          </h3>
+                          
+                          <div className="text-sm text-stone-600 leading-relaxed">
+                            {product.description}
+                          </div>
+                          
+                          <div className="flex items-center gap-3 pt-2">
+                            {product.colors && product.colors.slice(0, 3).map((color, index) => (
+                              <span key={index} className="text-xs tracking-wide text-stone-500">
+                                {color}
+                                {index < Math.min(product.colors.length - 1, 2) && <span className="mx-2 text-amber-400">•</span>}
+                              </span>
+                            ))}
+                            {product.colors && product.colors.length > 3 && (
+                              <span className="text-xs text-amber-600 font-medium">+{product.colors.length - 3}</span>
+                            )}
+                          </div>
+                          
+                          {product.images && product.images.length > 1 && (
+                            <div className="flex justify-center gap-2 pt-2">
+                              {product.images.map((_, imgIndex) => (
+                                <button
+                                  key={imgIndex}
+                                  onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleProductImageDotClick(product.id, imgIndex);
+                                  }}
+                                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                    currentProductImageIndex === imgIndex ? 'bg-amber-600 scale-125' : 'bg-stone-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
           </div>
-        </section>
+        )}
       </main>
 
       <footer id="contact-section" className="py-32 bg-gradient-to-br from-stone-100 to-amber-50/50 relative overflow-hidden">
@@ -1490,6 +1441,16 @@ const App = () => {
       
       {showStorageDebugger && (
         <StorageDebugger onClose={() => setShowStorageDebugger(false)} />
+      )}
+      
+      {showCategoryManager && (
+        <CategoryManager 
+          categories={categories} 
+          setCategories={setCategories}
+          products={products}
+          setProducts={setProducts}
+          onClose={() => setShowCategoryManager(false)} 
+        />
       )}
     </div>
   );
