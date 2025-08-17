@@ -566,7 +566,6 @@ const App = () => {
     { id: 'casual', name: 'קז\'ואל', editable: true }
   ]);
   
-    const [editingCategory, setEditingCategory] = useState(null);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   
   // Load products from Supabase
