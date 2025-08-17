@@ -654,7 +654,7 @@ const App = () => {
   
   // Improved filtering with count
   const filteredProducts = useMemo(() => {
-    if (selectedCategory === 'all') {
+    if (selectedCategory === 'all' || selectedCategory === 'home') {
       return products;
     }
     return products.filter(p => p.category === selectedCategory);
@@ -935,6 +935,69 @@ const App = () => {
               </div>
             </div>
           </section>
+        )}
+
+        {/* Featured Products on Home Page */}
+        {selectedCategory === 'home' && products.length > 0 && (
+          <div className="max-w-7xl mx-auto px-6 py-20">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl lg:text-5xl font-black mb-4 tracking-tight bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">
+                מוצרים מומלצים
+              </h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-amber-400 to-stone-600 mx-auto rounded-full shadow-lg"></div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {products.filter(p => p.featured).slice(0, 6).map((product, index) => {
+                const currentProductImageIndex = productImageIndexes[product.id] || 0;
+                return (
+                  <div
+                    key={product.id}
+                    className="group cursor-pointer animate-fadeInUp bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-500"
+                    onClick={() => handleProductSelect(product)}
+                    style={{animationDelay: `${index * 150}ms`}}
+                  >
+                    <div className="relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-700 transform group-hover:scale-105 mb-6">
+                      {product.images && product.images.length > 0 && (
+                        <img 
+                          src={product.images[currentProductImageIndex]}
+                          alt={product.name}
+                          className="w-full h-64 object-cover transition-all duration-700"
+                          loading="lazy"
+                          crossOrigin="anonymous"
+                          referrerPolicy="no-referrer"
+                        />
+                      )}
+                      {product.isNew && (
+                        <div className="absolute top-4 left-4 z-10 text-xs tracking-[0.3em] bg-gradient-to-r from-amber-600 to-stone-800 text-white px-3 py-1 rounded-full shadow-lg">
+                          חדש
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
+                      <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
+                        {product.name}
+                      </h3>
+                      <div className="text-sm text-stone-600 leading-relaxed">
+                        {product.description}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            <div className="text-center mt-12">
+              <button 
+                onClick={() => handleCategoryChange('all')}
+                className="bg-gradient-to-r from-stone-900 to-amber-900 text-white px-8 py-4 text-sm tracking-wide hover:from-amber-900 hover:to-stone-900 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-amber-200/30 transform hover:scale-105"
+              >
+                צפה בכל המוצרים
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Products Section - Show for all categories except home */}
