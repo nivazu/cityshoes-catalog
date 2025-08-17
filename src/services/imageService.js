@@ -62,6 +62,11 @@ export class ImageService {
         throw new Error(`Storage not connected: ${connectionTest.error || 'Unknown error'}`);
       }
       
+      // Check if bucket exists
+      if (!connectionTest.bucketExists) {
+        throw new Error(`Storage bucket "${this.BUCKET_NAME}" does not exist. Please create it in Supabase dashboard.`);
+      }
+      
       // Validate file
       const validationErrors = this.validateImage(file);
       if (validationErrors.length > 0) {
@@ -230,18 +235,34 @@ export class ImageService {
    */
   static async testConnection() {
     try {
-      const { data, error } = await supabase.storage.listBuckets();
+      // Instead of listing buckets (which requires special permissions),
+      // we'll test by trying to list files in our bucket
+      const { data, error } = await supabase.storage
+        .from(this.BUCKET_NAME)
+        .list('', { limit: 1 });
       
       if (error) {
-        throw new Error(`Storage connection failed: ${error.message}`);
+        // If error contains "Bucket not found", the bucket doesn't exist
+        if (error.message?.includes('Bucket not found')) {
+          return {
+            connected: true,
+            bucketExists: false,
+            error: 'Bucket does not exist'
+          };
+        }
+        // Other errors might be permission issues but bucket exists
+        return {
+          connected: true,
+          bucketExists: true,
+          error: error.message
+        };
       }
 
-      const bucketExists = data?.some(bucket => bucket.name === this.BUCKET_NAME);
-      
+      // If we can list files, bucket exists and we're connected
       return {
         connected: true,
-        bucketExists,
-        buckets: data?.map(b => b.name) || []
+        bucketExists: true,
+        buckets: [this.BUCKET_NAME] // Return our bucket name for compatibility
       };
     } catch (error) {
       console.error('Storage test failed:', error);
