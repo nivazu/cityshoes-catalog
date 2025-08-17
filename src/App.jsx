@@ -988,7 +988,65 @@ const App = () => {
           </section>
         )}
 
-
+        {/* Products by Category on Home Page */}
+        {selectedCategory === 'home' && (
+          <div className="max-w-7xl mx-auto px-6 py-20">
+            {categories.filter(cat => !cat.isHomePage && cat.id !== 'all' && products.filter(p => p.category === cat.id).length > 0).map(category => (
+              <div key={category.id} className="mb-20">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">
+                    {category.name}
+                  </h2>
+                  <button 
+                    onClick={() => handleCategoryChange(category.id)}
+                    className="text-sm text-amber-700 hover:text-amber-900 transition-colors duration-300 font-medium"
+                  >
+                    צפה בכל המוצרים ←
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {products.filter(p => p.category === category.id).slice(0, 4).map((product, index) => {
+                    const currentProductImageIndex = productImageIndexes[product.id] || 0;
+                    return (
+                      <div
+                        key={product.id}
+                        className="group cursor-pointer animate-fadeInUp bg-white/30 backdrop-blur-sm rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-500"
+                        onClick={() => handleProductSelect(product)}
+                        style={{animationDelay: `${index * 100}ms`}}
+                      >
+                        <div className="relative overflow-hidden bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-700 transform group-hover:scale-105 mb-4">
+                          {product.images && product.images.length > 0 && (
+                            <img 
+                              src={product.images[currentProductImageIndex]}
+                              alt={product.name}
+                              className="w-full h-48 object-cover transition-all duration-700"
+                              loading="lazy"
+                              crossOrigin="anonymous"
+                              referrerPolicy="no-referrer"
+                            />
+                          )}
+                          {product.isNew && (
+                            <div className="absolute top-2 left-2 text-xs bg-gradient-to-r from-amber-600 to-stone-800 text-white px-2 py-1 rounded-full shadow-md">
+                              חדש
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="text-xs tracking-[0.2em] text-amber-700 font-medium">{product.brand}</div>
+                          <h3 className="text-sm font-medium group-hover:text-amber-700 transition-colors duration-300 line-clamp-2">
+                            {product.name}
+                          </h3>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Products Section - Show for all categories except home */}
         {selectedCategory !== 'home' && (
