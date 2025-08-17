@@ -70,15 +70,17 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
               value={formData.category}
               onChange={(e) => setFormData(p => ({...p, category: e.target.value}))}
               className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
-              required
             >
-              <option value="">בחר קטגוריה</option>
+              <option value="">ללא קטגוריה (יופיע רק בעמוד הבית ובכל המוצרים)</option>
               {categories.filter(cat => !cat.isHomePage && cat.id !== 'all').map(category => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
               ))}
             </select>
+            <p className="text-xs text-stone-500 mt-1">
+              מוצרים ללא קטגוריה יוצגו רק בעמוד הבית וב"כל המוצרים"
+            </p>
           </div>
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-2">תיאור</label>
@@ -455,7 +457,7 @@ const CategoryManager = ({ categories, setCategories, products, setProducts, onC
   const handleDeleteCategory = (categoryId) => {
     const productsInCategory = products.filter(p => p.category === categoryId);
     const confirmMessage = productsInCategory.length > 0 
-      ? `יש ${productsInCategory.length} מוצרים בקטגוריה זו. הם יועברו לקטגוריה הכללית. האם להמשיך?`
+      ? `יש ${productsInCategory.length} מוצרים בקטגוריה זו. הם יוצגו רק בעמוד הבית ובכל המוצרים. האם להמשיך?`
       : 'האם אתה בטוח שברצונך למחוק קטגוריה זו?';
     
     if (window.confirm(confirmMessage)) {
@@ -687,11 +689,8 @@ const App = () => {
     if (selectedCategory === 'all' || selectedCategory === 'home') {
       return products;
     }
-    // Show products with matching category or products without category
-    return products.filter(p => 
-      p.category === selectedCategory || 
-      (!p.category && selectedCategory !== 'home')
-    );
+    // Show only products with matching category
+    return products.filter(p => p.category === selectedCategory);
   }, [selectedCategory, products]);
   
   // Get product count per category
