@@ -537,7 +537,7 @@ const CategoryManager = ({ categories, setCategories, onClose }) => {
 };
 
 const App = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('home');
   const [viewMode, setViewMode] = useState('grid');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productImageIndexes, setProductImageIndexes] = useState({});
@@ -940,6 +940,14 @@ const App = () => {
         {/* Products Section - Show for all categories except home */}
         {selectedCategory !== 'home' && (
           <div className="max-w-7xl mx-auto px-6">
+            {/* Category Title */}
+            <div className="text-center mb-12 pt-10">
+              <h1 className="text-4xl lg:text-6xl font-black mb-4 tracking-tight bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">
+                {categories.find(cat => cat.id === selectedCategory)?.name}
+              </h1>
+              <div className="w-32 h-1 bg-gradient-to-r from-amber-400 to-stone-600 mx-auto rounded-full shadow-lg"></div>
+            </div>
+
             {/* Mobile Category Selector */}
             <div className="lg:hidden mb-8">
               <select
