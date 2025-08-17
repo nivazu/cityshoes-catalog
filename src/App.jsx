@@ -778,15 +778,17 @@ const App = () => {
     try {
       setIsLoading(true);
       const data = await getProducts();
+      console.log('Loaded products from Supabase:', data.length);
       setProducts(data);
     } catch (error) {
       console.error('Error loading products:', error);
-      // Fallback to sample data for development
-      setProducts(sampleProducts);
+      alert(`שגיאה בטעינת מוצרים: ${error.message}`);
+      // Don't fallback to sample products - show the real error
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }
-  }, [sampleProducts]);
+  }, []);
   
   const [storeInfo, setStoreInfo] = useState({ 
     name: "נעלי העיר", 
@@ -1038,6 +1040,9 @@ const App = () => {
               </button>
               <button onClick={() => setShowStorageTest(!showStorageTest)} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
                 בדיקות
+              </button>
+              <button onClick={loadProducts} className="bg-green-500/20 hover:bg-green-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                🔄 רענן מוצרים
               </button>
               <button onClick={() => setEditingStore(true)} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
                 ערוך חנות

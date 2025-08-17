@@ -1,39 +1,30 @@
 import { supabase, TABLES } from '../lib/supabase'
 
-// Get all products with optional filtering
-export const getProducts = async (filters = {}) => {
+// Get all products
+export const getProducts = async () => {
   try {
-    let query = supabase
+    console.log('Fetching products from Supabase...');
+    
+    const { data, error } = await supabase
       .from(TABLES.PRODUCTS)
       .select('*')
       .order('created_at', { ascending: false })
 
-    // Apply filters
-    if (filters.category && filters.category !== 'all') {
-      query = query.eq('category', filters.category)
-    }
-    
-    if (filters.brand) {
-      query = query.ilike('brand', `%${filters.brand}%`)
-    }
-    
-    if (filters.search) {
-      query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
-    }
-    
-    if (filters.isNew !== undefined) {
-      query = query.eq('is_new', filters.isNew)
-    }
-    
-    if (filters.featured !== undefined) {
-      query = query.eq('featured', filters.featured)
-    }
-
-    const { data, error } = await query
-
     if (error) {
       console.error('Error fetching products:', error)
       throw error
+    }
+
+    console.log(`Successfully fetched ${data?.length || 0} products from Supabase`);
+    
+    // Log first few products for debugging
+    if (data && data.length > 0) {
+      console.log('Sample products:', data.slice(0, 3).map(p => ({
+        id: p.id,
+        name: p.name,
+        brand: p.brand,
+        category: p.category
+      })));
     }
 
     return data || []
