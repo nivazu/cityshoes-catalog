@@ -9,7 +9,7 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
   const [formData, setFormData] = useState({
     name: product.name || '',
     brand: product.brand || '',
-    category: product.category || 'lifestyle',
+    category: product.category || '',
     description: product.description || '',
     colors: product.colors?.join(', ') || '',
     sizes: product.sizes?.join(', ') || '',
@@ -63,6 +63,22 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
                 required
               />
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-2">קטגוריה</label>
+            <select
+              value={formData.category}
+              onChange={(e) => setFormData(p => ({...p, category: e.target.value}))}
+              className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+              required
+            >
+              <option value="">בחר קטגוריה</option>
+              {categories.filter(cat => !cat.isHomePage && cat.id !== 'all').map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-2">תיאור</label>
@@ -406,7 +422,7 @@ const ProductModal = ({ product, onClose, storeInfo }) => {
   );
 };
 
-const CategoryManager = ({ categories, setCategories, onClose }) => {
+const CategoryManager = ({ categories, setCategories, products, setProducts, onClose }) => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [editingCategoryId, setEditingCategoryId] = useState(null);
   const [editingCategoryName, setEditingCategoryName] = useState('');
@@ -437,7 +453,18 @@ const CategoryManager = ({ categories, setCategories, onClose }) => {
   };
 
   const handleDeleteCategory = (categoryId) => {
-    if (window.confirm('האם אתה בטוח שברצונך למחוק קטגוריה זו?')) {
+    const productsInCategory = products.filter(p => p.category === categoryId);
+    const confirmMessage = productsInCategory.length > 0 
+      ? `יש ${productsInCategory.length} מוצרים בקטגוריה זו. הם יועברו לקטגוריה הכללית. האם להמשיך?`
+      : 'האם אתה בטוח שברצונך למחוק קטגוריה זו?';
+    
+    if (window.confirm(confirmMessage)) {
+      // Update products in this category to have no category
+      if (productsInCategory.length > 0) {
+        setProducts(products.map(p => 
+          p.category === categoryId ? { ...p, category: '' } : p
+        ));
+      }
       setCategories(categories.filter(cat => cat.id !== categoryId));
     }
   };
@@ -503,6 +530,9 @@ const CategoryManager = ({ categories, setCategories, onClose }) => {
                 <>
                   <div>
                     <span className="font-medium text-stone-800">{category.name}</span>
+                    <span className="text-xs text-stone-500 mr-2">
+                      ({products.filter(p => p.category === category.id).length} מוצרים)
+                    </span>
                     {!category.editable && (
                       <span className="text-xs text-stone-500 mr-2">(לא ניתן לעריכה)</span>
                     )}
@@ -657,7 +687,11 @@ const App = () => {
     if (selectedCategory === 'all' || selectedCategory === 'home') {
       return products;
     }
-    return products.filter(p => p.category === selectedCategory);
+    // Show products with matching category or products without category
+    return products.filter(p => 
+      p.category === selectedCategory || 
+      (!p.category && selectedCategory !== 'home')
+    );
   }, [selectedCategory, products]);
   
   // Get product count per category
@@ -1353,7 +1387,9 @@ const App = () => {
       {showCategoryManager && (
         <CategoryManager 
           categories={categories} 
-          setCategories={setCategories} 
+          setCategories={setCategories}
+          products={products}
+          setProducts={setProducts}
           onClose={() => setShowCategoryManager(false)} 
         />
       )}
