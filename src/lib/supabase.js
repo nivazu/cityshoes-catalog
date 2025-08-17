@@ -7,6 +7,19 @@ const resolveEnv = (keys) => {
       return process.env[key]
     }
   }
+  // Try to get from window for runtime env vars in Vercel
+  if (typeof window !== 'undefined') {
+    for (const key of keys) {
+      // Check if it's injected as a global variable
+      if (window[key]) {
+        return window[key]
+      }
+      // Check process.env in browser context
+      if (window.process?.env?.[key]) {
+        return window.process.env[key]
+      }
+    }
+  }
   return undefined
 }
 
@@ -43,6 +56,9 @@ const supabaseAnonKey = rawAnonKey?.trim()
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Missing Supabase environment variables. Expected one of REACT_APP_*, NEXT_PUBLIC_* or SUPABASE_*')
+  console.error('Available env vars:', Object.keys(process.env || {}).filter(key => 
+    key.includes('SUPABASE') || key.includes('REACT_APP') || key.includes('NEXT_PUBLIC')
+  ))
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
