@@ -1,6 +1,20 @@
 -- ==========================================
--- Storage Policies for product-images bucket
+-- Storage Setup and Policies for product-images bucket
 -- ==========================================
+
+-- First, ensure the bucket exists
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'product-images', 
+  'product-images', 
+  true,
+  10485760, -- 10MB
+  ARRAY['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+)
+ON CONFLICT (id) DO UPDATE SET
+  public = true,
+  file_size_limit = 10485760,
+  allowed_mime_types = ARRAY['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
 
 -- Enable RLS on storage.objects table (if not already enabled)
 ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
@@ -10,6 +24,7 @@ DROP POLICY IF EXISTS "Public Access for product-images" ON storage.objects;
 DROP POLICY IF EXISTS "Public Upload to product-images" ON storage.objects;
 DROP POLICY IF EXISTS "Public Update in product-images" ON storage.objects;
 DROP POLICY IF EXISTS "Public Delete from product-images" ON storage.objects;
+DROP POLICY IF EXISTS "Limit file size for product-images" ON storage.objects;
 
 -- ==========================================
 -- 1. Policy for PUBLIC READ access (SELECT)
@@ -58,7 +73,6 @@ USING (bucket_id = 'product-images');
 
 -- If you want to restrict file sizes at the policy level
 -- Note: This is in addition to bucket-level restrictions
-DROP POLICY IF EXISTS "Limit file size for product-images" ON storage.objects;
 CREATE POLICY "Limit file size for product-images"
 ON storage.objects
 FOR INSERT
@@ -68,37 +82,34 @@ WITH CHECK (
 );
 
 -- ==========================================
--- Verify policies were created
+-- Verify everything was created correctly
+-- ==========================================
+DO $$
+BEGIN
+    -- Check if bucket exists
+    IF EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'product-images') THEN
+        RAISE NOTICE 'Bucket "product-images" exists ✓';
+    ELSE
+        RAISE WARNING 'Bucket "product-images" does not exist!';
+    END IF;
+    
+    -- Check if policies exist
+    IF EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'storage' AND tablename = 'objects' AND policyname LIKE '%product-images%') THEN
+        RAISE NOTICE 'Storage policies created ✓';
+    ELSE
+        RAISE WARNING 'Storage policies not found!';
+    END IF;
+END $$;
+
+-- ==========================================
+-- Final check - list all policies
 -- ==========================================
 SELECT 
-    schemaname,
-    tablename,
     policyname,
-    permissive,
-    roles,
     cmd,
-    qual,
-    with_check
+    permissive
 FROM pg_policies 
 WHERE schemaname = 'storage' 
 AND tablename = 'objects'
+AND policyname LIKE '%product-images%'
 ORDER BY policyname;
-
--- ==========================================
--- Make sure the bucket is public
--- ==========================================
-UPDATE storage.buckets 
-SET public = true 
-WHERE id = 'product-images';
-
--- ==========================================
--- Check bucket configuration
--- ==========================================
-SELECT 
-    id,
-    name,
-    public,
-    file_size_limit,
-    allowed_mime_types
-FROM storage.buckets 
-WHERE id = 'product-images';
