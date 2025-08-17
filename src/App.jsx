@@ -1009,26 +1009,26 @@ const App = () => {
       </div>
 
       {isAdminMode && (
-        <div className="fixed top-0 left-0 right-0 z-[60] bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 shadow-lg">
-          <div className="flex items-center justify-between max-w-7xl mx-auto">
+        <div className="fixed top-0 left-0 right-0 z-[60] bg-gradient-to-r from-red-600 to-red-700 text-white px-4 sm:px-6 py-3 shadow-lg">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between max-w-7xl mx-auto gap-4">
             <div className="flex items-center gap-4">
               <Settings className="w-5 h-5" />
               <span className="text-sm font-medium">מצב ניהול פעיל</span>
             </div>
-            <div className="flex items-center gap-4">
-              <button onClick={() => setShowStorageDebugger(true)} className="bg-yellow-500/20 hover:bg-yellow-500/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
-                🔧 אבחון Storage
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              <button onClick={() => setShowStorageDebugger(true)} className="bg-yellow-500/20 hover:bg-yellow-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                🔧 אבחון
               </button>
-              <button onClick={() => setShowStorageTest(!showStorageTest)} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
-                בדיקת העלאות
+              <button onClick={() => setShowStorageTest(!showStorageTest)} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                בדיקות
               </button>
-              <button onClick={() => setEditingStore(true)} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
-                ערוך פרטי חנות
+              <button onClick={() => setEditingStore(true)} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                ערוך חנות
               </button>
-              <button onClick={() => setEditingProduct({})} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
-                הוסף מוצר
+              <button onClick={() => setEditingProduct({})} className="bg-amber-500 hover:bg-amber-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-300">
+                ➕ הוסף מוצר
               </button>
-              <button onClick={handleLogout} className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm transition-colors duration-300">
+              <button onClick={handleLogout} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
                 יציאה
               </button>
             </div>
@@ -1036,7 +1036,7 @@ const App = () => {
         </div>
       )}
 
-      <header className={`fixed ${isAdminMode ? 'top-12' : 'top-0'} left-0 right-0 z-40 transition-all duration-700 ${scrollY > 50 ? 'bg-white/80 backdrop-blur-2xl border-b border-stone-200/50 shadow-lg shadow-stone-200/20' : 'bg-transparent'}`}>
+      <header className={`fixed ${isAdminMode ? 'top-16 sm:top-12' : 'top-0'} left-0 right-0 z-40 transition-all duration-700 ${scrollY > 50 ? 'bg-white/80 backdrop-blur-2xl border-b border-stone-200/50 shadow-lg shadow-stone-200/20' : 'bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
