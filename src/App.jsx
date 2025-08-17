@@ -890,29 +890,31 @@ const App = () => {
               <div className="text-xs tracking-[0.3em] text-stone-500 font-light">{storeInfo.slogan}</div>
             </div>
 
-            <nav className="hidden lg:flex items-center gap-3 bg-white/80 backdrop-blur-md rounded-full p-2 shadow-xl border border-stone-200">
-              {categories.map(category => (
-                <button
-                  key={category.id}
-                  onClick={() => handleCategoryChange(category.id)}
-                  className={`px-6 py-3 rounded-full text-sm font-medium tracking-wide transition-all duration-300 ${
-                    selectedCategory === category.id
-                      ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg scale-105'
-                      : 'text-stone-700 hover:text-stone-900 hover:bg-stone-100'
-                  }`}
-                >
-                  <span>{category.name}</span>
-                  {!category.isHomePage && (
-                    <span className="text-xs opacity-70 mr-1">({getCategoryCount(category.id)})</span>
-                  )}
-                </button>
-              ))}
-            </nav>
+            <div className="flex flex-col items-end gap-3">
+              <nav className="hidden lg:flex items-center gap-3 bg-white/80 backdrop-blur-md rounded-full p-2 shadow-xl border border-stone-200">
+                {categories.map(category => (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryChange(category.id)}
+                    className={`px-6 py-3 rounded-full text-sm font-medium tracking-wide transition-all duration-300 ${
+                      selectedCategory === category.id
+                        ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg scale-105'
+                        : 'text-stone-700 hover:text-stone-900 hover:bg-stone-100'
+                    }`}
+                  >
+                    <span>{category.name}</span>
+                    {!category.isHomePage && (
+                      <span className="text-xs opacity-70 mr-1">({getCategoryCount(category.id)})</span>
+                    )}
+                  </button>
+                ))}
+              </nav>
 
-            <a href={`https://wa.me/${storeInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 text-sm tracking-wide hover:from-green-600 hover:to-green-700 transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-green-200/50 transform hover:scale-105 rounded-full flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" /> 
-              דברו איתנו ב-Whatsapp
-            </a>
+              <a href={`https://wa.me/${storeInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 text-sm tracking-wide hover:from-green-600 hover:to-green-700 transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-green-200/50 transform hover:scale-105 rounded-full flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" /> 
+                דברו איתנו ב-Whatsapp
+              </a>
+            </div>
           </div>
         </div>
       </header>
