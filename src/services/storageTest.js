@@ -75,12 +75,17 @@ export class StorageTestService {
   static async testUpload() {
     console.log('Testing file upload...');
     try {
-      // Create a test file
-      const testContent = 'Test image content';
-      const testBlob = new Blob([testContent], { type: 'text/plain' });
-      const testFile = new File([testBlob], 'test.txt', { type: 'text/plain' });
+      // Create a test image (1x1 transparent PNG)
+      const pngData = atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
+      const bytes = new Uint8Array(pngData.length);
+      for (let i = 0; i < pngData.length; i++) {
+        bytes[i] = pngData.charCodeAt(i);
+      }
       
-      const testPath = `test/test-${Date.now()}.txt`;
+      const testBlob = new Blob([bytes], { type: 'image/png' });
+      const testFile = new File([testBlob], 'test.png', { type: 'image/png' });
+      
+      const testPath = `test/test-${Date.now()}.png`;
       
       const { data, error } = await supabase.storage
         .from('product-images')
