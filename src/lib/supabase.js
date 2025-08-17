@@ -59,9 +59,30 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Available env vars:', Object.keys(process.env || {}).filter(key => 
     key.includes('SUPABASE') || key.includes('REACT_APP') || key.includes('NEXT_PUBLIC')
   ))
+  console.error('All env vars:', Object.keys(process.env || {}))
+  console.error('Raw URL:', rawUrl)
+  console.error('Raw Anon Key:', rawAnonKey)
+  
+  // For local development, provide hardcoded values as fallback
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    console.warn('Using hardcoded values for local development')
+    const FALLBACK_URL = 'https://oywfddfwttncjayglvoy.supabase.co'
+    const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95d2ZkZGZ3dHRuY2pheWdsdm95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNzQ1NjEsImV4cCI6MjA2OTY1MDU2MX0.TH1dkwedk_5AMCcmNlKkCfq_eKImnlK0CMtnOVgbUfc'
+    
+    if (!supabaseUrl) {
+      Object.assign(window, { REACT_APP_SUPABASE_URL: FALLBACK_URL })
+    }
+    if (!supabaseAnonKey) {
+      Object.assign(window, { REACT_APP_SUPABASE_ANON_KEY: FALLBACK_KEY })
+    }
+  }
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Try again with fallback values for local dev
+const finalUrl = supabaseUrl || (typeof window !== 'undefined' && window.REACT_APP_SUPABASE_URL)
+const finalKey = supabaseAnonKey || (typeof window !== 'undefined' && window.REACT_APP_SUPABASE_ANON_KEY)
+
+export const supabase = createClient(finalUrl, finalKey, {
   auth: {
     persistSession: false // Since this is a catalog app, we might not need auth sessions
   }
