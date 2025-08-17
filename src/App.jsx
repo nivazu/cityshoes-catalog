@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
+import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube, Package, Shield, Star, MessageCircle } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from './services/productService';
 import ImageUpload from './components/ImageUpload';
 import StorageTest from './components/StorageTest';
@@ -748,7 +748,93 @@ const App = () => {
         </div>
       </header>
 
-      <main className={`min-h-screen transition-all duration-700 ${isAdminMode ? 'pt-32' : 'pt-24'}`}>
+      <main className={`pt-32 ${isAdminMode ? 'sm:pt-40' : 'sm:pt-28'} min-h-screen`}>
+        {/* Hero Section */}
+        <section className="relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 py-20 lg:py-32">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <div className="transition-all duration-1000">
+                <div className="text-xs tracking-[0.4em] text-amber-600 mb-6 font-light">COLLECTION 2025</div>
+                <h1 className="text-6xl lg:text-8xl font-black leading-none mb-8 tracking-tight">
+                  <span className="bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">{storeInfo.heroTitle.split(' ').slice(0, 1).join(' ')}</span><br />
+                  <span className="text-stone-800">{storeInfo.heroTitle.split(' ').slice(1, 2).join(' ')}</span><br />
+                  <span className="text-stone-400 text-5xl lg:text-6xl">{storeInfo.heroTitle.split(' ').slice(2).join(' ')}</span>
+                </h1>
+                <p className="text-lg text-stone-600 mb-12 leading-relaxed max-w-md">
+                  {storeInfo.heroSubtitle}
+                </p>
+                <div className="flex items-center gap-6">
+                  <button 
+                    onClick={() => document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' })}
+                    className="bg-gradient-to-r from-stone-900 to-amber-900 text-white px-8 py-4 text-sm tracking-wide hover:from-amber-900 hover:to-stone-900 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-amber-200/30 transform hover:scale-105"
+                  >
+                    צפו בקולקציה
+                    <ArrowLeft className="w-4 h-4 inline-block mr-2" />
+                  </button>
+                  {!isAdminMode && (
+                    <button
+                      onClick={() => window.open(`https://wa.me/${storeInfo.whatsapp}`, '_blank')}
+                      className="border border-stone-300 text-stone-700 px-6 py-4 text-sm tracking-wide hover:bg-stone-100 transition-all duration-300 flex items-center gap-2"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      WhatsApp
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              <div className="relative">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-bl from-amber-100/20 to-stone-200/20 rounded-3xl transform rotate-3 group-hover:rotate-6 transition-transform duration-700"></div>
+                  <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-700 transform group-hover:scale-105">
+                    <img 
+                      src={storeInfo.bannerImage}
+                      alt={storeInfo.heroTitle}
+                      className="w-full h-96 lg:h-[600px] object-contain transition-all duration-700"
+                      loading="lazy"
+                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                  </div>
+                  
+                  {/* Decorative Elements */}
+                  <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-amber-300/40 to-stone-400/30 rounded-full blur-2xl animate-pulse" style={{animationDuration: '4s'}}></div>
+                  <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-gradient-to-tl from-stone-300/40 to-amber-300/30 rounded-full blur-2xl animate-pulse" style={{animationDuration: '6s', animationDelay: '2s'}}></div>
+                  <div className="absolute top-1/2 -right-16 w-20 h-20 bg-gradient-to-l from-amber-400/30 to-stone-300/40 rounded-full blur-xl animate-pulse" style={{animationDuration: '5s', animationDelay: '1s'}}></div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Feature Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24">
+              <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 group">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-stone-600 rounded-full flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500">
+                  <Package className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-medium mb-3">משלוח מהיר</h3>
+                <p className="text-stone-600 text-sm leading-relaxed">משלוח תוך 3-5 ימי עסקים לכל הארץ</p>
+              </div>
+              
+              <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 group">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-stone-600 rounded-full flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500">
+                  <Shield className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-medium mb-3">אחריות מלאה</h3>
+                <p className="text-stone-600 text-sm leading-relaxed">אחריות יצרן על כל המוצרים</p>
+              </div>
+              
+              <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 group">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-stone-600 rounded-full flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500">
+                  <Star className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-medium mb-3">מותגים מובילים</h3>
+                <p className="text-stone-600 text-sm leading-relaxed">רק המותגים הטובים ביותר</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <div className="max-w-7xl mx-auto px-6">
           {/* Mobile Category Selector */}
           <div className="lg:hidden mb-8">
