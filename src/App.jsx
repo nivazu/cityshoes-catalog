@@ -1068,8 +1068,8 @@ const App = () => {
               <div className="text-xl sm:text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent cursor-pointer" onClick={() => !isAdminMode && setShowAdminLogin(true)}>
                 {storeInfo.name}
               </div>
-              <div className="hidden sm:block w-1 h-6 bg-gradient-to-b from-amber-400 to-stone-600 mx-4 shadow-sm"></div>
-              <div className="hidden sm:block text-xs tracking-[0.3em] text-stone-500 font-light">{storeInfo.slogan}</div>
+              <div className="w-1 h-6 bg-gradient-to-b from-amber-400 to-stone-600 mx-3 sm:mx-4 shadow-sm"></div>
+              <div className="text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.3em] text-stone-500 font-light">{storeInfo.slogan}</div>
             </div>
 
             <div className="flex flex-col items-end gap-2">
@@ -1713,15 +1713,15 @@ const App = () => {
       
       {/* Privacy Policy Modal */}
       {showPrivacyPolicy && (
-        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6">
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="flex justify-between items-center mb-8 pb-4 border-b border-stone-200">
-              <h2 className="text-2xl sm:text-3xl font-black text-stone-900">
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
+          <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">
                 מדיניות פרטיות
               </h2>
               <button 
                 onClick={() => setShowPrivacyPolicy(false)} 
-                className="text-stone-500 hover:text-stone-700 transition-colors duration-300 p-2 hover:bg-stone-100 rounded-lg"
+                className="text-stone-400 hover:text-amber-700 transition-colors duration-300"
               >
                 <X className="w-6 h-6" />
               </button>
