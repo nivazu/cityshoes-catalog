@@ -1301,6 +1301,15 @@ const App = () => {
               <span className="text-sm font-medium">מצב ניהול פעיל</span>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              <button onClick={() => setShowStorageDebugger(true)} className="bg-yellow-500/20 hover:bg-yellow-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                🔧 אבחון
+              </button>
+              <button onClick={() => setShowStorageTest(!showStorageTest)} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                בדיקות
+              </button>
+              <button onClick={loadProducts} className="bg-green-500/20 hover:bg-green-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                🔄 רענן מוצרים
+              </button>
               <button onClick={() => setEditingStore(true)} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
                 ערוך חנות
               </button>
