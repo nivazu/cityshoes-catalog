@@ -588,6 +588,156 @@ const CategoryManager = ({ categories, setCategories, products, setProducts, onC
   );
 };
 
+// About Edit Modal Component
+const AboutEditModal = ({ storeInfo, onSave, onCancel }) => {
+  const [formData, setFormData] = useState({
+    aboutTitle: storeInfo.aboutTitle || '',
+    aboutText: storeInfo.aboutText || '',
+    aboutBanners: storeInfo.aboutBanners || []
+  });
+
+  const handleAddBanner = () => {
+    setFormData(prev => ({
+      ...prev,
+      aboutBanners: [...prev.aboutBanners, { id: Date.now(), title: '', text: '', image: '' }]
+    }));
+  };
+
+  const handleUpdateBanner = (index, field, value) => {
+    const newBanners = [...formData.aboutBanners];
+    newBanners[index][field] = value;
+    setFormData(prev => ({ ...prev, aboutBanners: newBanners }));
+  };
+
+  const handleDeleteBanner = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      aboutBanners: prev.aboutBanners.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({
+      ...storeInfo,
+      ...formData
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
+      <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">
+            עריכת עמוד אודות
+          </h3>
+          <button onClick={onCancel} className="text-stone-400 hover:text-amber-700 transition-colors duration-300">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-2">כותרת העמוד</label>
+            <input
+              type="text"
+              value={formData.aboutTitle}
+              onChange={(e) => setFormData(p => ({...p, aboutTitle: e.target.value}))}
+              className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-2">תוכן העמוד</label>
+            <textarea
+              value={formData.aboutText}
+              onChange={(e) => setFormData(p => ({...p, aboutText: e.target.value}))}
+              className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm h-32 resize-none"
+              required
+            />
+          </div>
+          
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <label className="text-sm font-medium text-stone-700">באנרים</label>
+              <button
+                type="button"
+                onClick={handleAddBanner}
+                className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors duration-300 text-sm"
+              >
+                הוסף באנר
+              </button>
+            </div>
+            <div className="space-y-4">
+              {formData.aboutBanners.map((banner, index) => (
+                <div key={banner.id} className="border border-stone-300 rounded-xl p-4 bg-white/50">
+                  <div className="flex justify-between items-start mb-3">
+                    <h4 className="font-medium text-stone-700">באנר {index + 1}</h4>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteBanner(index)}
+                      className="text-red-600 hover:text-red-700 transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-stone-600 mb-1">כותרת</label>
+                      <input
+                        type="text"
+                        value={banner.title}
+                        onChange={(e) => handleUpdateBanner(index, 'title', e.target.value)}
+                        className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                        placeholder="כותרת הבאנר"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-stone-600 mb-1">טקסט</label>
+                      <input
+                        type="text"
+                        value={banner.text}
+                        onChange={(e) => handleUpdateBanner(index, 'text', e.target.value)}
+                        className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                        placeholder="טקסט קצר"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-medium text-stone-600 mb-1">כתובת תמונה</label>
+                      <input
+                        type="url"
+                        value={banner.image}
+                        onChange={(e) => handleUpdateBanner(index, 'image', e.target.value)}
+                        className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              className="flex-1 bg-gradient-to-r from-stone-800 to-amber-800 text-white py-3 rounded-xl font-medium hover:from-amber-800 hover:to-stone-800 transition-all duration-300"
+            >
+              שמור שינויים
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex-1 border border-stone-300 text-stone-600 py-3 rounded-xl font-medium hover:bg-stone-50 transition-colors duration-300"
+            >
+              ביטול
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const App = () => {
   const [selectedCategory, setSelectedCategory] = useState('home');
   const [viewMode, setViewMode] = useState('grid');
@@ -603,6 +753,10 @@ const App = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingStore, setEditingStore] = useState(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+  const [showTermsOfService, setShowTermsOfService] = useState(false);
+  const [showAboutUs, setShowAboutUs] = useState(false);
+  const [editingAbout, setEditingAbout] = useState(false);
 
   const [products, setProducts] = useState([]); 
 
@@ -648,7 +802,10 @@ const App = () => {
     tiktok: "https://www.tiktok.com/@asi0505798761?_t=ZS-8xzXQyLNjcI&_r=1",
     heroTitle: "PREMIUM FOOTWEAR EXPERIENCE", 
     heroSubtitle: "קולקציה אקסקלוסיבית של נעלי ספורט ואופנה מהמותגים המובילים בעולם.", 
-    bannerImage: "https://i.ibb.co/gMXLwMg6/b447649c-d70a-400e-bf50-f22a1c291eca-1.gif" 
+    bannerImage: "https://i.ibb.co/gMXLwMg6/b447649c-d70a-400e-bf50-f22a1c291eca-1.gif",
+    aboutTitle: "אודות נעלי העיר",
+    aboutText: "ברוכים הבאים לנעלי העיר - החנות המובילה לנעלי ספורט ואופנה בחדרה. אנו מתמחים במכירת נעליים מהמותגים המובילים בעולם ומספקים שירות מקצועי ואישי לכל לקוח.",
+    aboutBanners: []
   });
   
   const [showStorageDebugger, setShowStorageDebugger] = useState(false);
@@ -886,6 +1043,9 @@ const App = () => {
               </button>
               <button onClick={() => setEditingStore(true)} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
                 ערוך חנות
+              </button>
+              <button onClick={() => setEditingAbout(true)} className="bg-blue-500/20 hover:bg-blue-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                📄 ערוך אודות
               </button>
               <button onClick={() => setShowCategoryManager(true)} className="bg-purple-500/20 hover:bg-purple-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
                 🏷️ ניהול קטגוריות
@@ -1417,6 +1577,30 @@ const App = () => {
           </div>
           
           <div className="mt-8 text-xs text-stone-400">© 2025 {storeInfo.name}. כל הזכויות שמורות.</div>
+          
+          {/* Footer Links */}
+          <div className="mt-6 flex flex-wrap justify-center gap-4 text-xs">
+            <button
+              onClick={() => setShowPrivacyPolicy(true)}
+              className="text-stone-500 hover:text-amber-700 transition-colors duration-300 underline-offset-4 hover:underline"
+            >
+              מדיניות פרטיות
+            </button>
+            <span className="text-stone-400">•</span>
+            <button
+              onClick={() => setShowTermsOfService(true)}
+              className="text-stone-500 hover:text-amber-700 transition-colors duration-300 underline-offset-4 hover:underline"
+            >
+              תנאי שימוש באתר
+            </button>
+            <span className="text-stone-400">•</span>
+            <button
+              onClick={() => setShowAboutUs(true)}
+              className="text-stone-500 hover:text-amber-700 transition-colors duration-300 underline-offset-4 hover:underline"
+            >
+              אודותינו
+            </button>
+          </div>
         </div>
       </footer>
 
@@ -1476,6 +1660,7 @@ const App = () => {
 
       {editingProduct && <ProductEditModal product={editingProduct} onSave={saveProduct} onCancel={() => setEditingProduct(null)} categories={categories} />}
       {editingStore && <StoreEditModal storeInfo={storeInfo} onSave={saveStoreInfo} onCancel={() => setEditingStore(false)} />}
+      {editingAbout && <AboutEditModal storeInfo={storeInfo} onSave={saveStoreInfo} onCancel={() => setEditingAbout(false)} />}
       {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} storeInfo={storeInfo} />}
       
       {/* Storage Test Modal */}
@@ -1510,6 +1695,139 @@ const App = () => {
           setProducts={setProducts}
           onClose={() => setShowCategoryManager(false)} 
         />
+      )}
+      
+      {/* Privacy Policy Modal */}
+      {showPrivacyPolicy && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
+          <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">
+                מדיניות פרטיות
+              </h2>
+              <button 
+                onClick={() => setShowPrivacyPolicy(false)} 
+                className="text-stone-400 hover:text-amber-700 transition-colors duration-300"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="prose prose-stone max-w-none">
+              <p className="text-stone-700 leading-relaxed mb-4">
+                אנו ב{storeInfo.name} מחויבים להגנה על פרטיותך. מדיניות פרטיות זו מסבירה כיצד אנו אוספים, משתמשים ומגנים על המידע שלך.
+              </p>
+              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">איסוף מידע</h3>
+              <p className="text-stone-700 leading-relaxed mb-4">
+                אנו אוספים מידע שאתה מספק לנו ישירות, כגון שם, כתובת, מספר טלפון וכתובת דוא"ל כאשר אתה יוצר איתנו קשר או מבצע רכישה.
+              </p>
+              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">שימוש במידע</h3>
+              <p className="text-stone-700 leading-relaxed mb-4">
+                אנו משתמשים במידע שנאסף כדי לספק לך שירות טוב יותר, לעבד הזמנות, לשלוח עדכונים על מוצרים חדשים ומבצעים, ולשפר את חווית הקנייה שלך.
+              </p>
+              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">אבטחת מידע</h3>
+              <p className="text-stone-700 leading-relaxed mb-4">
+                אנו נוקטים באמצעי אבטחה מתאימים כדי להגן על המידע שלך מפני גישה בלתי מורשית, שינוי, גילוי או השמדה.
+              </p>
+              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">יצירת קשר</h3>
+              <p className="text-stone-700 leading-relaxed">
+                אם יש לך שאלות לגבי מדיניות הפרטיות שלנו, אנא צור איתנו קשר בטלפון {storeInfo.phone} או בכתובת {storeInfo.address}.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Terms of Service Modal */}
+      {showTermsOfService && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
+          <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">
+                תנאי שימוש באתר
+              </h2>
+              <button 
+                onClick={() => setShowTermsOfService(false)} 
+                className="text-stone-400 hover:text-amber-700 transition-colors duration-300"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="prose prose-stone max-w-none">
+              <p className="text-stone-700 leading-relaxed mb-4">
+                ברוכים הבאים לאתר {storeInfo.name}. השימוש באתר זה כפוף לתנאים הבאים:
+              </p>
+              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">תנאי שימוש כלליים</h3>
+              <p className="text-stone-700 leading-relaxed mb-4">
+                בכניסתך לאתר ובשימוש בו, אתה מסכים לתנאי השימוש. אם אינך מסכים לתנאים אלה, אנא הימנע משימוש באתר.
+              </p>
+              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">קניין רוחני</h3>
+              <p className="text-stone-700 leading-relaxed mb-4">
+                כל התכנים באתר זה, כולל טקסטים, תמונות, לוגו ועיצוב, הם רכושה של {storeInfo.name} ומוגנים בזכויות יוצרים.
+              </p>
+              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">מוצרים ומחירים</h3>
+              <p className="text-stone-700 leading-relaxed mb-4">
+                אנו שומרים לעצמנו את הזכות לשנות מחירים ומבצעים ללא הודעה מוקדמת. המחירים באתר כוללים מע"מ.
+              </p>
+              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">הגבלת אחריות</h3>
+              <p className="text-stone-700 leading-relaxed mb-4">
+                {storeInfo.name} לא תישא באחריות לכל נזק ישיר או עקיף הנובע משימוש או מחוסר יכולת להשתמש באתר.
+              </p>
+              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">שינויים בתנאי השימוש</h3>
+              <p className="text-stone-700 leading-relaxed">
+                אנו שומרים לעצמנו את הזכות לעדכן את תנאי השימוש מעת לעת. המשך השימוש באתר לאחר שינויים כאלה מהווה הסכמה לתנאים המעודכנים.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* About Us Modal */}
+      {showAboutUs && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
+          <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">
+                {storeInfo.aboutTitle || "אודותינו"}
+              </h2>
+              <button 
+                onClick={() => setShowAboutUs(false)} 
+                className="text-stone-400 hover:text-amber-700 transition-colors duration-300"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="prose prose-stone max-w-none">
+              <p className="text-stone-700 leading-relaxed mb-8 whitespace-pre-wrap">
+                {storeInfo.aboutText || "ברוכים הבאים לחנות שלנו"}
+              </p>
+              
+              {/* About Banners */}
+              {storeInfo.aboutBanners && storeInfo.aboutBanners.length > 0 && (
+                <div className="mt-12 space-y-8">
+                  {storeInfo.aboutBanners.map((banner, index) => (
+                    <div key={banner.id || index} className="bg-white/50 rounded-2xl overflow-hidden shadow-lg">
+                      {banner.image && (
+                        <img 
+                          src={banner.image} 
+                          alt={banner.title || `Banner ${index + 1}`}
+                          className="w-full h-64 object-cover"
+                        />
+                      )}
+                      <div className="p-6">
+                        {banner.title && (
+                          <h3 className="text-xl font-bold text-stone-800 mb-2">{banner.title}</h3>
+                        )}
+                        {banner.text && (
+                          <p className="text-stone-600">{banner.text}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
