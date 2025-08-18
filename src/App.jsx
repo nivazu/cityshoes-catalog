@@ -918,15 +918,15 @@ const App = () => {
                   <button
                     key={category.id}
                     onClick={() => handleCategoryChange(category.id)}
-                    className={`px-6 py-3 rounded-full text-sm font-medium tracking-wide transition-all duration-300 ${
+                    className={`px-6 py-3 rounded-full text-sm font-semibold tracking-wide transition-all duration-300 ${
                       selectedCategory === category.id
-                        ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg scale-105'
-                        : 'text-stone-700 hover:text-stone-900 hover:bg-stone-100'
+                        ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-xl scale-105 border-2 border-amber-600/30'
+                        : 'text-stone-800 hover:text-stone-900 hover:bg-amber-50 border-2 border-stone-300 bg-white/80 shadow-md'
                     }`}
                   >
                     <span>{category.name}</span>
                     {!category.isHomePage && (
-                      <span className="text-xs opacity-70 mr-1">({getCategoryCount(category.id)})</span>
+                      <span className="text-xs font-bold opacity-90 mr-1 bg-white/50 px-1.5 py-0.5 rounded-md">({getCategoryCount(category.id)})</span>
                     )}
                   </button>
                 ))}
@@ -1096,8 +1096,11 @@ const App = () => {
           <div className="max-w-7xl mx-auto px-6">
             {/* Category Title */}
             <div className="text-center mb-12 pt-10">
-              <h1 className="text-4xl lg:text-6xl font-black mb-4 tracking-tight bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent">
-                {categories.find(cat => cat.id === selectedCategory)?.name}
+              <h1 className="text-4xl lg:text-6xl font-black mb-4 tracking-tight text-stone-900 relative">
+                <span className="absolute inset-0 bg-gradient-to-r from-amber-200/50 to-amber-100/50 blur-2xl"></span>
+                <span className="relative bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent drop-shadow-sm">
+                  {categories.find(cat => cat.id === selectedCategory)?.name}
+                </span>
               </h1>
               <div className="w-32 h-1 bg-gradient-to-r from-amber-400 to-stone-600 mx-auto rounded-full shadow-lg"></div>
             </div>
@@ -1107,10 +1110,10 @@ const App = () => {
               <select
                 value={selectedCategory}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-700"
+                className="w-full px-4 py-3 bg-white/95 border-2 border-stone-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-800 font-medium shadow-md backdrop-blur-sm"
               >
                 {categories.filter(cat => !cat.isHomePage).map(category => (
-                  <option key={category.id} value={category.id}>
+                  <option key={category.id} value={category.id} className="font-medium">
                     {category.name} ({getCategoryCount(category.id)})
                   </option>
                 ))}
