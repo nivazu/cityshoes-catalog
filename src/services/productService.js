@@ -70,7 +70,8 @@ export const createProduct = async (productData) => {
       sizes: productData.sizes || [],
       images: productData.images || [],
       is_new: productData.isNew || false,
-      featured: productData.featured || false
+      featured: productData.featured || false,
+      price: productData.price || null
     };
     
     console.log('Product data to insert:', productToCreate);
@@ -120,6 +121,7 @@ export const updateProduct = async (id, productData) => {
       images: productData.images || [],
       is_new: productData.isNew || false,
       featured: productData.featured || false,
+      price: productData.price || null,
       updated_at: new Date().toISOString()
     };
     
