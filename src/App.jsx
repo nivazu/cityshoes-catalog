@@ -957,17 +957,19 @@ const App = () => {
         </button>
       )}
 
-      {/* Scroll to Top Button */}
+      {/* Scroll to Top Button - Show only when scrolled down */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-8 left-24 z-50 bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 group"
+        className={`fixed bottom-20 right-4 z-50 bg-white/95 backdrop-blur-sm text-stone-600 p-2.5 rounded-xl shadow-md hover:shadow-lg hover:bg-amber-50 hover:text-amber-700 transition-all duration-300 group border border-stone-200/50 ${
+          scrollY > 300 ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'
+        }`}
         aria-label="גלילה לראש העמוד"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
         </svg>
-        <span className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          לראש העמוד
+        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          חזרה למעלה
         </span>
       </button>
 
