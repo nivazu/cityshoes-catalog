@@ -1117,6 +1117,20 @@ const App = () => {
         </button>
       )}
 
+      {/* WhatsApp Floating Button */}
+      <a 
+        href={`https://wa.me/${storeInfo.whatsapp}`} 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="fixed bottom-36 right-4 z-50 bg-gradient-to-r from-green-500 to-green-600 text-white p-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
+        aria-label="דברו איתנו בוואטסאפ"
+      >
+        <MessageSquare className="w-6 h-6" />
+        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-3 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          דברו איתנו ב-WhatsApp
+        </span>
+      </a>
+
       {/* Scroll to Top Button - Show only when scrolled down */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
