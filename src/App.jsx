@@ -793,7 +793,7 @@ const App = () => {
   
   const [storeInfo, setStoreInfo] = useState({ 
     name: "נעלי העיר", 
-    slogan: "כל המיוחדים אצלנו", 
+    slogan: "הכי מיוחדים אצלנו", 
     phone: "050-5798761",
     whatsapp: "+972505798761",
     address: "שד' רוטשילד 17, חדרה", 
