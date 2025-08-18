@@ -724,6 +724,8 @@ const App = () => {
     setTimeout(() => {
         setSelectedCategory(categoryId);
         setIsTransitioning(false);
+        // גלילה לראש העמוד בעת החלפת קטגוריה
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 200);
   };
 
@@ -955,6 +957,20 @@ const App = () => {
         </button>
       )}
 
+      {/* Scroll to Top Button */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-8 left-24 z-50 bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 group"
+        aria-label="גלילה לראש העמוד"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+        <span className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          לראש העמוד
+        </span>
+      </button>
+
       <main className={`pt-32 ${isAdminMode ? 'sm:pt-40' : 'sm:pt-28'} min-h-screen`}>
         {/* Hero Section - Show only on home page */}
         {selectedCategory === 'home' && (
@@ -1102,7 +1118,7 @@ const App = () => {
             {/* Product Grid */}
             <div className="mb-8 flex items-center justify-between">
               <div className="flex items-center gap-8">
-                <div className="text-sm tracking-wide text-stone-600">
+                <div className="text-base font-semibold tracking-wide text-stone-800 bg-white/70 px-4 py-2 rounded-lg shadow-md">
                   {filteredProducts.length} פריטים
                 </div>
                 <div className="flex items-center gap-4 bg-white/50 rounded-full p-1 shadow-lg">
