@@ -738,6 +738,226 @@ const AboutEditModal = ({ storeInfo, onSave, onCancel }) => {
   );
 };
 
+// Privacy Policy Edit Modal Component
+const PrivacyEditModal = ({ storeInfo, onSave, onCancel }) => {
+  const [sections, setSections] = useState(storeInfo.privacyPolicy?.sections || []);
+
+  const handleAddSection = () => {
+    setSections([...sections, { title: '', content: '' }]);
+  };
+
+  const handleUpdateSection = (index, field, value) => {
+    const newSections = [...sections];
+    newSections[index][field] = value;
+    setSections(newSections);
+  };
+
+  const handleDeleteSection = (index) => {
+    setSections(sections.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({
+      ...storeInfo,
+      privacyPolicy: { sections }
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
+      <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">
+            עריכת מדיניות פרטיות
+          </h3>
+          <button onClick={onCancel} className="text-stone-400 hover:text-amber-700 transition-colors duration-300">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex justify-between items-center mb-4">
+            <label className="text-sm font-medium text-stone-700">סעיפי מדיניות</label>
+            <button
+              type="button"
+              onClick={handleAddSection}
+              className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors duration-300 text-sm"
+            >
+              הוסף סעיף
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            {sections.map((section, index) => (
+              <div key={index} className="border border-stone-300 rounded-xl p-4 bg-white/50">
+                <div className="flex justify-between items-start mb-3">
+                  <h4 className="font-medium text-stone-700">סעיף {index + 1}</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteSection(index)}
+                    className="text-red-600 hover:text-red-700 transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-stone-600 mb-1">כותרת</label>
+                    <input
+                      type="text"
+                      value={section.title}
+                      onChange={(e) => handleUpdateSection(index, 'title', e.target.value)}
+                      className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                      placeholder="כותרת הסעיף"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-stone-600 mb-1">תוכן</label>
+                    <textarea
+                      value={section.content}
+                      onChange={(e) => handleUpdateSection(index, 'content', e.target.value)}
+                      className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm h-20 resize-none"
+                      placeholder="תוכן הסעיף"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              className="flex-1 bg-gradient-to-r from-stone-800 to-amber-800 text-white py-3 rounded-xl font-medium hover:from-amber-800 hover:to-stone-800 transition-all duration-300"
+            >
+              שמור שינויים
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex-1 border border-stone-300 text-stone-600 py-3 rounded-xl font-medium hover:bg-stone-50 transition-colors duration-300"
+            >
+              ביטול
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// Terms of Service Edit Modal Component
+const TermsEditModal = ({ storeInfo, onSave, onCancel }) => {
+  const [sections, setSections] = useState(storeInfo.termsOfService?.sections || []);
+
+  const handleAddSection = () => {
+    setSections([...sections, { title: '', content: '' }]);
+  };
+
+  const handleUpdateSection = (index, field, value) => {
+    const newSections = [...sections];
+    newSections[index][field] = value;
+    setSections(newSections);
+  };
+
+  const handleDeleteSection = (index) => {
+    setSections(sections.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({
+      ...storeInfo,
+      termsOfService: { sections }
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
+      <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">
+            עריכת תנאי שימוש
+          </h3>
+          <button onClick={onCancel} className="text-stone-400 hover:text-amber-700 transition-colors duration-300">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex justify-between items-center mb-4">
+            <label className="text-sm font-medium text-stone-700">סעיפי תנאי שימוש</label>
+            <button
+              type="button"
+              onClick={handleAddSection}
+              className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors duration-300 text-sm"
+            >
+              הוסף סעיף
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            {sections.map((section, index) => (
+              <div key={index} className="border border-stone-300 rounded-xl p-4 bg-white/50">
+                <div className="flex justify-between items-start mb-3">
+                  <h4 className="font-medium text-stone-700">סעיף {index + 1}</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteSection(index)}
+                    className="text-red-600 hover:text-red-700 transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-stone-600 mb-1">כותרת</label>
+                    <input
+                      type="text"
+                      value={section.title}
+                      onChange={(e) => handleUpdateSection(index, 'title', e.target.value)}
+                      className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                      placeholder="כותרת הסעיף"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-stone-600 mb-1">תוכן</label>
+                    <textarea
+                      value={section.content}
+                      onChange={(e) => handleUpdateSection(index, 'content', e.target.value)}
+                      className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm h-20 resize-none"
+                      placeholder="תוכן הסעיף"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              className="flex-1 bg-gradient-to-r from-stone-800 to-amber-800 text-white py-3 rounded-xl font-medium hover:from-amber-800 hover:to-stone-800 transition-all duration-300"
+            >
+              שמור שינויים
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex-1 border border-stone-300 text-stone-600 py-3 rounded-xl font-medium hover:bg-stone-50 transition-colors duration-300"
+            >
+              ביטול
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const App = () => {
   const [selectedCategory, setSelectedCategory] = useState('home');
   const [viewMode, setViewMode] = useState('grid');
@@ -757,6 +977,8 @@ const App = () => {
   const [showTermsOfService, setShowTermsOfService] = useState(false);
   const [showAboutUs, setShowAboutUs] = useState(false);
   const [editingAbout, setEditingAbout] = useState(false);
+  const [editingPrivacy, setEditingPrivacy] = useState(false);
+  const [editingTerms, setEditingTerms] = useState(false);
 
   const [products, setProducts] = useState([]); 
 
@@ -805,7 +1027,47 @@ const App = () => {
     bannerImage: "https://i.ibb.co/gMXLwMg6/b447649c-d70a-400e-bf50-f22a1c291eca-1.gif",
     aboutTitle: "אודות נעלי העיר",
     aboutText: "ברוכים הבאים לנעלי העיר - החנות המובילה לנעלי ספורט ואופנה בחדרה. אנו מתמחים במכירת נעליים מהמותגים המובילים בעולם ומספקים שירות מקצועי ואישי לכל לקוח.",
-    aboutBanners: []
+    aboutBanners: [],
+    privacyPolicy: {
+      sections: [
+        {
+          title: "איסוף מידע",
+          content: "אנו אוספים מידע שאתה מספק לנו ישירות, כגון שם, כתובת, מספר טלפון וכתובת דוא\"ל כאשר אתה יוצר איתנו קשר או מבצע רכישה."
+        },
+        {
+          title: "שימוש במידע",
+          content: "אנו משתמשים במידע שנאסף כדי לספק לך שירות טוב יותר, לעבד הזמנות, לשלוח עדכונים על מוצרים חדשים ומבצעים, ולשפר את חווית הקנייה שלך."
+        },
+        {
+          title: "אבטחת מידע",
+          content: "אנו נוקטים באמצעי אבטחה מתאימים כדי להגן על המידע שלך מפני גישה בלתי מורשית, שינוי, גילוי או השמדה."
+        }
+      ]
+    },
+    termsOfService: {
+      sections: [
+        {
+          title: "תנאי שימוש כלליים",
+          content: "בכניסתך לאתר ובשימוש בו, אתה מסכים לתנאי השימוש. אם אינך מסכים לתנאים אלה, אנא הימנע משימוש באתר."
+        },
+        {
+          title: "קניין רוחני",
+          content: "כל התכנים באתר זה, כולל טקסטים, תמונות, לוגו ועיצוב, הם רכושה של נעלי העיר ומוגנים בזכויות יוצרים."
+        },
+        {
+          title: "מוצרים ומחירים",
+          content: "אנו שומרים לעצמנו את הזכות לשנות מחירים ומבצעים ללא הודעה מוקדמת. המחירים באתר כוללים מע\"מ."
+        },
+        {
+          title: "הגבלת אחריות",
+          content: "נעלי העיר לא תישא באחריות לכל נזק ישיר או עקיף הנובע משימוש או מחוסר יכולת להשתמש באתר."
+        },
+        {
+          title: "שינויים בתנאי השימוש",
+          content: "אנו שומרים לעצמנו את הזכות לעדכן את תנאי השימוש מעת לעת. המשך השימוש באתר לאחר שינויים כאלה מהווה הסכמה לתנאים המעודכנים."
+        }
+      ]
+    }
   });
   
   const [showStorageDebugger, setShowStorageDebugger] = useState(false);
@@ -1046,6 +1308,12 @@ const App = () => {
               </button>
               <button onClick={() => setEditingAbout(true)} className="bg-blue-500/20 hover:bg-blue-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
                 📄 ערוך אודות
+              </button>
+              <button onClick={() => setEditingPrivacy(true)} className="bg-purple-500/20 hover:bg-purple-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                🔒 מדיניות פרטיות
+              </button>
+              <button onClick={() => setEditingTerms(true)} className="bg-orange-500/20 hover:bg-orange-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                📋 תנאי שימוש
               </button>
               <button onClick={() => setShowCategoryManager(true)} className="bg-purple-500/20 hover:bg-purple-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
                 🏷️ ניהול קטגוריות
@@ -1675,6 +1943,8 @@ const App = () => {
       {editingProduct && <ProductEditModal product={editingProduct} onSave={saveProduct} onCancel={() => setEditingProduct(null)} categories={categories} />}
       {editingStore && <StoreEditModal storeInfo={storeInfo} onSave={saveStoreInfo} onCancel={() => setEditingStore(false)} />}
       {editingAbout && <AboutEditModal storeInfo={storeInfo} onSave={saveStoreInfo} onCancel={() => setEditingAbout(false)} />}
+      {editingPrivacy && <PrivacyEditModal storeInfo={storeInfo} onSave={saveStoreInfo} onCancel={() => setEditingPrivacy(false)} />}
+      {editingTerms && <TermsEditModal storeInfo={storeInfo} onSave={saveStoreInfo} onCancel={() => setEditingTerms(false)} />}
       {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} storeInfo={storeInfo} />}
       
       {/* Storage Test Modal */}
@@ -1732,26 +2002,12 @@ const App = () => {
               </p>
               
               <div className="space-y-8">
-                <div>
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">איסוף מידע</h3>
-                  <p className="text-stone-700 leading-relaxed">
-                    אנו אוספים מידע שאתה מספק לנו ישירות, כגון שם, כתובת, מספר טלפון וכתובת דוא"ל כאשר אתה יוצר איתנו קשר או מבצע רכישה.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">שימוש במידע</h3>
-                  <p className="text-stone-700 leading-relaxed">
-                    אנו משתמשים במידע שנאסף כדי לספק לך שירות טוב יותר, לעבד הזמנות, לשלוח עדכונים על מוצרים חדשים ומבצעים, ולשפר את חווית הקנייה שלך.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">אבטחת מידע</h3>
-                  <p className="text-stone-700 leading-relaxed">
-                    אנו נוקטים באמצעי אבטחה מתאימים כדי להגן על המידע שלך מפני גישה בלתי מורשית, שינוי, גילוי או השמדה.
-                  </p>
-                </div>
+                {storeInfo.privacyPolicy?.sections?.map((section, index) => (
+                  <div key={index}>
+                    <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">{section.title}</h3>
+                    <p className="text-stone-700 leading-relaxed whitespace-pre-wrap">{section.content}</p>
+                  </div>
+                ))}
 
                 <div className="bg-amber-50/30 rounded-xl p-6 border border-amber-200/30">
                   <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">יצירת קשר</h3>
