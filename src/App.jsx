@@ -1661,8 +1661,8 @@ const App = () => {
                 <div className="absolute bottom-1/3 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stone-400/25 to-transparent animate-pulse" style={{animationDuration: '25s', animationDelay: '5s'}}></div>
               </div>
 
-              <div className="max-w-7xl mx-auto px-6 relative">
-                <div className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12' : 'space-y-8'} transition-all duration-700 ${isTransitioning ? 'opacity-0 transform translate-y-8' : 'opacity-100 transform translate-y-0'}`}>
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
+                <div className={`${viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6' : 'space-y-4 sm:space-y-6'} transition-all duration-700 ${isTransitioning ? 'opacity-0 transform translate-y-8' : 'opacity-100 transform translate-y-0'}`}>
                   {filteredProducts.map((product, index) => {
                     const currentProductImageIndex = productImageIndexes[product.id] || 0;
                     return (
@@ -1670,45 +1670,45 @@ const App = () => {
                         key={product.id}
                         className={`group cursor-pointer animate-fadeInUp relative ${
                           viewMode === 'list' 
-                            ? 'flex flex-col md:flex-row gap-8 items-center bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg' 
-                            : 'bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-500'
+                            ? 'flex flex-col bg-white rounded-xl shadow-md overflow-hidden' 
+                            : 'bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-500 overflow-hidden'
                         }`}
                         onClick={() => handleProductSelect(product)}
                         style={{animationDelay: `${index * 150}ms`}}
                       >
                         {isAdminMode && (
-                          <div className="absolute top-4 right-4 z-20 flex gap-2">
+                          <div className="absolute top-2 right-2 z-20 flex gap-1">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setEditingProduct(product);
                               }}
-                              className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
+                              className="bg-blue-600 hover:bg-blue-700 text-white p-1.5 rounded-full shadow-lg transition-colors duration-300"
                             >
-                              <Edit3 className="w-4 h-4" />
+                              <Edit3 className="w-3 h-3" />
                             </button>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 deleteProductLocal(product.id);
                               }}
-                              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
+                              className="bg-red-600 hover:bg-red-700 text-white p-1.5 rounded-full shadow-lg transition-colors duration-300"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3 h-3" />
                             </button>
                           </div>
                         )}
 
-                        <div className={`relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-stone-200/50 transition-all duration-700 transform group-hover:scale-105 ${viewMode === 'list' ? 'w-full md:w-48 h-48 flex-shrink-0 mb-4 md:mb-0' : 'mb-6'}`}>
+                        <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-full h-48' : 'aspect-square'}`}>
                           {product.isNew && (
-                            <div className="absolute top-4 left-4 z-10 text-xs tracking-[0.3em] bg-gradient-to-r from-amber-600 to-stone-800 text-white px-3 py-1 rounded-full shadow-lg">
+                            <div className="absolute top-2 left-2 z-10 text-[10px] sm:text-xs tracking-widest bg-gradient-to-r from-amber-600 to-stone-800 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full shadow-lg">
                               חדש
                             </div>
                           )}
                           
                           {!isAdminMode && (
-                            <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-0 group-hover:scale-100">
-                              <Heart className="w-5 h-5 text-white hover:text-amber-400 cursor-pointer transition-colors duration-300 drop-shadow-lg" />
+                            <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-white hover:text-amber-400 cursor-pointer transition-colors duration-300 drop-shadow-lg" />
                             </div>
                           )}
                           
@@ -1716,7 +1716,7 @@ const App = () => {
                             <img 
                               src={product.images[currentProductImageIndex]}
                               alt={product.name}
-                              className={`w-full object-cover transition-all duration-700 ${viewMode === 'list' ? 'h-full' : 'h-80 lg:h-96'}`}
+                              className="w-full h-full object-cover transition-all duration-700"
                               loading="lazy"
                               crossOrigin="anonymous"
                               referrerPolicy="no-referrer"
@@ -1724,59 +1724,64 @@ const App = () => {
                           )}
                           
                           {product.images && product.images.length > 1 && (
-                            <div className="absolute inset-y-0 left-2 right-2 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <div className="absolute inset-y-0 left-1 right-1 sm:left-2 sm:right-2 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300">
                               <button 
-                                className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
+                                className="pointer-events-auto bg-white/90 hover:bg-white p-1 sm:p-1.5 rounded-full transition-all duration-300 shadow-lg"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleProductImageChange(product.id, 'prev');
                                 }}
                               >
-                                <ArrowRight className="w-4 h-4" />
+                                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                               </button>
                               <button 
-                                className="pointer-events-auto bg-white/90 hover:bg-white p-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
+                                className="pointer-events-auto bg-white/90 hover:bg-white p-1 sm:p-1.5 rounded-full transition-all duration-300 shadow-lg"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleProductImageChange(product.id, 'next');
                                 }}
                               >
-                                <ArrowLeft className="w-4 h-4" />
+                                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
                               </button>
                             </div>
                           )}
                           
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                          
-                          {!isAdminMode && (
-                            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-8 group-hover:translate-y-0">
-                              <button className="bg-white/90 backdrop-blur-sm text-stone-800 px-6 py-2 text-sm tracking-wide hover:bg-white transition-all duration-300 rounded-full shadow-xl">
-                                צפה בפרטים
-                              </button>
+                          {product.images && product.images.length > 1 && (
+                            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+                              {product.images.map((_, idx) => (
+                                <div 
+                                  key={idx}
+                                  className={`w-1 h-1 rounded-full transition-all duration-300 ${
+                                    idx === currentProductImageIndex ? 'bg-white w-4' : 'bg-white/50'
+                                  }`}
+                                />
+                              ))}
                             </div>
                           )}
                         </div>
 
-                        <div className={`space-y-3 ${viewMode === 'list' ? 'flex-1' : 'bg-white/30 backdrop-blur-sm rounded-xl p-6 shadow-lg'}`}>
-                          <div className="flex items-center justify-between">
-                            <div className="text-xs tracking-[0.3em] text-amber-700 font-medium">{product.brand}</div>
+                        <div className="p-3 sm:p-4 space-y-2">
+                          <div className="text-[10px] sm:text-xs tracking-[0.2em] text-amber-700 font-medium uppercase">
+                            {product.brand}
                           </div>
                           
-                          <h3 className="text-xl font-medium group-hover:text-amber-700 transition-colors duration-300">
+                          <h3 className="text-sm sm:text-base font-semibold text-stone-900 line-clamp-2 group-hover:text-amber-700 transition-colors duration-300">
                             {product.name}
                           </h3>
                           
-                          <div className="text-sm text-stone-600 leading-relaxed">
-                            {product.description}
-                          </div>
+                          {viewMode !== 'grid' && (
+                            <div className="text-xs sm:text-sm text-stone-600 line-clamp-2">
+                              {product.description}
+                            </div>
+                          )}
                           
                           {product.price && (
-                            <div className="text-2xl font-bold text-stone-800 pt-2">
+                            <div className="text-lg sm:text-xl font-bold text-stone-800 pt-1">
                               ₪{product.price.toFixed(2)}
                             </div>
                           )}
                           
-                          <div className="flex items-center gap-3 pt-2">
+                          <div className="flex items-center gap-2 pt-1">
                             {product.colors && product.colors.slice(0, 3).map((color, index) => (
                               <span key={index} className="text-xs tracking-wide text-stone-500">
                                 {color}
