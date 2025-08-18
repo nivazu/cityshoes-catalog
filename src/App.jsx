@@ -4,6 +4,7 @@ import { getProducts, createProduct, updateProduct, deleteProduct } from './serv
 import ImageUpload from './components/ImageUpload';
 import StorageTest from './components/StorageTest';
 import StorageDebugger from './components/StorageDebugger';
+import { supabase, TABLES } from './lib/supabase';
 
 const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
   const [formData, setFormData] = useState({
