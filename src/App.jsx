@@ -740,27 +740,13 @@ const AboutEditModal = ({ storeInfo, onSave, onCancel }) => {
 
 // Privacy Policy Edit Modal Component
 const PrivacyEditModal = ({ storeInfo, onSave, onCancel }) => {
-  const [sections, setSections] = useState(storeInfo.privacyPolicy?.sections || []);
-
-  const handleAddSection = () => {
-    setSections([...sections, { title: '', content: '' }]);
-  };
-
-  const handleUpdateSection = (index, field, value) => {
-    const newSections = [...sections];
-    newSections[index][field] = value;
-    setSections(newSections);
-  };
-
-  const handleDeleteSection = (index) => {
-    setSections(sections.filter((_, i) => i !== index));
-  };
+  const [privacyText, setPrivacyText] = useState(storeInfo.privacyPolicyText || '');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({
       ...storeInfo,
-      privacyPolicy: { sections }
+      privacyPolicyText: privacyText
     });
   };
 
@@ -776,55 +762,18 @@ const PrivacyEditModal = ({ storeInfo, onSave, onCancel }) => {
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex justify-between items-center mb-4">
-            <label className="text-sm font-medium text-stone-700">סעיפי מדיניות</label>
-            <button
-              type="button"
-              onClick={handleAddSection}
-              className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors duration-300 text-sm"
-            >
-              הוסף סעיף
-            </button>
-          </div>
-          
-          <div className="space-y-4">
-            {sections.map((section, index) => (
-              <div key={index} className="border border-stone-300 rounded-xl p-4 bg-white/50">
-                <div className="flex justify-between items-start mb-3">
-                  <h4 className="font-medium text-stone-700">סעיף {index + 1}</h4>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteSection(index)}
-                    className="text-red-600 hover:text-red-700 transition-colors"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium text-stone-600 mb-1">כותרת</label>
-                    <input
-                      type="text"
-                      value={section.title}
-                      onChange={(e) => handleUpdateSection(index, 'title', e.target.value)}
-                      className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
-                      placeholder="כותרת הסעיף"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-stone-600 mb-1">תוכן</label>
-                    <textarea
-                      value={section.content}
-                      onChange={(e) => handleUpdateSection(index, 'content', e.target.value)}
-                      className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm h-20 resize-none"
-                      placeholder="תוכן הסעיף"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-2">תוכן מדיניות הפרטיות</label>
+            <textarea
+              value={privacyText}
+              onChange={(e) => setPrivacyText(e.target.value)}
+              className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm h-96 resize-none font-mono text-sm"
+              placeholder="הזן את תוכן מדיניות הפרטיות..."
+              required
+            />
+            <p className="text-xs text-stone-500 mt-2">
+              💡 טיפ: ניתן להשתמש ב-Enter לשורות חדשות ובסימנים כמו : או - ליצירת רשימות
+            </p>
           </div>
           
           <div className="flex gap-4">
@@ -850,27 +799,13 @@ const PrivacyEditModal = ({ storeInfo, onSave, onCancel }) => {
 
 // Terms of Service Edit Modal Component
 const TermsEditModal = ({ storeInfo, onSave, onCancel }) => {
-  const [sections, setSections] = useState(storeInfo.termsOfService?.sections || []);
-
-  const handleAddSection = () => {
-    setSections([...sections, { title: '', content: '' }]);
-  };
-
-  const handleUpdateSection = (index, field, value) => {
-    const newSections = [...sections];
-    newSections[index][field] = value;
-    setSections(newSections);
-  };
-
-  const handleDeleteSection = (index) => {
-    setSections(sections.filter((_, i) => i !== index));
-  };
+  const [termsText, setTermsText] = useState(storeInfo.termsOfServiceText || '');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({
       ...storeInfo,
-      termsOfService: { sections }
+      termsOfServiceText: termsText
     });
   };
 
@@ -886,55 +821,18 @@ const TermsEditModal = ({ storeInfo, onSave, onCancel }) => {
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex justify-between items-center mb-4">
-            <label className="text-sm font-medium text-stone-700">סעיפי תנאי שימוש</label>
-            <button
-              type="button"
-              onClick={handleAddSection}
-              className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors duration-300 text-sm"
-            >
-              הוסף סעיף
-            </button>
-          </div>
-          
-          <div className="space-y-4">
-            {sections.map((section, index) => (
-              <div key={index} className="border border-stone-300 rounded-xl p-4 bg-white/50">
-                <div className="flex justify-between items-start mb-3">
-                  <h4 className="font-medium text-stone-700">סעיף {index + 1}</h4>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteSection(index)}
-                    className="text-red-600 hover:text-red-700 transition-colors"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium text-stone-600 mb-1">כותרת</label>
-                    <input
-                      type="text"
-                      value={section.title}
-                      onChange={(e) => handleUpdateSection(index, 'title', e.target.value)}
-                      className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
-                      placeholder="כותרת הסעיף"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-stone-600 mb-1">תוכן</label>
-                    <textarea
-                      value={section.content}
-                      onChange={(e) => handleUpdateSection(index, 'content', e.target.value)}
-                      className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm h-20 resize-none"
-                      placeholder="תוכן הסעיף"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-2">תוכן תנאי השימוש</label>
+            <textarea
+              value={termsText}
+              onChange={(e) => setTermsText(e.target.value)}
+              className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm h-96 resize-none font-mono text-sm"
+              placeholder="הזן את תוכן תנאי השימוש..."
+              required
+            />
+            <p className="text-xs text-stone-500 mt-2">
+              💡 טיפ: ניתן להשתמש ב-Enter לשורות חדשות ובסימנים כמו : או - ליצירת רשימות
+            </p>
           </div>
           
           <div className="flex gap-4">
@@ -1028,46 +926,39 @@ const App = () => {
     aboutTitle: "אודות נעלי העיר",
     aboutText: "ברוכים הבאים לנעלי העיר - החנות המובילה לנעלי ספורט ואופנה בחדרה. אנו מתמחים במכירת נעליים מהמותגים המובילים בעולם ומספקים שירות מקצועי ואישי לכל לקוח.",
     aboutBanners: [],
-    privacyPolicy: {
-      sections: [
-        {
-          title: "איסוף מידע",
-          content: "אנו אוספים מידע שאתה מספק לנו ישירות, כגון שם, כתובת, מספר טלפון וכתובת דוא\"ל כאשר אתה יוצר איתנו קשר או מבצע רכישה."
-        },
-        {
-          title: "שימוש במידע",
-          content: "אנו משתמשים במידע שנאסף כדי לספק לך שירות טוב יותר, לעבד הזמנות, לשלוח עדכונים על מוצרים חדשים ומבצעים, ולשפר את חווית הקנייה שלך."
-        },
-        {
-          title: "אבטחת מידע",
-          content: "אנו נוקטים באמצעי אבטחה מתאימים כדי להגן על המידע שלך מפני גישה בלתי מורשית, שינוי, גילוי או השמדה."
-        }
-      ]
-    },
-    termsOfService: {
-      sections: [
-        {
-          title: "תנאי שימוש כלליים",
-          content: "בכניסתך לאתר ובשימוש בו, אתה מסכים לתנאי השימוש. אם אינך מסכים לתנאים אלה, אנא הימנע משימוש באתר."
-        },
-        {
-          title: "קניין רוחני",
-          content: "כל התכנים באתר זה, כולל טקסטים, תמונות, לוגו ועיצוב, הם רכושה של נעלי העיר ומוגנים בזכויות יוצרים."
-        },
-        {
-          title: "מוצרים ומחירים",
-          content: "אנו שומרים לעצמנו את הזכות לשנות מחירים ומבצעים ללא הודעה מוקדמת. המחירים באתר כוללים מע\"מ."
-        },
-        {
-          title: "הגבלת אחריות",
-          content: "נעלי העיר לא תישא באחריות לכל נזק ישיר או עקיף הנובע משימוש או מחוסר יכולת להשתמש באתר."
-        },
-        {
-          title: "שינויים בתנאי השימוש",
-          content: "אנו שומרים לעצמנו את הזכות לעדכן את תנאי השימוש מעת לעת. המשך השימוש באתר לאחר שינויים כאלה מהווה הסכמה לתנאים המעודכנים."
-        }
-      ]
-    }
+    privacyPolicyText: `מדיניות פרטיות
+
+אנו בנעלי העיר מחויבים להגנה על פרטיותך. מדיניות פרטיות זו מסבירה כיצד אנו אוספים, משתמשים ומגנים על המידע שלך.
+
+איסוף מידע:
+אנו אוספים מידע שאתה מספק לנו ישירות, כגון שם, כתובת, מספר טלפון וכתובת דוא"ל כאשר אתה יוצר איתנו קשר או מבצע רכישה.
+
+שימוש במידע:
+אנו משתמשים במידע שנאסף כדי לספק לך שירות טוב יותר, לעבד הזמנות, לשלוח עדכונים על מוצרים חדשים ומבצעים, ולשפר את חווית הקנייה שלך.
+
+אבטחת מידע:
+אנו נוקטים באמצעי אבטחה מתאימים כדי להגן על המידע שלך מפני גישה בלתי מורשית, שינוי, גילוי או השמדה.
+
+יצירת קשר:
+אם יש לך שאלות לגבי מדיניות הפרטיות שלנו, אנא צור איתנו קשר.`,
+    termsOfServiceText: `תנאי שימוש
+
+ברוכים הבאים לאתר נעלי העיר. השימוש באתר זה כפוף לתנאים הבאים:
+
+תנאי שימוש כלליים:
+בכניסתך לאתר ובשימוש בו, אתה מסכים לתנאי השימוש. אם אינך מסכים לתנאים אלה, אנא הימנע משימוש באתר.
+
+קניין רוחני:
+כל התכנים באתר זה, כולל טקסטים, תמונות, לוגו ועיצוב, הם רכושה של נעלי העיר ומוגנים בזכויות יוצרים.
+
+מוצרים ומחירים:
+אנו שומרים לעצמנו את הזכות לשנות מחירים ומבצעים ללא הודעה מוקדמת. המחירים באתר כוללים מע"מ.
+
+הגבלת אחריות:
+נעלי העיר לא תישא באחריות לכל נזק ישיר או עקיף הנובע משימוש או מחוסר יכולת להשתמש באתר.
+
+שינויים בתנאי השימוש:
+אנו שומרים לעצמנו את הזכות לעדכן את תנאי השימוש מעת לעת. המשך השימוש באתר לאחר שינויים כאלה מהווה הסכמה לתנאים המעודכנים.`
   });
   
   const [showStorageDebugger, setShowStorageDebugger] = useState(false);
@@ -1076,6 +967,20 @@ const App = () => {
   useEffect(() => {
     loadProducts();
   }, [loadProducts]);
+
+  // Load store info from localStorage
+  useEffect(() => {
+    try {
+      const savedStoreInfo = localStorage.getItem('storeInfo');
+      if (savedStoreInfo) {
+        const parsedInfo = JSON.parse(savedStoreInfo);
+        setStoreInfo(parsedInfo);
+        console.log('Store info loaded from localStorage');
+      }
+    } catch (error) {
+      console.error('Error loading store info:', error);
+    }
+  }, []);
 
   // Product CRUD operations
   const handleSaveProduct = async (productData) => {
@@ -1191,7 +1096,17 @@ const App = () => {
 
   const saveStoreInfo = (newStoreInfo) => {
     setStoreInfo(newStoreInfo);
+    // שמירה ב-localStorage
+    try {
+      localStorage.setItem('storeInfo', JSON.stringify(newStoreInfo));
+      console.log('Store info saved to localStorage');
+    } catch (error) {
+      console.error('Error saving store info:', error);
+    }
     setEditingStore(false);
+    setEditingAbout(false);
+    setEditingPrivacy(false);
+    setEditingTerms(false);
   };
 
   const handleProductSelect = (product) => {
@@ -2001,13 +1916,8 @@ const App = () => {
                 אנו ב-<span className="font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">{storeInfo.name}</span> מחויבים להגנה על פרטיותך. מדיניות פרטיות זו מסבירה כיצד אנו אוספים, משתמשים ומגנים על המידע שלך.
               </p>
               
-              <div className="space-y-8">
-                {storeInfo.privacyPolicy?.sections?.map((section, index) => (
-                  <div key={index}>
-                    <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">{section.title}</h3>
-                    <p className="text-stone-700 leading-relaxed whitespace-pre-wrap">{section.content}</p>
-                  </div>
-                ))}
+              <div className="space-y-6">
+                <div className="text-stone-700 leading-relaxed whitespace-pre-wrap">{storeInfo.privacyPolicyText}</div>
 
                 <div className="bg-amber-50/30 rounded-xl p-6 border border-amber-200/30">
                   <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">יצירת קשר</h3>
@@ -2045,38 +1955,11 @@ const App = () => {
                 ברוכים הבאים לאתר <span className="font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">{storeInfo.name}</span>. השימוש באתר זה כפוף לתנאים הבאים:
               </p>
               
-              <div className="space-y-8">
-
-                <div>
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">תנאי שימוש כלליים</h3>
-                  <p className="text-stone-700 leading-relaxed">
-                    בכניסתך לאתר ובשימוש בו, אתה מסכים לתנאי השימוש. אם אינך מסכים לתנאים אלה, אנא הימנע משימוש באתר.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">קניין רוחני</h3>
-                  <p className="text-stone-700 leading-relaxed">
-                    כל התכנים באתר זה, כולל טקסטים, תמונות, לוגו ועיצוב, הם רכושה של <span className="font-semibold">{storeInfo.name}</span> ומוגנים בזכויות יוצרים.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">מוצרים ומחירים</h3>
-                  <p className="text-stone-700 leading-relaxed">
-                    אנו שומרים לעצמנו את הזכות לשנות מחירים ומבצעים ללא הודעה מוקדמת. המחירים באתר כוללים מע"מ.
-                  </p>
-                </div>
-
-                <div className="bg-amber-50/20 rounded-xl p-6 border border-amber-200/20">
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">הגבלת אחריות</h3>
-                  <p className="text-stone-700 leading-relaxed">
-                    <span className="font-semibold">{storeInfo.name}</span> לא תישא באחריות לכל נזק ישיר או עקיף הנובע משימוש או מחוסר יכולת להשתמש באתר.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-3">שינויים בתנאי השימוש</h3>
+              <div className="space-y-6">
+                <div className="text-stone-700 leading-relaxed whitespace-pre-wrap">{storeInfo.termsOfServiceText}</div>
+                
+                <div className="mt-8">
+                  <h3 className="text-lg font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-4">שינויים בתנאי השימוש</h3>
                   <p className="text-stone-700 leading-relaxed mb-4">
                     אנו שומרים לעצמנו את הזכות לעדכן את תנאי השימוש מעת לעת. המשך השימוש באתר לאחר שינויים כאלה מהווה הסכמה לתנאים המעודכנים.
                   </p>
