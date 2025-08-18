@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Phone, MapPin, Instagram, Grid, List, ArrowLeft, ArrowRight, Heart, X, Settings, Save, Edit3, Trash2, Eye, EyeOff, Download, MessageSquare, Facebook, Youtube } from 'lucide-react';
-import { getProducts, createProduct, updateProduct, deleteProduct } from './services/productService';
+import { supabase, TABLES } from './lib/supabase';
+import { getProducts, createProduct, updateProduct as updateProductService, deleteProduct } from './services/productService';
 import ImageUpload from './components/ImageUpload';
 import StorageTest from './components/StorageTest';
 import StorageDebugger from './components/StorageDebugger';
-import { supabase, TABLES } from './lib/supabase';
 
 const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
   const [formData, setFormData] = useState({
@@ -1025,7 +1025,7 @@ const App = () => {
       
       if (productData.id) {
         // Update existing product
-        const updatedProduct = await updateProduct(productData.id, productData);
+        const updatedProduct = await updateProductService(productData.id, productData);
         setProducts(prev => prev.map(p => p.id === productData.id ? updatedProduct : p));
         console.log('Product updated successfully:', updatedProduct);
       } else {
