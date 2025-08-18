@@ -1078,23 +1078,23 @@ const App = () => {
                   <button
                     key={category.id}
                     onClick={() => handleCategoryChange(category.id)}
-                    className={`px-6 py-3 rounded-full text-sm font-semibold tracking-wide transition-all duration-300 ${
+                    className={`px-4 py-2 rounded-full text-xs font-medium tracking-wide transition-all duration-300 ${
                       selectedCategory === category.id
-                        ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-xl scale-105 border-2 border-amber-600/30'
-                        : 'text-stone-800 hover:text-stone-900 hover:bg-amber-50 border-2 border-stone-300 bg-white/80 shadow-md'
+                        ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg scale-105'
+                        : 'text-stone-700 hover:text-stone-900 hover:bg-amber-50/70'
                     }`}
                   >
                     <span>{category.name}</span>
                     {!category.isHomePage && (
-                      <span className="text-xs font-bold opacity-90 mr-1 bg-white/50 px-1.5 py-0.5 rounded-md">({getCategoryCount(category.id)})</span>
+                      <span className="text-xs opacity-80 mr-1">({getCategoryCount(category.id)})</span>
                     )}
                   </button>
                 ))}
               </nav>
 
-              <a href={`https://wa.me/${storeInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 text-sm tracking-wide hover:from-green-600 hover:to-green-700 transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-green-200/50 transform hover:scale-105 rounded-full flex items-center gap-2">
-                <MessageSquare className="w-4 h-4" /> 
-                דברו איתנו ב-Whatsapp
+              <a href={`https://wa.me/${storeInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 text-xs font-medium hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl rounded-full flex items-center gap-1.5 whitespace-nowrap">
+                <MessageSquare className="w-3.5 h-3.5" /> 
+                <span className="hidden sm:inline">דברו איתנו ב-</span>WhatsApp
               </a>
             </div>
           </div>
@@ -1105,13 +1105,13 @@ const App = () => {
       {selectedCategory !== 'home' && (
         <button
           onClick={() => handleCategoryChange('home')}
-          className="fixed bottom-8 left-8 z-50 bg-gradient-to-r from-stone-800 to-amber-800 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 group"
+          className="fixed bottom-8 left-4 z-50 bg-gradient-to-r from-stone-800 to-amber-800 text-white p-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
           aria-label="חזרה לעמוד הבית"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
           </svg>
-          <span className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <span className="absolute -right-2 top-1/2 transform translate-x-full -translate-y-1/2 bg-stone-800 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-lg">
             עמוד הבית
           </span>
         </button>
@@ -1126,7 +1126,7 @@ const App = () => {
         aria-label="דברו איתנו בוואטסאפ"
       >
         <MessageSquare className="w-6 h-6" />
-        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-3 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+        <span className="absolute -left-2 top-1/2 transform -translate-x-full -translate-y-1/2 bg-green-600 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-lg">
           דברו איתנו ב-WhatsApp
         </span>
       </a>
