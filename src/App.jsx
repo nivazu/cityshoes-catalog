@@ -1781,17 +1781,39 @@ const App = () => {
                             </div>
                           )}
                           
-                          <div className="flex items-center gap-2 pt-1">
-                            {product.colors && product.colors.slice(0, 3).map((color, index) => (
-                              <span key={index} className="text-xs tracking-wide text-stone-500">
-                                {color}
-                                {index < Math.min(product.colors.length - 1, 2) && <span className="mx-2 text-amber-400">•</span>}
-                              </span>
-                            ))}
-                            {product.colors && product.colors.length > 3 && (
-                              <span className="text-xs text-amber-600 font-medium">+{product.colors.length - 3}</span>
-                            )}
-                          </div>
+                          {product.colors && product.colors.length > 0 && (
+                            <div className="flex items-center gap-1.5 pt-1">
+                              {product.colors.slice(0, 4).map((color, index) => {
+                                // Convert color names to hex if needed
+                                const colorMap = {
+                                  'שחור': '#000000',
+                                  'לבן': '#FFFFFF',
+                                  'אפור': '#808080',
+                                  'כחול': '#0000FF',
+                                  'אדום': '#FF0000',
+                                  'ירוק': '#008000',
+                                  'צהוב': '#FFFF00',
+                                  'כתום': '#FFA500',
+                                  'סגול': '#800080',
+                                  'חום': '#8B4513',
+                                  'ורוד': '#FFC0CB',
+                                  'בז\'': '#F5DEB3'
+                                };
+                                const bgColor = colorMap[color] || color;
+                                return (
+                                  <div 
+                                    key={index} 
+                                    className="w-4 h-4 rounded-full border border-gray-300 shadow-sm" 
+                                    style={{backgroundColor: bgColor}}
+                                    title={color}
+                                  />
+                                );
+                              })}
+                              {product.colors.length > 4 && (
+                                <span className="text-[10px] text-stone-600">+{product.colors.length - 4}</span>
+                              )}
+                            </div>
+                          )}
                           
                           {product.images && product.images.length > 1 && (
                             <div className="flex justify-center gap-2 pt-2">
