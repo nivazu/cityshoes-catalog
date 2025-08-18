@@ -1095,14 +1095,14 @@ const App = () => {
         {selectedCategory !== 'home' && (
           <div className="max-w-7xl mx-auto px-6">
             {/* Category Title */}
-            <div className="text-center mb-12 pt-10">
-              <h1 className="text-4xl lg:text-6xl font-black mb-4 tracking-tight text-stone-900 relative">
-                <span className="absolute inset-0 bg-gradient-to-r from-amber-200/50 to-amber-100/50 blur-2xl"></span>
-                <span className="relative bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent drop-shadow-sm">
+            <div className="text-center mb-8 md:mb-12 pt-6 md:pt-10">
+              <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black mb-4 tracking-tight text-stone-900 relative px-4">
+                <span className="absolute inset-0 bg-gradient-to-r from-amber-300/60 to-amber-200/60 blur-xl md:blur-2xl"></span>
+                <span className="relative bg-gradient-to-r from-stone-900 to-amber-800 bg-clip-text text-transparent drop-shadow-md">
                   {categories.find(cat => cat.id === selectedCategory)?.name}
                 </span>
               </h1>
-              <div className="w-32 h-1 bg-gradient-to-r from-amber-400 to-stone-600 mx-auto rounded-full shadow-lg"></div>
+              <div className="w-24 md:w-32 h-1.5 bg-gradient-to-r from-amber-500 to-stone-700 mx-auto rounded-full shadow-lg"></div>
             </div>
 
             {/* Mobile Category Selector */}
@@ -1110,10 +1110,17 @@ const App = () => {
               <select
                 value={selectedCategory}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full px-4 py-3 bg-white/95 border-2 border-stone-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-800 font-medium shadow-md backdrop-blur-sm"
+                className="w-full px-5 py-4 bg-white border-2 border-stone-500 rounded-2xl focus:outline-none focus:ring-4 focus:ring-amber-500/50 text-stone-900 font-bold text-lg shadow-xl appearance-none"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'left 1rem center',
+                  backgroundSize: '1.5em 1.5em',
+                  paddingLeft: '3.5rem'
+                }}
               >
                 {categories.filter(cat => !cat.isHomePage).map(category => (
-                  <option key={category.id} value={category.id} className="font-medium">
+                  <option key={category.id} value={category.id} className="font-bold text-lg py-2">
                     {category.name} ({getCategoryCount(category.id)})
                   </option>
                 ))}
@@ -1122,28 +1129,28 @@ const App = () => {
 
             {/* Product Grid */}
             <div className="mb-8 flex items-center justify-between">
-              <div className="flex items-center gap-8">
-                <div className="text-base font-semibold tracking-wide text-stone-800 bg-white/70 px-4 py-2 rounded-lg shadow-md">
+              <div className="flex items-center gap-4 md:gap-8">
+                <div className="text-sm sm:text-base font-bold tracking-wide text-stone-900 bg-amber-100/80 px-3 sm:px-4 py-2 rounded-lg shadow-lg border border-amber-300/50">
                   {filteredProducts.length} פריטים
                 </div>
-                <div className="flex items-center gap-4 bg-white/50 rounded-full p-1 shadow-lg">
+                <div className="flex items-center gap-2 sm:gap-4 bg-white/80 rounded-full p-0.5 sm:p-1 shadow-lg border border-stone-200">
                   <button
                     onClick={() => {
                       console.log('Setting view mode to grid');
                       setViewMode('grid');
                     }}
-                    className={`p-3 rounded-full transition-all duration-300 ${viewMode === 'grid' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-400 hover:text-stone-700'}`}
+                    className={`p-2 sm:p-3 rounded-full transition-all duration-300 ${viewMode === 'grid' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-600 hover:text-stone-800 hover:bg-stone-100'}`}
                   >
-                    <Grid className="w-4 h-4" />
+                    <Grid className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <button
                     onClick={() => {
                       console.log('Setting view mode to list');
                       setViewMode('list');
                     }}
-                    className={`p-3 rounded-full transition-all duration-300 ${viewMode === 'list' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-400 hover:text-stone-700'}`}
+                    className={`p-2 sm:p-3 rounded-full transition-all duration-300 ${viewMode === 'list' ? 'bg-gradient-to-r from-stone-800 to-amber-800 text-white shadow-lg' : 'text-stone-600 hover:text-stone-800 hover:bg-stone-100'}`}
                   >
-                    <List className="w-4 h-4" />
+                    <List className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
