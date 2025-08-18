@@ -15,7 +15,8 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
     sizes: product.sizes?.join(', ') || '',
     images: product.images || [],
     isNew: product.isNew || false,
-    featured: product.featured || false
+    featured: product.featured || false,
+    price: product.price || ''
   });
 
   const handleSubmit = (e) => {
@@ -25,7 +26,8 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
       ...formData,
       colors: formData.colors.split(',').map(c => c.trim()).filter(Boolean),
       sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
-      images: Array.isArray(formData.images) ? formData.images : [formData.images].filter(Boolean)
+      images: Array.isArray(formData.images) ? formData.images : [formData.images].filter(Boolean),
+      price: parseFloat(formData.price) || null
     };
     onSave(productData);
   };
@@ -60,6 +62,19 @@ const ProductEditModal = ({ product, onSave, onCancel, categories }) => {
                 value={formData.brand}
                 onChange={(e) => setFormData(p => ({...p, brand: e.target.value}))}
                 className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-2">מחיר (₪)</label>
+              <input
+                type="number"
+                value={formData.price}
+                onChange={(e) => setFormData(p => ({...p, price: e.target.value}))}
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
                 required
               />
             </div>
@@ -370,6 +385,11 @@ const ProductModal = ({ product, onClose, storeInfo }) => {
                   <p className="text-lg text-stone-600 leading-relaxed mb-8">
                     {product.description}
                   </p>
+                  {product.price && (
+                    <div className="text-4xl font-bold text-stone-800 mb-8">
+                      ₪{product.price.toFixed(2)}
+                    </div>
+                  )}
                 </div>
                 
                 {product.colors && product.colors.length > 0 && (
@@ -1038,6 +1058,11 @@ const App = () => {
                           <h3 className="text-sm font-medium group-hover:text-amber-700 transition-colors duration-300 line-clamp-2">
                             {product.name}
                           </h3>
+                          {product.price && (
+                            <div className="text-lg font-bold text-stone-800 mt-2">
+                              ₪{product.price.toFixed(2)}
+                            </div>
+                          )}
                         </div>
                       </div>
                     );
@@ -1254,6 +1279,12 @@ const App = () => {
                           <div className="text-sm text-stone-600 leading-relaxed">
                             {product.description}
                           </div>
+                          
+                          {product.price && (
+                            <div className="text-2xl font-bold text-stone-800 pt-2">
+                              ₪{product.price.toFixed(2)}
+                            </div>
+                          )}
                           
                           <div className="flex items-center gap-3 pt-2">
                             {product.colors && product.colors.slice(0, 3).map((color, index) => (
