@@ -1062,18 +1062,18 @@ const App = () => {
       )}
 
       <header className={`fixed ${isAdminMode ? 'top-16 sm:top-12' : 'top-0'} left-0 right-0 z-40 transition-all duration-700 ${scrollY > 50 ? 'bg-white/80 backdrop-blur-2xl border-b border-stone-200/50 shadow-lg shadow-stone-200/20' : 'bg-transparent'}`}>
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="text-lg sm:text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent cursor-pointer" onClick={() => !isAdminMode && setShowAdminLogin(true)}>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center min-w-0">
+              <div className="text-base sm:text-xl lg:text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent cursor-pointer flex-shrink-0" onClick={() => !isAdminMode && setShowAdminLogin(true)}>
                 {storeInfo.name}
               </div>
-              <div className="hidden sm:block w-1 h-6 bg-gradient-to-b from-amber-400 to-stone-600 mx-4 shadow-sm"></div>
-              <div className="hidden sm:block text-xs tracking-[0.3em] text-stone-500 font-light">{storeInfo.slogan}</div>
+              <div className="hidden lg:block w-1 h-6 bg-gradient-to-b from-amber-400 to-stone-600 mx-4 shadow-sm flex-shrink-0"></div>
+              <div className="hidden lg:block text-xs tracking-[0.3em] text-stone-500 font-light whitespace-nowrap">{storeInfo.slogan}</div>
             </div>
 
-            <div className="flex flex-col items-end gap-3">
-              <nav className="hidden lg:flex items-center gap-3 bg-white/80 backdrop-blur-md rounded-full p-2 shadow-xl border border-stone-200">
+            <div className="flex flex-col items-end gap-2 sm:gap-3">
+              <nav className="hidden lg:flex items-center gap-2 bg-white/80 backdrop-blur-md rounded-full p-1.5 shadow-xl border border-stone-200">
                 {categories.map(category => (
                   <button
                     key={category.id}
