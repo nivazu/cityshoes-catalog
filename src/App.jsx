@@ -1065,11 +1065,11 @@ const App = () => {
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent cursor-pointer" onClick={() => !isAdminMode && setShowAdminLogin(true)}>
+              <div className="text-lg sm:text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent cursor-pointer" onClick={() => !isAdminMode && setShowAdminLogin(true)}>
                 {storeInfo.name}
               </div>
-              <div className="w-1 h-6 bg-gradient-to-b from-amber-400 to-stone-600 mx-4 shadow-sm"></div>
-              <div className="text-xs tracking-[0.3em] text-stone-500 font-light">{storeInfo.slogan}</div>
+              <div className="hidden sm:block w-1 h-6 bg-gradient-to-b from-amber-400 to-stone-600 mx-4 shadow-sm"></div>
+              <div className="hidden sm:block text-xs tracking-[0.3em] text-stone-500 font-light">{storeInfo.slogan}</div>
             </div>
 
             <div className="flex flex-col items-end gap-3">
@@ -1713,39 +1713,69 @@ const App = () => {
       
       {/* Privacy Policy Modal */}
       {showPrivacyPolicy && (
-        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
-          <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">
+        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-8 pb-4 border-b border-stone-200">
+              <h2 className="text-2xl sm:text-3xl font-black text-stone-900">
                 מדיניות פרטיות
               </h2>
               <button 
                 onClick={() => setShowPrivacyPolicy(false)} 
-                className="text-stone-400 hover:text-amber-700 transition-colors duration-300"
+                className="text-stone-500 hover:text-stone-700 transition-colors duration-300 p-2 hover:bg-stone-100 rounded-lg"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="prose prose-stone max-w-none">
-              <p className="text-stone-700 leading-relaxed mb-4">
-                אנו ב{storeInfo.name} מחויבים להגנה על פרטיותך. מדיניות פרטיות זו מסבירה כיצד אנו אוספים, משתמשים ומגנים על המידע שלך.
-              </p>
-              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">איסוף מידע</h3>
-              <p className="text-stone-700 leading-relaxed mb-4">
-                אנו אוספים מידע שאתה מספק לנו ישירות, כגון שם, כתובת, מספר טלפון וכתובת דוא"ל כאשר אתה יוצר איתנו קשר או מבצע רכישה.
-              </p>
-              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">שימוש במידע</h3>
-              <p className="text-stone-700 leading-relaxed mb-4">
-                אנו משתמשים במידע שנאסף כדי לספק לך שירות טוב יותר, לעבד הזמנות, לשלוח עדכונים על מוצרים חדשים ומבצעים, ולשפר את חווית הקנייה שלך.
-              </p>
-              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">אבטחת מידע</h3>
-              <p className="text-stone-700 leading-relaxed mb-4">
-                אנו נוקטים באמצעי אבטחה מתאימים כדי להגן על המידע שלך מפני גישה בלתי מורשית, שינוי, גילוי או השמדה.
-              </p>
-              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">יצירת קשר</h3>
-              <p className="text-stone-700 leading-relaxed">
-                אם יש לך שאלות לגבי מדיניות הפרטיות שלנו, אנא צור איתנו קשר בטלפון {storeInfo.phone} או בכתובת {storeInfo.address}.
-              </p>
+            <div className="space-y-6">
+              <div className="bg-amber-50/50 border border-amber-200/50 rounded-xl p-5">
+                <p className="text-base sm:text-lg text-stone-800 leading-relaxed font-medium">
+                  אנו ב-<span className="font-bold text-amber-700">{storeInfo.name}</span> מחויבים להגנה על פרטיותך. מדיניות פרטיות זו מסבירה כיצד אנו אוספים, משתמשים ומגנים על המידע שלך.
+                </p>
+              </div>
+              
+              <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm">
+                <h3 className="text-xl font-bold text-stone-900 mb-3 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center text-amber-700 font-bold">1</span>
+                  איסוף מידע
+                </h3>
+                <p className="text-base text-stone-700 leading-relaxed pr-10">
+                  אנו אוספים מידע שאתה מספק לנו ישירות, כגון שם, כתובת, מספר טלפון וכתובת דוא"ל כאשר אתה יוצר איתנו קשר או מבצע רכישה.
+                </p>
+              </div>
+
+              <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm">
+                <h3 className="text-xl font-bold text-stone-900 mb-3 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center text-amber-700 font-bold">2</span>
+                  שימוש במידע
+                </h3>
+                <p className="text-base text-stone-700 leading-relaxed pr-10">
+                  אנו משתמשים במידע שנאסף כדי לספק לך שירות טוב יותר, לעבד הזמנות, לשלוח עדכונים על מוצרים חדשים ומבצעים, ולשפר את חווית הקנייה שלך.
+                </p>
+              </div>
+
+              <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm">
+                <h3 className="text-xl font-bold text-stone-900 mb-3 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center text-amber-700 font-bold">3</span>
+                  אבטחת מידע
+                </h3>
+                <p className="text-base text-stone-700 leading-relaxed pr-10">
+                  אנו נוקטים באמצעי אבטחה מתאימים כדי להגן על המידע שלך מפני גישה בלתי מורשית, שינוי, גילוי או השמדה.
+                </p>
+              </div>
+
+              <div className="bg-stone-50 border border-stone-200 rounded-xl p-6">
+                <h3 className="text-xl font-bold text-stone-900 mb-3 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center text-green-700 font-bold">📞</span>
+                  יצירת קשר
+                </h3>
+                <p className="text-base text-stone-700 leading-relaxed pr-10">
+                  אם יש לך שאלות לגבי מדיניות הפרטיות שלנו, אנא צור איתנו קשר:
+                </p>
+                <div className="mt-3 pr-10 space-y-2">
+                  <p className="text-base text-stone-600">📱 טלפון: <span className="font-semibold text-stone-800">{storeInfo.phone}</span></p>
+                  <p className="text-base text-stone-600">📍 כתובת: <span className="font-semibold text-stone-800">{storeInfo.address}</span></p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1753,43 +1783,80 @@ const App = () => {
       
       {/* Terms of Service Modal */}
       {showTermsOfService && (
-        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
-          <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">
+        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-8 pb-4 border-b border-stone-200">
+              <h2 className="text-2xl sm:text-3xl font-black text-stone-900">
                 תנאי שימוש באתר
               </h2>
               <button 
                 onClick={() => setShowTermsOfService(false)} 
-                className="text-stone-400 hover:text-amber-700 transition-colors duration-300"
+                className="text-stone-500 hover:text-stone-700 transition-colors duration-300 p-2 hover:bg-stone-100 rounded-lg"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="prose prose-stone max-w-none">
-              <p className="text-stone-700 leading-relaxed mb-4">
-                ברוכים הבאים לאתר {storeInfo.name}. השימוש באתר זה כפוף לתנאים הבאים:
-              </p>
-              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">תנאי שימוש כלליים</h3>
-              <p className="text-stone-700 leading-relaxed mb-4">
-                בכניסתך לאתר ובשימוש בו, אתה מסכים לתנאי השימוש. אם אינך מסכים לתנאים אלה, אנא הימנע משימוש באתר.
-              </p>
-              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">קניין רוחני</h3>
-              <p className="text-stone-700 leading-relaxed mb-4">
-                כל התכנים באתר זה, כולל טקסטים, תמונות, לוגו ועיצוב, הם רכושה של {storeInfo.name} ומוגנים בזכויות יוצרים.
-              </p>
-              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">מוצרים ומחירים</h3>
-              <p className="text-stone-700 leading-relaxed mb-4">
-                אנו שומרים לעצמנו את הזכות לשנות מחירים ומבצעים ללא הודעה מוקדמת. המחירים באתר כוללים מע"מ.
-              </p>
-              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">הגבלת אחריות</h3>
-              <p className="text-stone-700 leading-relaxed mb-4">
-                {storeInfo.name} לא תישא באחריות לכל נזק ישיר או עקיף הנובע משימוש או מחוסר יכולת להשתמש באתר.
-              </p>
-              <h3 className="text-lg font-bold text-stone-800 mt-6 mb-3">שינויים בתנאי השימוש</h3>
-              <p className="text-stone-700 leading-relaxed">
-                אנו שומרים לעצמנו את הזכות לעדכן את תנאי השימוש מעת לעת. המשך השימוש באתר לאחר שינויים כאלה מהווה הסכמה לתנאים המעודכנים.
-              </p>
+            <div className="space-y-6">
+              <div className="bg-blue-50/50 border border-blue-200/50 rounded-xl p-5">
+                <p className="text-base sm:text-lg text-stone-800 leading-relaxed font-medium">
+                  ברוכים הבאים לאתר <span className="font-bold text-blue-700">{storeInfo.name}</span>. השימוש באתר זה כפוף לתנאים הבאים:
+                </p>
+              </div>
+
+              <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm">
+                <h3 className="text-xl font-bold text-stone-900 mb-3 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-700 font-bold">📋</span>
+                  תנאי שימוש כלליים
+                </h3>
+                <p className="text-base text-stone-700 leading-relaxed pr-10">
+                  בכניסתך לאתר ובשימוש בו, אתה מסכים לתנאי השימוש. אם אינך מסכים לתנאים אלה, אנא הימנע משימוש באתר.
+                </p>
+              </div>
+
+              <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm">
+                <h3 className="text-xl font-bold text-stone-900 mb-3 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-700 font-bold">©️</span>
+                  קניין רוחני
+                </h3>
+                <p className="text-base text-stone-700 leading-relaxed pr-10">
+                  כל התכנים באתר זה, כולל טקסטים, תמונות, לוגו ועיצוב, הם רכושה של <span className="font-semibold">{storeInfo.name}</span> ומוגנים בזכויות יוצרים.
+                </p>
+              </div>
+
+              <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm">
+                <h3 className="text-xl font-bold text-stone-900 mb-3 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center text-green-700 font-bold">💰</span>
+                  מוצרים ומחירים
+                </h3>
+                <p className="text-base text-stone-700 leading-relaxed pr-10">
+                  אנו שומרים לעצמנו את הזכות לשנות מחירים ומבצעים ללא הודעה מוקדמת. המחירים באתר כוללים מע"מ.
+                </p>
+              </div>
+
+              <div className="bg-orange-50/50 border border-orange-200/50 rounded-xl p-6">
+                <h3 className="text-xl font-bold text-stone-900 mb-3 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-700 font-bold">⚠️</span>
+                  הגבלת אחריות
+                </h3>
+                <p className="text-base text-stone-700 leading-relaxed pr-10">
+                  <span className="font-semibold">{storeInfo.name}</span> לא תישא באחריות לכל נזק ישיר או עקיף הנובע משימוש או מחוסר יכולת להשתמש באתר.
+                </p>
+              </div>
+
+              <div className="bg-stone-50 border border-stone-200 rounded-xl p-6">
+                <h3 className="text-xl font-bold text-stone-900 mb-3 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-stone-200 rounded-lg flex items-center justify-center text-stone-700 font-bold">🔄</span>
+                  שינויים בתנאי השימוש
+                </h3>
+                <p className="text-base text-stone-700 leading-relaxed pr-10">
+                  אנו שומרים לעצמנו את הזכות לעדכן את תנאי השימוש מעת לעת. המשך השימוש באתר לאחר שינויים כאלה מהווה הסכמה לתנאים המעודכנים.
+                </p>
+                <div className="mt-4 p-3 bg-amber-100/30 rounded-lg">
+                  <p className="text-sm text-stone-600 font-medium">
+                    📅 עדכון אחרון: {new Date().toLocaleDateString('he-IL')}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1797,48 +1864,77 @@ const App = () => {
       
       {/* About Us Modal */}
       {showAboutUs && (
-        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-6">
-          <div className="bg-gradient-to-br from-stone-50 via-amber-50/10 via-stone-50/50 to-amber-100/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-black tracking-tight bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent">
+        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-8 pb-4 border-b border-stone-200">
+              <h2 className="text-2xl sm:text-3xl font-black text-stone-900">
                 {storeInfo.aboutTitle || "אודותינו"}
               </h2>
               <button 
                 onClick={() => setShowAboutUs(false)} 
-                className="text-stone-400 hover:text-amber-700 transition-colors duration-300"
+                className="text-stone-500 hover:text-stone-700 transition-colors duration-300 p-2 hover:bg-stone-100 rounded-lg"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="prose prose-stone max-w-none">
-              <p className="text-stone-700 leading-relaxed mb-8 whitespace-pre-wrap">
-                {storeInfo.aboutText || "ברוכים הבאים לחנות שלנו"}
-              </p>
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/50 rounded-xl p-6">
+                <p className="text-base sm:text-lg text-stone-800 leading-relaxed whitespace-pre-wrap">
+                  {storeInfo.aboutText || "ברוכים הבאים לחנות שלנו"}
+                </p>
+              </div>
               
               {/* About Banners */}
               {storeInfo.aboutBanners && storeInfo.aboutBanners.length > 0 && (
-                <div className="mt-12 space-y-8">
+                <div className="space-y-6">
                   {storeInfo.aboutBanners.map((banner, index) => (
-                    <div key={banner.id || index} className="bg-white/50 rounded-2xl overflow-hidden shadow-lg">
+                    <div key={banner.id || index} className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
                       {banner.image && (
-                        <img 
-                          src={banner.image} 
-                          alt={banner.title || `Banner ${index + 1}`}
-                          className="w-full h-64 object-cover"
-                        />
+                        <div className="relative h-48 sm:h-64 overflow-hidden">
+                          <img 
+                            src={banner.image} 
+                            alt={banner.title || `Banner ${index + 1}`}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
                       )}
                       <div className="p-6">
                         {banner.title && (
-                          <h3 className="text-xl font-bold text-stone-800 mb-2">{banner.title}</h3>
+                          <h3 className="text-xl sm:text-2xl font-bold text-stone-900 mb-3">{banner.title}</h3>
                         )}
                         {banner.text && (
-                          <p className="text-stone-600">{banner.text}</p>
+                          <p className="text-base text-stone-700 leading-relaxed">{banner.text}</p>
                         )}
                       </div>
                     </div>
                   ))}
                 </div>
               )}
+              
+              {/* Contact Information */}
+              <div className="bg-gradient-to-r from-stone-50 to-stone-100 border border-stone-200 rounded-xl p-6 mt-8">
+                <h3 className="text-xl font-bold text-stone-900 mb-4 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center text-amber-700">📍</span>
+                  מידע ליצירת קשר
+                </h3>
+                <div className="space-y-3 pr-10">
+                  <p className="text-base text-stone-700 flex items-center gap-2">
+                    <span className="text-amber-600">📱</span>
+                    <span className="font-medium">טלפון:</span>
+                    <a href={`tel:${storeInfo.phone}`} className="font-semibold text-amber-700 hover:text-amber-800">{storeInfo.phone}</a>
+                  </p>
+                  <p className="text-base text-stone-700 flex items-center gap-2">
+                    <span className="text-amber-600">📍</span>
+                    <span className="font-medium">כתובת:</span>
+                    <span className="font-semibold">{storeInfo.address}</span>
+                  </p>
+                  <p className="text-base text-stone-700 flex items-center gap-2">
+                    <span className="text-green-600">💬</span>
+                    <span className="font-medium">WhatsApp:</span>
+                    <a href={`https://wa.me/${storeInfo.whatsapp}`} className="font-semibold text-green-700 hover:text-green-800">לחץ כאן לשיחה</a>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
