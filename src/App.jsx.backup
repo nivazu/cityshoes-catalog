@@ -1301,6 +1301,15 @@ const App = () => {
               <span className="text-sm font-medium">מצב ניהול פעיל</span>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              <button onClick={() => setShowStorageDebugger(true)} className="bg-yellow-500/20 hover:bg-yellow-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                🔧 אבחון
+              </button>
+              <button onClick={() => setShowStorageTest(!showStorageTest)} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                בדיקות
+              </button>
+              <button onClick={loadProducts} className="bg-green-500/20 hover:bg-green-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
+                🔄 רענן מוצרים
+              </button>
               <button onClick={() => setEditingStore(true)} className="bg-white/20 hover:bg-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors duration-300">
                 ערוך חנות
               </button>
@@ -1507,28 +1516,6 @@ const App = () => {
                           {product.isNew && (
                             <div className="absolute top-2 left-2 text-xs bg-gradient-to-r from-amber-600 to-stone-800 text-white px-2 py-1 rounded-full shadow-md">
                               חדש
-                            </div>
-                          )}
-                          {isAdminMode && (
-                            <div className="absolute top-2 right-2 z-20 flex gap-2">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setEditingProduct(product);
-                                }}
-                                className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
-                              >
-                                <Edit3 className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  deleteProductLocal(product.id);
-                                }}
-                                className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-colors duration-300"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
                             </div>
                           )}
                         </div>
