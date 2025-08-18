@@ -968,18 +968,53 @@ const App = () => {
     loadProducts();
   }, [loadProducts]);
 
-  // Load store info from localStorage
+  // Load store info from Supabase
   useEffect(() => {
-    try {
-      const savedStoreInfo = localStorage.getItem('storeInfo');
-      if (savedStoreInfo) {
-        const parsedInfo = JSON.parse(savedStoreInfo);
-        setStoreInfo(parsedInfo);
-        console.log('Store info loaded from localStorage');
+    const loadStoreInfo = async () => {
+      try {
+        const { data, error } = await supabase
+          .from(TABLES.STORES)
+          .select('*')
+          .eq('store_key', 'default')
+          .single();
+        
+        if (error) {
+          console.error('Error loading store info:', error);
+          // Try to load from localStorage as fallback
+          const savedStoreInfo = localStorage.getItem('storeInfo');
+          if (savedStoreInfo) {
+            const parsedInfo = JSON.parse(savedStoreInfo);
+            setStoreInfo(parsedInfo);
+            console.log('Store info loaded from localStorage (fallback)');
+          }
+        } else if (data) {
+          const storeData = {
+            name: data.name,
+            slogan: data.slogan,
+            phone: data.phone,
+            address: data.address,
+            whatsapp: data.phone,
+            instagram: data.instagram,
+            facebook: data.facebook,
+            tiktok: data.tiktok,
+            heroTitle: data.hero_title,
+            heroSubtitle: data.hero_subtitle,
+            bannerImage: data.banner_image,
+            aboutTitle: data.about_title,
+            aboutText: data.about_text,
+            aboutBanners: data.about_banners || [],
+            privacyPolicyText: data.privacy_policy_text,
+            termsOfServiceText: data.terms_of_service_text
+          };
+          setStoreInfo(storeData);
+          console.log('Store info loaded from Supabase');
+        }
+      } catch (error) {
+        console.error('Error loading store info:', error);
       }
-    } catch (error) {
-      console.error('Error loading store info:', error);
-    }
+    };
+    
+    loadStoreInfo();
   }, []);
 
   // Product CRUD operations
@@ -1094,15 +1129,71 @@ const App = () => {
     setEditingStore(false);
   };
 
-  const saveStoreInfo = (newStoreInfo) => {
-    setStoreInfo(newStoreInfo);
-    // שמירה ב-localStorage
+  const saveStoreInfo = async (newStoreInfo) => {
     try {
-      localStorage.setItem('storeInfo', JSON.stringify(newStoreInfo));
-      console.log('Store info saved to localStorage');
+      // Prepare data for Supabase
+      const storeData = {
+        store_key: 'default',
+        name: newStoreInfo.name,
+        slogan: newStoreInfo.slogan,
+        phone: newStoreInfo.phone,
+        address: newStoreInfo.address,
+        instagram: newStoreInfo.instagram,
+        facebook: newStoreInfo.facebook,
+        tiktok: newStoreInfo.tiktok,
+        hero_title: newStoreInfo.heroTitle,
+        hero_subtitle: newStoreInfo.heroSubtitle,
+        banner_image: newStoreInfo.bannerImage,
+        about_title: newStoreInfo.aboutTitle,
+        about_text: newStoreInfo.aboutText,
+        about_banners: newStoreInfo.aboutBanners || [],
+        privacy_policy_text: newStoreInfo.privacyPolicyText,
+        terms_of_service_text: newStoreInfo.termsOfServiceText
+      };
+
+      // Try to update existing record first
+      const { data: existingData, error: selectError } = await supabase
+        .from(TABLES.STORES)
+        .select('id')
+        .eq('store_key', 'default')
+        .single();
+
+      let result;
+      if (existingData && !selectError) {
+        // Update existing record
+        result = await supabase
+          .from(TABLES.STORES)
+          .update(storeData)
+          .eq('store_key', 'default')
+          .select()
+          .single();
+      } else {
+        // Insert new record
+        result = await supabase
+          .from(TABLES.STORES)
+          .insert([storeData])
+          .select()
+          .single();
+      }
+
+      if (result.error) {
+        console.error('Error saving store info to Supabase:', result.error);
+        // Fallback to localStorage
+        localStorage.setItem('storeInfo', JSON.stringify(newStoreInfo));
+        console.log('Store info saved to localStorage (fallback)');
+      } else {
+        console.log('Store info saved to Supabase successfully');
+        // Also save to localStorage as cache
+        localStorage.setItem('storeInfo', JSON.stringify(newStoreInfo));
+      }
+
+      setStoreInfo(newStoreInfo);
     } catch (error) {
       console.error('Error saving store info:', error);
+      // Fallback to localStorage
+      localStorage.setItem('storeInfo', JSON.stringify(newStoreInfo));
     }
+    
     setEditingStore(false);
     setEditingAbout(false);
     setEditingPrivacy(false);
